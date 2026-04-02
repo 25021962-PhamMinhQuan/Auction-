@@ -39,6 +39,9 @@ public class UserService {
     }
     UserDAO userDAO = new UserDAO();
     public String register(User user) {
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            return "Username cannot be empty";
+        }
         if (userDAO.findByUsername(user.getUsername()) != null) {
             return "Username already exists";
         }
