@@ -21,10 +21,29 @@ public class UserService {
                 throw new IllegalArgumentException("Unknown role");
         }
     }
+    private boolean isValidPassword(String password){
+        if(password.length() < 8){ return false;}
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasNumber = false;
+        boolean hasSpecial = false;
+
+        for(char c: password.toCharArray()){
+            if(Character.isUpperCase(c)){ hasUpper = true;}
+            else if(Character.isLowerCase(c)){ hasLower = true;}
+            else if(Character.isDigit(c)){ hasNumber = true;}
+            else hasSpecial = true;
+        }
+
+        return hasLower && hasNumber && hasLower && hasSpecial;
+    }
     UserDAO userDAO = new UserDAO();
     public String register(User user) {
         if (userDAO.findByUsername(user.getUsername()) != null) {
             return "Username already exists";
+        }
+        if(!isValidPassword(user.getPassword())){
+            return "Password is not strong enough";
         }
         String HashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         user = cloneWithNewPassword(user, HashedPassword);
