@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="spane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController">
+   <children>
+      <MediaView fx:id="mvVideo" layoutX="50.0" preserveRatio="false">
+         <StackPane.margin>
+            <Insets />
+         </StackPane.margin>
+      </MediaView>
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-color: linear-gradient(to right, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 0.3) 100%); -fx-background-radius: 15;" StackPane.alignment="CENTER_LEFT">
+         <children>
+            <Label text="Đăng nhập">
+               <VBox.margin>
+                  <Insets left="50.0" top="150.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="Montserrat Bold" size="29.0" />
+               </font>
+            </Label>
+            <Label prefHeight="25.0" prefWidth="90.0" text="Tên đăng nhập">
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <TextField maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </TextField>
+            <Label prefHeight="25.0" text="Mật khẩu">
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <HBox prefHeight="26.0" prefWidth="162.0">
+               <children>
+                  <StackPane maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0">
+                     <children>
+                        <TextField fx:id="passTextfield" />
+                        <PasswordField fx:id="passwordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                  </StackPane>
+                  <ToggleButton fx:id="showPasswordbtn" mnemonicParsing="false" onAction="#handleToggle" prefHeight="26.0" prefWidth="34.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="25.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="26.0" prefWidth="600.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Đăng nhập">
+                     <HBox.margin>
+                        <Insets left="50.0" right="15.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Label prefHeight="25.0" text="Chưa có tài khoản?">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <Hyperlink prefHeight="25.0" prefWidth="92.0" text="Đăng ký ngay">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</StackPane>
