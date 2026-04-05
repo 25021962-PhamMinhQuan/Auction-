@@ -35,7 +35,7 @@ public class UserService {
             else hasSpecial = true;
         }
 
-        return hasLower && hasNumber && hasLower && hasSpecial;
+        return hasLower && hasNumber && hasUpper && hasSpecial;
     }
     UserDAO userDAO = new UserDAO();
     public String register(User user) {

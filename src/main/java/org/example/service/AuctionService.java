@@ -11,6 +11,11 @@ public class AuctionService {
 
     public void StartAuction(auction Auction){
         Auction.start();
+
+        Auction.setOnBidPersisted(bid -> {
+            auctionDAO.update(Auction, "RUNNING");
+            bidDAO.save(Auction);
+        });
         auctionDAO.save(Auction, "START");
     }
     public void placeBid(auction Auction, Bidder bidder,double amount){
@@ -20,10 +25,6 @@ public class AuctionService {
 
         Auction.placeBid(bidder, amount);
 
-        //Nếu cái placeBid qua được hết logic trong auction thì
-        auctionDAO.update(Auction, "RUNNING");
-        bidDAO.save(Auction);
-
     }
 
     public void FinishAuction(auction Auction){
@@ -31,3 +32,4 @@ public class AuctionService {
         auctionDAO.update(Auction, "FINISHED");
     }
 }
+

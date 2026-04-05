@@ -5,6 +5,8 @@ import org.example.dao.BidDAO;
 import org.example.model.item.Item;
 import org.example.model.user.Bidder;
 import org.example.observer.AuctionObserver;
+import org.example.service.AuctionService;
+import org.example.service.UserService;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -12,15 +14,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.function.Consumer;
 
 public class auction {
         private int id;
         // tạo một mảng Status đặc biệt các giai đoạn của quá trình đấu giá
         public enum Status {OPEN, RUNNING, FINISHED, CANCELED}
 
-        private AuctionDAO auctionDAO = new AuctionDAO();
-
-        private BidDAO bidDAO = new BidDAO();
+        private AuctionService auctionService = new AuctionService();
 
         private Item item;
 
@@ -36,6 +37,12 @@ public class auction {
 
         // tạo ra một hàng đợi ưu tiên cho những người sử dụng lệnh đặt tự động
         private PriorityQueue<AutoBid> autoBids;
+
+        private Consumer<BidTransaction> onBidPersisted;
+
+        public void setOnBidPersisted(Consumer<BidTransaction> logic){
+            this.onBidPersisted = logic;
+        }
 
         public auction(Item item) {
             this.item = item;
@@ -111,6 +118,9 @@ public class auction {
             // thêm giao dịch vào lịch sử
             bids.add(bid);
 
+            if(onBidPersisted != null){
+                onBidPersisted.accept(bid);
+            }
             // anti-sniping
             if (item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
                 item.extendTime(60);
@@ -162,8 +172,7 @@ public class auction {
                 autoBids.add(second);
             }
 
-            placeBidInternal(first.getBidder(),priceAfterBid,false);
-
+            placeBidInternal(first.getBidder(), priceAfterBid, false);
             autoBids.add(first);
             autoBids.addAll(skipped);
 
