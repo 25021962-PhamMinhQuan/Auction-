@@ -7,6 +7,7 @@ import org.example.model.item.Item;
 import org.example.model.user.Bidder;
 import org.example.model.user.User;
 import org.example.observer.BidderClient;
+import org.example.service.AuctionService;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -17,12 +18,12 @@ public class Main {
         AuthController auth = new AuthController();
 
         // register
-        auth.register(new Bidder("1", "userA", "123"));
-        auth.register(new Bidder("2", "userB", "123"));
+        auth.register(new Bidder("1", "userA", "Password@123"));
+        auth.register(new Bidder("2", "userB", "Password@123"));
 
         // login
-        User a = auth.login("userA", "123");
-        User b = auth.login("userB", "123");
+        User a = auth.login("userA", "Password@123");
+        User b = auth.login("userB", "Password@123");
 
         System.out.println("Login success: " + a.getUsername());
 
@@ -38,13 +39,14 @@ public class Main {
         );
 
         Auction auction = new Auction(item);
-        auction.start();
+        AuctionService auctionService = new AuctionService();
+        auctionService.StartAuction(auction);
 
         auction.addObserver(new BidderClient("Client1"));
 
         auction.addAutoBid(new AutoBid((Bidder) b, 2000, 100));
 
-        auction.placeBid((Bidder) a, 1100);
+        auctionService.placeBid(auction,(Bidder) a, 1100);
 
         System.out.println("Current price: " + auction.getCurrentPrice());
         System.out.println(auction.getBids());

@@ -6,6 +6,6 @@ import java.sql.SQLException;
 
 public class DBConnection {
     public static Connection getConnection() throws SQLException{
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/user","root","13489103");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/AUCTION_SYSTEM","root","13489103");
     }
 }

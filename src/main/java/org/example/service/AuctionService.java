@@ -14,7 +14,7 @@ public class AuctionService {
 
         auction.setOnBidPersisted(bid -> {
             auctionDAO.update(auction, "RUNNING");
-            bidDAO.save(auction);
+            bidDAO.save(bid, auction.getId());
         });
         auctionDAO.save(auction, "START");
     }

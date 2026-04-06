@@ -8,11 +8,13 @@ public class BidTransaction {
     private Bidder bidder;
     private double amount;
     private LocalDateTime time;
-
-    public BidTransaction(Bidder bidder, double amount) {
+    public enum BidType { MANUAL, AUTO }
+    private BidType type;
+    public BidTransaction(Bidder bidder, double amount,BidType type) {
         this.bidder = bidder;
         this.amount = amount;
         this.time = LocalDateTime.now();
+        this.type = type;
     }
 
     public Bidder getBidder() {
@@ -27,12 +29,15 @@ public class BidTransaction {
         return time;
     }
 
+    public BidType getType() { return type; }
+
     @Override
     public String toString() {
         return "BidTransaction{" +
                 "bidder=" + this.bidder.getUsername() +
                 ", amount=" + this.amount +
                 ", time=" + this.time +
+                ", type=" + this.type +
                 '}';
     }
 }
