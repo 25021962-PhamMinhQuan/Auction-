@@ -1,6 +1,6 @@
 package org.example.manager;
 
-import org.example.model.auction.auction;
+import org.example.model.auction.Auction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ public class AuctionManager {
     // cnay là thuật toán singleton
     //tác dụng là để lưu tất cả cái auction cho 1 auctionManager quản lí thôi tránh trg hợp có 2 auction manager khác nhau
     private static AuctionManager instance;
-    private List<auction> auctions;
+    private List<Auction> auctions;
 
     private AuctionManager() {
         auctions = new ArrayList<>();
@@ -23,11 +23,11 @@ public class AuctionManager {
         }
         return instance;
     }
-    public void addAuction(auction Auction) {
-        auctions.add(Auction);
+    public void addAuction(Auction auction) {
+        auctions.add(auction);
     }
 
-    public List<auction> getAuctions() {
+    public List<Auction> getAuctions() {
         return new ArrayList<>(auctions);
     }
 }

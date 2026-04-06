@@ -2,34 +2,34 @@ package org.example.service;
 
 import org.example.dao.AuctionDAO;
 import org.example.dao.BidDAO;
-import org.example.model.auction.auction;
+import org.example.model.auction.Auction;
 import org.example.model.user.Bidder;
 
 public class AuctionService {
     private AuctionDAO auctionDAO = new AuctionDAO();
     private BidDAO bidDAO = new BidDAO();
 
-    public void StartAuction(auction Auction){
-        Auction.start();
+    public void StartAuction(Auction auction){
+        auction.start();
 
-        Auction.setOnBidPersisted(bid -> {
-            auctionDAO.update(Auction, "RUNNING");
-            bidDAO.save(Auction);
+        auction.setOnBidPersisted(bid -> {
+            auctionDAO.update(auction, "RUNNING");
+            bidDAO.save(auction);
         });
-        auctionDAO.save(Auction, "START");
+        auctionDAO.save(auction, "START");
     }
-    public void placeBid(auction Auction, Bidder bidder,double amount){
+    public void placeBid(Auction auction, Bidder bidder,double amount){
         if (bidder == null) {
             throw new IllegalArgumentException("Bidder null");
         }
 
-        Auction.placeBid(bidder, amount);
+        auction.placeBid(bidder, amount);
 
     }
 
-    public void FinishAuction(auction Auction){
-        Auction.finish();
-        auctionDAO.update(Auction, "FINISHED");
+    public void FinishAuction(Auction auction){
+        auction.finish();
+        auctionDAO.update(auction, "FINISHED");
     }
 }
 

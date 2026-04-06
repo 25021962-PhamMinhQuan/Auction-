@@ -2,7 +2,7 @@ package org.example;
 
 import org.example.controller.AuthController;
 import org.example.factory.ItemFactory;
-import org.example.model.auction.auction;
+import org.example.model.auction.Auction;
 import org.example.model.item.Item;
 import org.example.model.user.Bidder;
 import org.example.model.user.User;
@@ -37,16 +37,16 @@ public class Main {
                 LocalDateTime.now().plusMinutes(2)
         );
 
-        auction Auction = new auction(item);
-        Auction.start();
+        Auction auction = new Auction(item);
+        auction.start();
 
-        Auction.addObserver(new BidderClient("Client1"));
+        auction.addObserver(new BidderClient("Client1"));
 
-        Auction.addAutoBid(new AutoBid((Bidder) b, 2000, 100));
+        auction.addAutoBid(new AutoBid((Bidder) b, 2000, 100));
 
-        Auction.placeBid((Bidder) a, 1100);
+        auction.placeBid((Bidder) a, 1100);
 
-        System.out.println("Current price: " + Auction.getCurrentPrice());
-        System.out.println(Auction.getBids());
+        System.out.println("Current price: " + auction.getCurrentPrice());
+        System.out.println(auction.getBids());
     }
 }

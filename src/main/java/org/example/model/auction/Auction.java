@@ -1,22 +1,18 @@
 package org.example.model.auction;
 
-import org.example.dao.AuctionDAO;
-import org.example.dao.BidDAO;
 import org.example.model.item.Item;
 import org.example.model.user.Bidder;
 import org.example.observer.AuctionObserver;
 import org.example.service.AuctionService;
-import org.example.service.UserService;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.function.Consumer;
 
-public class auction {
+public class Auction {
         private int id;
         // tạo một mảng Status đặc biệt các giai đoạn của quá trình đấu giá
         public enum Status {OPEN, RUNNING, FINISHED, CANCELED}
@@ -44,7 +40,7 @@ public class auction {
             this.onBidPersisted = logic;
         }
 
-        public auction(Item item) {
+        public Auction(Item item) {
             this.item = item;
             this.status = Status.OPEN;
             this.bids = new ArrayList<>();

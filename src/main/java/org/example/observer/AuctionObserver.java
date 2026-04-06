@@ -1,9 +1,9 @@
 package org.example.observer;
 
 import org.example.model.auction.BidTransaction;
-import org.example.model.auction.auction;
+import org.example.model.auction.Auction;
 
 public interface AuctionObserver {
-    void update(auction Auction, BidTransaction bid, double MinIncreament);
+    void update(Auction auction, BidTransaction bid, double MinIncreament);
 }
 
