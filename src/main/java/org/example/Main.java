@@ -44,7 +44,8 @@ public class Main {
 
         auction.addObserver(new BidderClient("Client1"));
 
-        auction.addAutoBid(new AutoBid((Bidder) b, 2000, 100));
+        auctionService.registerAutoBid(auction, new AutoBid((Bidder) b, 2000, 100));
+
 
         auctionService.placeBid(auction,(Bidder) a, 1100);
 
