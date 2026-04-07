@@ -38,7 +38,7 @@ public class Main {
                 LocalDateTime.now().plusMinutes(2)
         );
 
-        Auction auction = new Auction(item);
+        Auction auction = new Auction(item);;
         AuctionService auctionService = new AuctionService();
         auctionService.StartAuction(auction);
 
