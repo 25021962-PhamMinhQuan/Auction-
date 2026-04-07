@@ -89,10 +89,10 @@ public class Auction {
         public synchronized void placeBid(Bidder bidder, double amount) {
 
             // đoạn này là nếu có 1 người tăng giá thủ công thì set cái tigger auto = true để có thể chạy autobid
-            placeBidInternal(bidder, amount, true);
+            placeBidInternal(bidder, amount, true, BidTransaction.BidType.MANUAL);
         }
 
-        private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto) {
+        private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
 
             if (status != Status.RUNNING) {
                 throw new IllegalStateException("Auction not running");
@@ -107,10 +107,16 @@ public class Auction {
                 throw new IllegalArgumentException("Bid too low");
             }
 
+            if (highestBidder != null &&
+                    highestBidder.getId().equals(bidder.getId()) &&
+                    type == BidTransaction.BidType.MANUAL) {
+                throw new IllegalArgumentException("You are still the highest");
+            }
+
             item.setCurrentPrice(amount);
             highestBidder = bidder;
 
-            BidTransaction bid = new BidTransaction(bidder, amount);
+            BidTransaction bid = new BidTransaction(bidder, amount,type);
             // thêm giao dịch vào lịch sử
             bids.add(bid);
 
@@ -168,7 +174,7 @@ public class Auction {
                 autoBids.add(second);
             }
 
-            placeBidInternal(first.getBidder(), priceAfterBid, false);
+            placeBidInternal(first.getBidder(), priceAfterBid, false, BidTransaction.BidType.AUTO);
             autoBids.add(first);
             autoBids.addAll(skipped);
 
