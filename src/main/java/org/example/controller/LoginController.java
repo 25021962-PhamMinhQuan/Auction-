@@ -6,9 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -16,6 +14,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.media.Media;
 import javafx.stage.Stage;
+import org.example.model.user.Bidder;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +28,9 @@ public class LoginController implements Initializable {
     private PasswordField passwordfield;
 
     @FXML
-    private TextField passTextfield, userNameTextField;
-
+    private TextField passTextfield, usernameTextField;
+    @FXML
+    private Label warning;
     @FXML
     private ToggleButton showPasswordbtn;
 
@@ -44,8 +46,8 @@ public class LoginController implements Initializable {
     private File file;
     private Media media;
     private MediaPlayer mediaPlayer;
-    private Image eyeclosed;
-    private Image eyeopen;
+    private Image eyeclosed, eyeopen, checked;;
+    AuthController auth = new AuthController();
 
 
     @Override
@@ -97,7 +99,24 @@ public class LoginController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-    @FXML void handleLogin(ActionEvent e){
+    private void notif() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Attenion!");
+        alert.setHeaderText("Login successfully!");
+        alert.setContentText("");
+        alert.showAndWait();
+    }
+
+    @FXML
+    public void handleLogin(ActionEvent e) {
+        if (usernameTextField.getText().isEmpty()) {
+            warning.setText("Username is required");
+        } else if (passwordfield.getText().isEmpty()) {
+            warning.setText("Password is required");
+        } else {
+            auth.login(usernameTextField.getText(), passwordfield.getText());
+            notif();
+        }
 
     }
 }

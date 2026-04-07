@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -16,6 +17,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.media.Media;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import org.example.model.user.Bidder;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,13 +31,15 @@ public class RegisterController implements Initializable {
     private PasswordField passwordfield, cfpasswordfield;
 
     @FXML
-    private TextField passTextfield, cfpassTextfield ;
+    private TextField passTextfield, cfpassTextfield, usernameTextField ;
 
     @FXML
     private ToggleButton showPasswordbtn, showcfPasswordbtn;
 
     @FXML
     private MediaView mvVideo;
+    @FXML
+    private Label warning;
 
     @FXML
     private StackPane spane;
@@ -45,6 +51,7 @@ public class RegisterController implements Initializable {
     private MediaPlayer mediaPlayer;
     private Image eyeclosed;
     private Image eyeopen;
+    AuthController auth = new AuthController();
 
 
     @Override
@@ -105,5 +112,27 @@ public class RegisterController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+    private void notif(){
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Attenion!");
+        alert.setHeaderText("Registered successfully!");
+        alert.setContentText("You can now login!");
+        alert.showAndWait();
+    }
+    @FXML
+    public void handleRegister(ActionEvent e) throws IOException {
+        if (usernameTextField.getText().isEmpty()){
+            warning.setText("Username is required");
+        } else if (passwordfield.getText().isEmpty()){
+            warning.setText("Password is required");
+        }
+        else if(!passwordfield.getText().equals(cfpasswordfield.getText())){
+            warning.setText("Passwords do not match");
+        } else {
+            auth.register(new Bidder("36", usernameTextField.getText(), cfpasswordfield.getText()));
+            notif();
+            gotoLogin(e);
+        }
     }
 }

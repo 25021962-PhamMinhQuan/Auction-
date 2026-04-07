@@ -35,7 +35,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="userNameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
+            <TextField fx:id="usernameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -65,9 +65,14 @@
                   <Insets bottom="25.0" />
                </VBox.margin>
             </HBox>
+            <Label fx:id="warning" textFill="RED">
+               <VBox.margin>
+                  <Insets left="50.0" top="-25.0" />
+               </VBox.margin>
+            </Label>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" text="Login">
+                  <Button mnemonicParsing="false" onAction="#handleLogin" text="Login">
                      <HBox.margin>
                         <Insets left="50.0" right="15.0" />
                      </HBox.margin>

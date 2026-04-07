@@ -35,7 +35,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </Label>
-            <TextField maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
+            <TextField fx:id="usernameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -84,9 +84,14 @@
                   <ToggleButton fx:id="showcfPasswordbtn" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleToggleConfirm" prefHeight="24.0" prefWidth="24.0" />
                </children>
             </HBox>
+            <Label fx:id="warning" textFill="RED">
+               <VBox.margin>
+                  <Insets bottom="-20.0" left="50.0" top="5.0" />
+               </VBox.margin>
+            </Label>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
-                  <Button fx:id="registerBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="75.0" text="Register">
+                  <Button fx:id="registerBtn" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" text="Register">
                      <HBox.margin>
                         <Insets left="50.0" right="15.0" />
                      </HBox.margin>
