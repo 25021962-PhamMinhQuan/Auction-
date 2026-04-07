@@ -35,7 +35,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </Label>
-            <TextField maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
+            <TextField fx:id="userNameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

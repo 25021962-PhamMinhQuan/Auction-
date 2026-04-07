@@ -27,7 +27,7 @@ public class LoginController implements Initializable {
     private PasswordField passwordfield;
 
     @FXML
-    private TextField passTextfield;
+    private TextField passTextfield, userNameTextField;
 
     @FXML
     private ToggleButton showPasswordbtn;
@@ -39,6 +39,7 @@ public class LoginController implements Initializable {
     private StackPane spane;
     @FXML
     ImageView imageview;
+
 
     private File file;
     private Media media;
@@ -95,5 +96,8 @@ public class LoginController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+    @FXML void handleLogin(ActionEvent e){
+
     }
 }

@@ -6,10 +6,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
-import java.awt.*;
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class AuctionApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/login.fxml"));
