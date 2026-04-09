@@ -18,9 +18,9 @@ public class ItemFactory {
         if(end.isBefore(start)){
             throw new IllegalArgumentException("The start time must be before the end time.");
         }
-        if(start.isBefore(LocalDateTime.now())){
-            throw new IllegalArgumentException("Bidding time must starts from now");
-        }
+        //if(start.isBefore(LocalDateTime.now())){
+        //    throw new IllegalArgumentException("Bidding time must starts from now");
+        //}
 
         switch (type) {
             case "ELECTRONICS":
