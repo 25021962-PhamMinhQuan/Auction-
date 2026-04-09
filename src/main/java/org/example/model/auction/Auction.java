@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class Auction {
@@ -29,7 +30,7 @@ public class Auction {
 
         private Bidder highestBidder;
 
-        private List<AuctionObserver> observers = new ArrayList<>();
+        private List<AuctionObserver> observers = new CopyOnWriteArrayList<>();
 
         // tạo ra một hàng đợi ưu tiên cho những người sử dụng lệnh đặt tự động
         private PriorityQueue<AutoBid> autoBids;
@@ -214,6 +215,9 @@ public class Auction {
 
         public Item getItem() {
             return item;
+        }
+        public String getStatus(){
+            return status.name();
         }
 }
 

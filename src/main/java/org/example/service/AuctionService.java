@@ -8,6 +8,8 @@ import org.example.dao.AutoBidDao;
 import org.example.util.AutoBid;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.concurrent.*;
 
 public class AuctionService {
     private AuctionDAO auctionDAO = new AuctionDAO();
@@ -22,6 +24,22 @@ public class AuctionService {
             bidDAO.save(bid, auction.getId());
         });
         auctionDAO.save(auction, "START");
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleAtFixedRate(() -> {
+            if(auction.getStatus() != Auction.Status.RUNNING.name()){
+                scheduler.shutdown();
+                return;
+            }
+
+            LocalDateTime endTime = auction.getItem().getEndTime();
+
+            if(LocalDateTime.now().isAfter(endTime)){
+                FinishAuction(auction);
+                scheduler.shutdown();
+            }
+                }, 0, 1,TimeUnit.SECONDS);
     }
     public void placeBid(Auction auction, Bidder bidder,double amount){
         if (bidder == null) {
