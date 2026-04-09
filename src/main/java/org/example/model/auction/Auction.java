@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class Auction {
         private int id;
         // tạo một mảng Status đặc biệt các giai đoạn của quá trình đấu giá
-        public enum Status {OPEN, RUNNING, FINISHED, CANCELED}
+        public enum Status {OPEN, RUNNING, FINISHED, CANCELED, PAID}
 
         private AuctionService auctionService = new AuctionService();
 
@@ -94,7 +94,12 @@ public class Auction {
         }
 
         private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
-
+            if (status == Status.CANCELED) {
+                throw new IllegalStateException("Auction cancelled");
+            }
+            if (status == Status.PAID) {
+                throw new IllegalStateException("Auction finished");
+            }
             if (status != Status.RUNNING) {
                 throw new IllegalStateException("Auction not running");
             }
@@ -192,6 +197,18 @@ public class Auction {
                 return highestBidder;
             } else {
                 return null;
+            }
+        }
+
+        public void markPaid(){
+            if(status == Status.FINISHED){
+                status = Status.PAID;
+            }
+        }
+
+        public void cancel(){
+            if(status == Status.OPEN || status == Status.RUNNING){
+                status = Status.CANCELED;
             }
         }
 

@@ -45,5 +45,17 @@ public class AuctionDAO {
             throw new RuntimeException(e);
         }
     }
+    // chỉ dùng khi cancel hoặc paid
+    public void updateStatus(Auction auction, String status) {
+        String sql = "UPDATE AUCTION SET status=? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, auction.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

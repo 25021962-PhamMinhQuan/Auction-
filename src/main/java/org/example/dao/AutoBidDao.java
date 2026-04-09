@@ -56,7 +56,7 @@ public class AutoBidDao {
     }
 
     public void deactivateByAuction(int auctionId){
-        String sqlUPDATE = "UPDATE AUTO_BID SET IS_ACTIVE = TRUE WHERE AUCTION_ID = ?";
+        String sqlUPDATE = "UPDATE AUTO_BID SET IS_ACTIVE = FALSE WHERE AUCTION_ID = ?";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE)){
             pstmt.setInt(1,auctionId);
