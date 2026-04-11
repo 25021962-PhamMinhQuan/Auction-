@@ -22,6 +22,13 @@ public class ItemFactory {
         //    throw new IllegalArgumentException("Bidding time must starts from now");
         //}
 
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Product name must not be blank.");
+        }
+        if (price <= 0) {
+            throw new IllegalArgumentException("The price must be greater than 0.");
+        }
+
         switch (type) {
             case "ELECTRONICS":
                 return new Electronics(id, name, describe, price, start, end);

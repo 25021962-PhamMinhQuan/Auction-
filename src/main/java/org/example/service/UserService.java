@@ -48,6 +48,10 @@ public class UserService {
         if(!isValidPassword(user.getPassword())){
             return "Password is not strong enough";
         }
+        if(!user.getUsername().matches("^[a-zA-Z0-9_]{6,20}$")){
+            return "mật khẩu phải có độ dài từ 6 đến 20 kí tự.\n" +
+                    "mật khẩu không được có kí tự đặc biệt ngoại trừ \"_\"";
+        }
         String HashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         user = cloneWithNewPassword(user, HashedPassword);
 
