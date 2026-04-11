@@ -10,13 +10,14 @@ import static org.example.dao.DBConnection.getConnection;
 
 public class AuctionDAO {
     public void save(Auction auction,String status){
-        String sqlINSERT = "INSERT INTO AUCTION (current_price,start_time,end_time,status) VALUES (?,?,?,?)";
+        String sqlINSERT = "INSERT INTO AUCTION (current_price,start_time,end_time,status,item_id) VALUES (?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT, Statement.RETURN_GENERATED_KEYS);){
             pstmt.setDouble(1,auction.getCurrentPrice());
             pstmt.setObject(2,auction.getItem().getStartTime());
             pstmt.setObject(3,auction.getItem().getEndTime());
             pstmt.setString(4,status);
+            pstmt.setString(5,auction.getItem().getId());
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();

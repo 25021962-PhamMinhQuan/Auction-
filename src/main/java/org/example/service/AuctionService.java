@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.dao.AuctionDAO;
 import org.example.dao.BidDAO;
+import org.example.dao.ItemDao;
 import org.example.model.auction.Auction;
 import org.example.model.user.Bidder;
 import org.example.dao.AutoBidDao;
@@ -16,6 +17,7 @@ public class AuctionService {
     private AuctionDAO auctionDAO = new AuctionDAO();
     private BidDAO bidDAO = new BidDAO();
     private AutoBidDao autoBidDao = new AutoBidDao();
+    private ItemDao itemDao = new ItemDao();
 
     public void StartAuction(Auction auction){
         auction.start();
@@ -92,6 +94,7 @@ public class AuctionService {
 
         auction.markPaid();
         auctionDAO.updateStatus(auction, "PAID");
+        itemDao.updateStatus(auction.getItem(),"SOLD");
     }
 }
 

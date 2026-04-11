@@ -13,5 +13,10 @@ public class Art extends Item {
                LocalDateTime end) {
         super(id, name, description, price, start, end);
     }
+
+    @Override
+    public String getType(){
+        return "Art";
+    }
 }
 

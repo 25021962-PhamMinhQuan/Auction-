@@ -5,9 +5,11 @@ import org.example.factory.ItemFactory;
 import org.example.model.auction.Auction;
 import org.example.model.item.Item;
 import org.example.model.user.Bidder;
+import org.example.model.user.Seller;
 import org.example.model.user.User;
 import org.example.observer.BidderClient;
 import org.example.service.AuctionService;
+import org.example.service.ItemService;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -16,26 +18,31 @@ public class Main {
     public static void main(String[] args) {
 
         AuthController auth = new AuthController();
+        ItemService itemService = new ItemService();
 
         // register
         auth.register(new Bidder("1", "userA", "Password@123"));
         auth.register(new Bidder("2", "userB", "Password@123"));
+        auth.register(new Seller("3", "userC", "Password@123"));
+
 
         // login
         User a = auth.login("userA", "Password@123");
         User b = auth.login("userB", "Password@123");
+        User c = auth.login("userC", "Password@123");
 
         System.out.println("Login success: " + a.getUsername());
 
         // đấu giá
-        Item item = ItemFactory.createItem(
+        Item item = itemService.CreateItem(
                 "ELECTRONICS",
                 "i1",
                 "Laptop",
                 "Gaming",
                 1000,
                 LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(2)
+                LocalDateTime.now().plusMinutes(2),
+                (Seller) c
         );
 
         Auction auction = new Auction(item);

@@ -28,6 +28,10 @@ public abstract class Item extends Entity {
         this.endTime = endTime;
     }
 
+    public double getStartPrice() {
+        return startPrice;
+    }
+
     public double getCurrentPrice() {
         return currentPrice;
     }
@@ -47,5 +51,12 @@ public abstract class Item extends Entity {
     public LocalDateTime getStartTime(){
         return this.startTime;
     }
+
+    public String getName() { return name; }
+
+    public String getDescription() { return description; }
+
+    public abstract String getType();
+
 }
 
