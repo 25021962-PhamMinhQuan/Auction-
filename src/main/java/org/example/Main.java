@@ -21,15 +21,14 @@ public class Main {
         ItemService itemService = new ItemService();
 
         // register
-        auth.register(new Bidder("1", "userA", "Password@123"));
-        auth.register(new Bidder("2", "userB", "Password@123"));
-        auth.register(new Seller("3", "userC", "Password@123"));
-
+        auth.register(new Bidder("1", "user_account_A", "Password@123"));
+        auth.register(new Bidder("2", "user_account_B", "Password@123"));
+        auth.register(new Seller("4", "user_account_C", "Password@123"));
 
         // login
-        User a = auth.login("userA", "Password@123");
-        User b = auth.login("userB", "Password@123");
-        User c = auth.login("userC", "Password@123");
+        User a = auth.login("user_account_A", "Password@123");
+        User b = auth.login("user_account_B", "Password@123");
+        User c = auth.login("user_account_C", "Password@123");
 
         System.out.println("Login success: " + a.getUsername());
 
