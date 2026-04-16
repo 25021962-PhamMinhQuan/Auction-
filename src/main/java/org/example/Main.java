@@ -3,6 +3,7 @@ package org.example;
 import org.example.controller.AuthController;
 import org.example.factory.ItemFactory;
 import org.example.model.auction.Auction;
+import org.example.model.auction.BiddingCoordinator;
 import org.example.model.item.Item;
 import org.example.model.user.Bidder;
 import org.example.model.user.Seller;
@@ -21,9 +22,9 @@ public class Main {
         ItemService itemService = new ItemService();
 
         // register
-        auth.register(new Bidder("1", "user_account_A", "Password@123"));
-        auth.register(new Bidder("2", "user_account_B", "Password@123"));
-        auth.register(new Seller("4", "user_account_C", "Password@123"));
+        auth.register(new Bidder("5", "user_account_A", "Password@123"));
+        auth.register(new Bidder("6", "user_account_B", "Password@123"));
+        auth.register(new Seller("7", "user_account_C", "Password@123"));
 
         // login
         User a = auth.login("user_account_A", "Password@123");
@@ -43,12 +44,11 @@ public class Main {
                 LocalDateTime.now().plusMinutes(2),
                 (Seller) c
         );
-
         Auction auction = new Auction(item);
         AuctionService auctionService = new AuctionService();
         auctionService.StartAuction(auction);
 
-        auction.addObserver(new BidderClient("Client1"));
+        auctionService.addObserverToAuction(auction,new BidderClient("Client1"));
 
         auctionService.registerAutoBid(auction, new AutoBid((Bidder) b, 2000, 100));
 

@@ -18,8 +18,6 @@ public class Auction {
         // tạo một mảng Status đặc biệt các giai đoạn của quá trình đấu giá
         public enum Status {OPEN, RUNNING, FINISHED, CANCELED, PAID}
 
-        private AuctionService auctionService = new AuctionService();
-
         private Item item;
 
         // cnay để cập nhận trạng thái của giao dịch
@@ -30,70 +28,14 @@ public class Auction {
 
         private Bidder highestBidder;
 
-        private List<AuctionObserver> observers = new CopyOnWriteArrayList<>();
-
-        // tạo ra một hàng đợi ưu tiên cho những người sử dụng lệnh đặt tự động
-        private PriorityQueue<AutoBid> autoBids;
-
-        private Consumer<BidTransaction> onBidPersisted;
-
-        public void setOnBidPersisted(Consumer<BidTransaction> logic){
-            this.onBidPersisted = logic;
-        }
 
         public Auction(Item item) {
             this.item = item;
             this.status = Status.OPEN;
             this.bids = new ArrayList<>();
-
-            // khởi tạo ra mảng với yêu cầu (logic) là sắp xếp theo thứ tự nhỏ dần của giá trần và chx nạp object j đâu
-            autoBids = new PriorityQueue<>(
-                    (a, b) -> {
-                        int logic = Double.compare(b.getMaxBid(), a.getMaxBid());
-                        if(logic == 0){
-                            return a.getTime().compareTo(b.getTime());
-                        }
-                        return logic;
-                    }
-            );
-        }
-        public double getMinIncrement(){
-            return this.item.getCurrentPrice() * 0.05;
         }
 
-        // nếu giao dịch đang mở thì đổi trạng thái nó thành hoạt động
-        public void start() {
-            if (status == Status.OPEN) {
-                status = Status.RUNNING;
-            }
-        }
-
-        // thêm người theo dõi vào list observers (list mẹ của cái bidder client để thông báo giao dịch ý)
-        public void addObserver(AuctionObserver observer) {
-            observers.add(observer);
-        }
-
-
-        private void notifyObservers(BidTransaction bid) {
-            for (AuctionObserver o : observers) {
-                // đoạn này this có nghĩa là nạp cái auction này vào bâyh thì chx hẳn là có tdung nhma khi thiết kế giao diện thì cnay sẽ cung cấp các thông tin như đang đấu giá sản phẩm nào bla bla
-                o.update(this, bid, this.getMinIncrement());
-            }
-        }
-
-        // nếu có ng dùng auto bid thì thêm họ vào danh sách hàng chờ ưu tiên
-        public void addAutoBid(AutoBid autoBid) {
-            autoBids.add(autoBid);
-        }
-
-        // synchronized là để đảm bảo chỉ có 1 người đặt giá 1 lúc ko xảy ra trg hợp 1 lucs 2 ng đặt
-        public synchronized void placeBid(Bidder bidder, double amount) {
-
-            // đoạn này là nếu có 1 người tăng giá thủ công thì set cái tigger auto = true để có thể chạy autobid
-            placeBidInternal(bidder, amount, true, BidTransaction.BidType.MANUAL);
-        }
-
-        private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
+        public void validateBid(Bidder bidder, double amount, BidTransaction.BidType type) {
             if (status == Status.CANCELED) {
                 throw new IllegalStateException("Auction cancelled");
             }
@@ -103,87 +45,43 @@ public class Auction {
             if (status != Status.RUNNING) {
                 throw new IllegalStateException("Auction not running");
             }
-
             if (LocalDateTime.now().isAfter(item.getEndTime())) {
-                finish();
                 throw new IllegalStateException("Auction ended");
             }
-
-            if (amount <= item.getCurrentPrice() || amount < item.getCurrentPrice() + this.getMinIncrement()) {
+            if (amount <= item.getCurrentPrice() || amount < item.getCurrentPrice() + getMinIncrement()) {
                 throw new IllegalArgumentException("Bid too low");
             }
-
             if (highestBidder != null &&
                     highestBidder.getId().equals(bidder.getId()) &&
                     type == BidTransaction.BidType.MANUAL) {
                 throw new IllegalArgumentException("You are still the highest");
             }
+        }
 
+        public BidTransaction recordBid(Bidder bidder, double amount, BidTransaction.BidType type) {
             item.setCurrentPrice(amount);
             highestBidder = bidder;
 
-            BidTransaction bid = new BidTransaction(bidder, amount,type);
-            // thêm giao dịch vào lịch sử
+            BidTransaction bid = new BidTransaction(bidder, amount, type);
             bids.add(bid);
 
-            if(onBidPersisted != null){
-                onBidPersisted.accept(bid);
-            }
-            // anti-sniping
+            // Anti-sniping
             if (item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
                 item.extendTime(60);
             }
 
-            notifyObservers(bid);
-
-            // đây chính là phần để chạy autobid
-            if (triggerAuto) {
-                processAutoBids();
-            }
+            return bid;
         }
 
-        private void processAutoBids() {
-            Double minIncreament = this.getMinIncrement();
-            if (autoBids.isEmpty()) return;
 
-            AutoBid first=null,second = null;
-            List<AutoBid> skipped = new ArrayList<>();
+        public double getMinIncrement(){
+            return this.item.getCurrentPrice() * 0.05;
+        }
 
-            while(!autoBids.isEmpty()){
-                AutoBid candiate = autoBids.poll();
-                if(candiate.getMaxBid() > item.getCurrentPrice() && candiate.getIncrement() >= minIncreament){
-                    first = candiate;
-                    break;
-                }
-                skipped.add(candiate);
+        public void start() {
+            if (status == Status.OPEN) {
+                status = Status.RUNNING;
             }
-            if(first == null){
-                autoBids.addAll(skipped);
-                return;
-            }
-
-            while(!autoBids.isEmpty()){
-                AutoBid candiate = autoBids.poll();
-                if(candiate.getMaxBid() > item.getCurrentPrice() && candiate.getIncrement() >= minIncreament){
-                    second = candiate;
-                    break;
-                }
-                skipped.add(candiate);
-            }
-            double priceAfterBid;
-
-            if(second == null){
-                priceAfterBid = Math.min(first.getMaxBid(), first.getIncrement() + item.getCurrentPrice());
-            }
-            else{
-                priceAfterBid = Math.min(first.getMaxBid(), second.getMaxBid() + first.getIncrement());
-                autoBids.add(second);
-            }
-
-            placeBidInternal(first.getBidder(), priceAfterBid, false, BidTransaction.BidType.AUTO);
-            autoBids.add(first);
-            autoBids.addAll(skipped);
-
         }
 
         public void finish() {
