@@ -2,15 +2,14 @@ package org.example.factory;
 import org.example.model.item.Art;
 import org.example.model.item.Electronics;
 import org.example.model.item.Item;
+import java.util.*;
 
 import java.time.LocalDateTime;
 
 
 public class ItemFactory {
-
-    public static Item createItem(String type,
-                                  String id,
-                                  String name,
+    private static final Map<String, ItemCreationStrategy> strategies = new HashMap<>();
+    public static void validateItemParameters(String name,
                                   String describe,
                                   double price,
                                   LocalDateTime start,
@@ -28,15 +27,36 @@ public class ItemFactory {
         if (price <= 0) {
             throw new IllegalArgumentException("The price must be greater than 0.");
         }
+    }
 
-        switch (type) {
-            case "ELECTRONICS":
-                return new Electronics(id, name, describe, price, start, end);
-            case "ART":
-                return new Art(id, name, describe, price, start, end);
-            default:
-                throw new IllegalArgumentException("Unknown type");
+    public static void registerStrategy(ItemCreationStrategy strategy){
+        strategies.put(strategy.getType(), strategy);
+    }
+
+    static {
+        ItemFactory.registerStrategy(new ArtsCreationStrategy());
+        ItemFactory.registerStrategy(new ElectronicsCreationStrategy());
+    }
+
+    public static Item createItem(String type,
+                                  String id,
+                                  String name,
+                                  String description,
+                                  double price,
+                                  LocalDateTime start,
+                                  LocalDateTime end){
+        ItemFactory.validateItemParameters(name,description,price,start,end);
+
+        ItemCreationStrategy strategy = strategies.get(type);
+        if(strategy == null){
+            throw new IllegalArgumentException("Unknow item type: " + type);
         }
+
+        return strategy.createItem(id,name,description,price,start,end);
+    }
+
+    public static java.util.Set<String> getAvailableTypes() {
+        return strategies.keySet();
     }
 }
 

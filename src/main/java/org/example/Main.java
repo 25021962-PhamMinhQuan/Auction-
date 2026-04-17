@@ -35,7 +35,7 @@ public class Main {
 
         // đấu giá
         Item item = itemService.CreateItem(
-                "ELECTRONICS",
+                "ELECTRONIC",
                 "i1",
                 "Laptop",
                 "Gaming",
