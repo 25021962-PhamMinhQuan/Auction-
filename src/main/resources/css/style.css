@@ -1,0 +1,64 @@
+/* css toàn app */
+.root {
+    -fx-background-color: #0f172a;
+    -fx-primary-yellow: #fbbf24;
+    -fx-font-family: 'Inter';
+    -fx-background-image: url("/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_18pt-Regular.ttf');
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_18pt-Bold.ttf');
+    font-weight: bold;
+}
+.button-login {
+    -fx-background-color: #fbbf24;
+    -fx-text-fill: #111827;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+.button-login:hover {
+    -fx-background-color: #f59e0b;
+}
+.input_field {
+    -fx-background-color: #1f2933;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #374151;
+}
+.input_field:focused{
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 1.5;
+}
+/* login & register screen */
+.login_card {
+    -fx-background-color: linear-gradient(to bottom right, #111827, #0b1220);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0.3, 0, 10);
+    -fx-background-radius: 16;
+}
+.title {
+    -fx-font-family: "Inter";
+    -fx-font-size: 29px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5e7eb;
+}
+.label-secondary {
+    -fx-font-family: "Inter";
+    -fx-font-size: 13px;
+    -fx-text-fill: #9ca3af;
+}
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+}
+

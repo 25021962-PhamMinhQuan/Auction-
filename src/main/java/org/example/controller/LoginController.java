@@ -7,14 +7,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
-import javafx.scene.media.Media;
 import javafx.stage.Stage;
-import org.example.model.user.Bidder;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -35,31 +32,16 @@ public class LoginController implements Initializable {
     private ToggleButton showPasswordbtn;
 
     @FXML
-    private MediaView mvVideo;
-
-    @FXML
     private StackPane spane;
     @FXML
     ImageView imageview;
 
-
-    private File file;
-    private Media media;
-    private MediaPlayer mediaPlayer;
-    private Image eyeclosed, eyeopen, checked;;
+    private Image eyeclosed, eyeopen;
     AuthController auth = new AuthController();
 
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-        URL vidURL = getClass().getResource("/background.mp4");
-        media = new Media(vidURL.toExternalForm());
-        mediaPlayer = new MediaPlayer(media);
-        mvVideo.setMediaPlayer(mediaPlayer);
-        mvVideo.fitWidthProperty().bind(spane.widthProperty());
-        mvVideo.fitHeightProperty().bind(spane.heightProperty());
-        mediaPlayer.setAutoPlay(true);
-        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         eyeclosed = new Image(getClass().getResourceAsStream("/close.png"));
         eyeopen = new Image(getClass().getResourceAsStream("/open.png"));
         imageview = new ImageView();
@@ -68,7 +50,24 @@ public class LoginController implements Initializable {
         imageview.setFitHeight(15);
         imageview.setPreserveRatio(true);
         showPasswordbtn.setGraphic(imageview);
+        ColorAdjust effect = new ColorAdjust();
+        effect.setBrightness(0.6);
+        imageview.setEffect(effect);
+        imageview.setOpacity(0.8);
+        showPasswordbtn.setOnMouseEntered(e -> {
+            effect.setBrightness(0.9);
+            imageview.setOpacity(1);
+            imageview.setScaleX(1.1);
+            imageview.setScaleY(1.1);
+        });
+        showPasswordbtn.setOnMouseExited(e -> {
+            effect.setBrightness(0.6);
+            imageview.setOpacity(0.8);
+            imageview.setScaleX(1);
+            imageview.setScaleY(1);
+        });
     }
+
 
     @FXML
     public void handleToggle(ActionEvent e) {
