@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -37,8 +38,6 @@ public class RegisterController implements Initializable {
     private ToggleButton showPasswordbtn, showcfPasswordbtn;
 
     @FXML
-    private MediaView mvVideo;
-    @FXML
     private Label warning;
 
     @FXML
@@ -46,8 +45,6 @@ public class RegisterController implements Initializable {
     @FXML
     ImageView imageview1, imageview2;
 
-    private File file;
-    private Media media;
     private MediaPlayer mediaPlayer;
     private Image eyeclosed;
     private Image eyeopen;
@@ -56,27 +53,10 @@ public class RegisterController implements Initializable {
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-            URL vidURL = getClass().getResource("/background.mp4");
-            media = new Media(vidURL.toExternalForm());
-            mediaPlayer = new MediaPlayer(media);
-            mvVideo.setMediaPlayer(mediaPlayer);
-            mvVideo.fitWidthProperty().bind(spane.widthProperty());
-            mvVideo.fitHeightProperty().bind(spane.heightProperty());
-            mediaPlayer.setAutoPlay(true);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
             eyeclosed = new Image(getClass().getResourceAsStream("/close.png"));
             eyeopen = new Image(getClass().getResourceAsStream("/open.png"));
-            imageview1 = new ImageView();
-            imageview2 = new ImageView();
-            imageview1.setFitWidth(15);
-            imageview1.setFitHeight(15);
-            imageview2.setFitHeight(15);
-            imageview2.setFitWidth(15);
-            imageview1.setImage(eyeopen);
-            showPasswordbtn.setGraphic(imageview1);
-            imageview2.setImage(eyeopen);
-            showcfPasswordbtn.setGraphic(imageview2);
-
+            imageview1 = setupButton(showPasswordbtn);
+            imageview2 = setupButton(showcfPasswordbtn);
     }
     private void handleTogglemethod(PasswordField pf, TextField tf, ToggleButton tb, ImageView img){
         if (tb.isSelected()){
@@ -96,6 +76,34 @@ public class RegisterController implements Initializable {
             tb.setGraphic(img);
         }
 
+    }
+    private ImageView setupButton(ToggleButton button) {
+        ImageView img = new ImageView(eyeopen);
+        img.setFitWidth(15);
+        img.setFitHeight(15);
+        img.setPreserveRatio(true);
+
+        button.setGraphic(img);
+
+        ColorAdjust effect = new ColorAdjust();
+        effect.setBrightness(0.6);
+        img.setEffect(effect);
+        img.setOpacity(0.8);
+
+        button.setOnMouseEntered(e -> {
+            effect.setBrightness(0.9);
+            img.setOpacity(1);
+            img.setScaleX(1.1);
+            img.setScaleY(1.1);
+        });
+
+        button.setOnMouseExited(e -> {
+            effect.setBrightness(0.6);
+            img.setOpacity(0.8);
+            img.setScaleX(1);
+            img.setScaleY(1);
+        });
+        return img;
     }
     @FXML
     public void handleTogglePass(ActionEvent e){

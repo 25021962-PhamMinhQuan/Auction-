@@ -7,35 +7,39 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="spane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController">
+<StackPane fx:id="spane" prefHeight="500.0" prefWidth="700.0" styleClass="root" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController">
    <children>
-      <MediaView fx:id="mvVideo" layoutX="50.0" preserveRatio="false">
-         <StackPane.margin>
-            <Insets />
-         </StackPane.margin>
-      </MediaView>
-      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-color: linear-gradient(to right, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 0.3) 100%); -fx-background-radius: 15;" StackPane.alignment="CENTER_LEFT">
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-radius: 15;" styleClass="login_card" StackPane.alignment="CENTER_LEFT">
          <children>
-            <Label text="Login">
+            <ImageView fitHeight="117.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <VBox.margin>
-                  <Insets left="50.0" top="150.0" />
+                  <Insets left="50.0" top="100.0" />
+               </VBox.margin>
+               <image>
+                  <Image url="@../../../Auction%20App.png" />
+               </image>
+            </ImageView>
+            <Label styleClass="title" text="Login">
+               <VBox.margin>
+                  <Insets left="50.0" top="15.0" />
                </VBox.margin>
                <font>
-                  <Font name="Montserrat Bold" size="29.0" />
+                  <Font size="29.0" />
                </font>
             </Label>
-            <Label prefHeight="25.0" prefWidth="90.0" text="Username">
+            <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="Username">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="usernameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0">
+            <TextField fx:id="usernameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0" styleClass="input_field">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -43,7 +47,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </TextField>
-            <Label prefHeight="25.0" text="Password">
+            <Label prefHeight="25.0" styleClass="label-secondary" text="Password">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -52,14 +56,14 @@
                <children>
                   <StackPane maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0">
                      <children>
-                        <TextField fx:id="passTextfield" />
-                        <PasswordField fx:id="passwordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" />
+                        <TextField fx:id="passTextfield" styleClass="input_field" />
+                        <PasswordField fx:id="passwordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field" />
                      </children>
                      <HBox.margin>
                         <Insets left="50.0" />
                      </HBox.margin>
                   </StackPane>
-                  <ToggleButton fx:id="showPasswordbtn" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleToggle" prefHeight="24.0" prefWidth="24.0" />
+                  <ToggleButton fx:id="showPasswordbtn" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleToggle" prefHeight="24.0" prefWidth="24.0" styleClass="icon-button" />
                </children>
                <VBox.margin>
                   <Insets bottom="25.0" />
@@ -72,17 +76,17 @@
             </Label>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#handleLogin" text="Login">
+                  <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="button-login" text="Login">
                      <HBox.margin>
                         <Insets left="50.0" right="15.0" />
                      </HBox.margin>
                   </Button>
-                  <Label prefHeight="25.0" text="Don't have an account?">
+                  <Label prefHeight="25.0" styleClass="label-secondary" text="Don't have an account?">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" prefWidth="53.0" text="Register">
+                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" prefWidth="53.0" text="Register" textFill="#fbbf24">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
