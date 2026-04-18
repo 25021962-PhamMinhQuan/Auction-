@@ -6,9 +6,16 @@ import org.example.model.user.Bidder;
 import org.example.model.user.Seller;
 import org.example.model.user.User;
 
+import org.example.repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
+    private final UserRepository userDAO;
+
+    public UserService(UserRepository userDAO){
+        this.userDAO = userDAO;
+    }
+
     private User cloneWithNewPassword(User user, String newPassword) {
         switch (user.getRole()) {
             case "ADMIN":
@@ -37,7 +44,8 @@ public class UserService {
 
         return hasLower && hasNumber && hasUpper && hasSpecial;
     }
-    UserDAO userDAO = new UserDAO();
+
+
     public String register(User user) {
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
             return "Username cannot be empty";

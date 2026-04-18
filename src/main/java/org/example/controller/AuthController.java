@@ -1,12 +1,16 @@
 package org.example.controller;
 
 import org.example.model.user.User;
+import org.example.service.ServiceFactory;
 import org.example.service.UserService;
 
 public class AuthController {
 
-    private UserService userService = new UserService();
+    private final UserService userService;
 
+    public AuthController(){
+        this.userService = ServiceFactory.getInstance().getUserService();
+    }
     public String register(User user) {
         return userService.register(user);
     }

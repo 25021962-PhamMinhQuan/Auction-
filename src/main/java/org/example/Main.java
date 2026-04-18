@@ -11,6 +11,7 @@ import org.example.model.user.User;
 import org.example.observer.BidderClient;
 import org.example.service.AuctionService;
 import org.example.service.ItemService;
+import org.example.service.ServiceFactory;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
 
         AuthController auth = new AuthController();
-        ItemService itemService = new ItemService();
+        ItemService itemService = ServiceFactory.getInstance().getItemService();
 
         // register
         auth.register(new Bidder("5", "user_account_A", "Password@123"));
@@ -45,7 +46,7 @@ public class Main {
                 (Seller) c
         );
         Auction auction = new Auction(item);
-        AuctionService auctionService = new AuctionService();
+        AuctionService auctionService = ServiceFactory.getInstance().getAuctionService();
         auctionService.StartAuction(auction);
 
         auctionService.addObserverToAuction(auction,new BidderClient("Client1"));

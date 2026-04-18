@@ -5,17 +5,19 @@ import org.example.model.user.Admin;
 import org.example.model.user.Bidder;
 import org.example.model.user.Seller;
 import org.example.model.user.User;
+import org.example.repository.UserRepository;
 
 import java.sql.*;
 
 import static org.example.dao.DBConnection.getConnection;
 
-public class UserDAO {
+public class UserDAO implements UserRepository {
     //Cloud chạy chậm ác nên khi nào nộp bài mới nên dùng
     //private Connection getConnection() throws SQLException {
     //    String url = "jdbc:mysql://bft2owl42sz3v5srsfqb-mysql.services.clever-cloud.com:3306/bft2owl42sz3v5srsfqb?useSSL=true&requireSSL=true";
     //    return DriverManager.getConnection(url, "usb9ok88u4klv3pr", "KYgtktFg5ixHskW5l2Ez");
     //}
+    @Override
     public void save(User user){
         String sqlInsert = "INSERT INTO ACCOUNT (id,username,password,role) VALUES (?,?,?,?)";
         try(Connection conn = getConnection();
@@ -31,6 +33,8 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
     public User findByUsername(String name) {
         String sql = "SELECT * FROM ACCOUNT WHERE username = ?";
         try (Connection conn = getConnection();

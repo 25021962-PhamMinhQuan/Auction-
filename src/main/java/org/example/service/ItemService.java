@@ -5,12 +5,16 @@ import org.example.factory.ItemFactory;
 import org.example.model.item.Item;
 import org.example.model.user.Seller;
 import org.example.model.user.User;
+import org.example.repository.ItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ItemService {
-    private ItemDao itemDAO = new ItemDao();
+    private final ItemRepository itemDAO;
+    public ItemService(ItemRepository itemDAO){
+        this.itemDAO = itemDAO;
+    }
 
     public Item CreateItem(String type, String id, String name, String description, double price, LocalDateTime start, LocalDateTime end, Seller seller){
         if(!seller.getRole().equals("SELLER")){

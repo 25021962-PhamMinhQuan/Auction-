@@ -4,6 +4,7 @@ import org.example.factory.ItemFactory;
 import org.example.model.item.Art;
 import org.example.model.item.Electronics;
 import org.example.model.item.Item;
+import org.example.repository.ItemRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static org.example.dao.DBConnection.getConnection;
 
-public class ItemDao {
+public class ItemDao implements ItemRepository {
 
     private Item buildItem(ResultSet rs) throws SQLException {
         String type = rs.getString("type");
@@ -33,6 +34,7 @@ public class ItemDao {
         }
     }
 
+    @Override
     public void save(Item item,String seller_id){
         String sqlINSERT = "INSERT INTO ITEM (ID, NAME, DESCRIPTION, START_PRICE, TYPE, SELLER_ID) VALUES (?,?,?,?,?,?)";
         try(Connection conn = getConnection();
@@ -49,6 +51,7 @@ public class ItemDao {
         }
     }
 
+    @Override
     public Item findById(String id){
         String sqlSELECT = "SELECT * FROM ITEM WHERE ID = ?";
         try(Connection conn = getConnection();
@@ -64,6 +67,7 @@ public class ItemDao {
         return null;
     }
 
+    @Override
     public List<Item> findBySeller(String sellerId){
         String sqlSELECT = "SELECT * FROM ITEM WHERE SELLER_ID = ?";
         List<Item> items = new ArrayList<>();
@@ -80,6 +84,7 @@ public class ItemDao {
         return items;
     }
 
+    @Override
     public void update(Item item) {
         String sqlUPDATE = "UPDATE ITEM SET name=?, description=?, start_price=? WHERE id=?";
         try (Connection conn = getConnection();
@@ -94,6 +99,7 @@ public class ItemDao {
         }
     }
 
+    @Override
     public void updateStatus(Item item,String status){
         String sqlUPDATE = "UPDATE ITEM SET STATUS = ? WHERE ID = ?";
         try(Connection conn = getConnection();
@@ -106,6 +112,7 @@ public class ItemDao {
         }
     }
 
+    @Override
     public void delete(String id) {
         String sqlDELETE = "DELETE FROM ITEM WHERE id = ?";
         try (Connection conn = getConnection();

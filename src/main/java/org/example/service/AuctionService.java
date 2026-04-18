@@ -9,6 +9,10 @@ import org.example.model.user.Bidder;
 import org.example.dao.AutoBidDao;
 import org.example.model.user.User;
 import org.example.observer.AuctionObserver;
+import org.example.repository.AuctionRepository;
+import org.example.repository.AutoBidRepository;
+import org.example.repository.BidRepository;
+import org.example.repository.ItemRepository;
 import org.example.util.AutoBid;
 
 import java.sql.SQLException;
@@ -18,10 +22,20 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class AuctionService {
-    private AuctionDAO auctionDAO = new AuctionDAO();
-    private BidDAO bidDAO = new BidDAO();
-    private AutoBidDao autoBidDao = new AutoBidDao();
-    private ItemDao itemDao = new ItemDao();
+    private final AuctionRepository auctionDAO;
+    private final BidRepository bidDAO;
+    private final ItemRepository itemDao;
+    private final AutoBidRepository autoBidDao;
+
+    public AuctionService(AuctionRepository auctionDAO,
+                          BidRepository bidDAO,
+                          ItemRepository itemDao,
+                          AutoBidRepository autoBidDAO){
+        this.itemDao = itemDao;
+        this.auctionDAO = auctionDAO;
+        this.bidDAO = bidDAO;
+        this.autoBidDao = autoBidDAO;
+    }
     private Map<Integer, BiddingCoordinator> coordinators = new HashMap<>();
 
     public void StartAuction(Auction auction){

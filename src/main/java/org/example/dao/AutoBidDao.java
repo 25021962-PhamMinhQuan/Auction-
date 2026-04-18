@@ -1,5 +1,6 @@
 package org.example.dao;
 import org.example.model.user.Bidder;
+import org.example.repository.AutoBidRepository;
 import org.example.util.AutoBid;
 
 import java.sql.Connection;
@@ -12,7 +13,8 @@ import java.util.PriorityQueue;
 
 import static org.example.dao.DBConnection.getConnection;
 
-public class AutoBidDao {
+public class AutoBidDao implements AutoBidRepository {
+    @Override
     public void save(AutoBid autoBid, int auctionId) {
         String sqlINSERT = "INSERT INTO AUTO_BID (AUCTION_ID, BIDDER_ID, MAX_BID, INCREMENT_STEP, REGISTERED_AT) VALUES (?,?,?,?,?)";
         try (Connection conn = getConnection();
@@ -27,7 +29,9 @@ public class AutoBidDao {
             throw new RuntimeException(e);
         }
     }
+
     // dung khi server loi va phai restart lại từ đầu
+    @Override
     public PriorityQueue<AutoBid> findActiveByAuction(int auctionId){
         String sql = "SELECT * FROM AUTO_BID WHERE AUCTION_ID = ? AND IS_ACTIVE IS TRUE";
         PriorityQueue<AutoBid> result = new PriorityQueue<>();
@@ -55,6 +59,7 @@ public class AutoBidDao {
         return result;
     }
 
+    @Override
     public void deactivateByAuction(int auctionId){
         String sqlUPDATE = "UPDATE AUTO_BID SET IS_ACTIVE = FALSE WHERE AUCTION_ID = ?";
         try(Connection conn = getConnection();

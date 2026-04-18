@@ -2,13 +2,15 @@ package org.example.dao;
 import org.example.model.auction.BidTransaction;
 import org.example.model.auction.Auction;
 import org.example.model.user.Bidder;
+import org.example.repository.AuctionRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 
 import static org.example.dao.DBConnection.getConnection;
 
-public class AuctionDAO {
+public class AuctionDAO implements AuctionRepository {
+    @Override
     public void save(Auction auction,String status){
         String sqlINSERT = "INSERT INTO AUCTION (current_price,start_time,end_time,status,item_id) VALUES (?,?,?,?,?)";
         try(Connection conn = getConnection();
@@ -30,6 +32,8 @@ public class AuctionDAO {
         }
 
     }
+
+    @Override
     public void update(Auction auction,String status){
         String sqlUPDATE = "UPDATE AUCTION SET current_price = ?,highest_bidder_id = ?,status = ? WHERE id = ?";
 
@@ -46,7 +50,9 @@ public class AuctionDAO {
             throw new RuntimeException(e);
         }
     }
+
     // chỉ dùng khi cancel hoặc paid
+    @Override
     public void updateStatus(Auction auction, String status) {
         String sql = "UPDATE AUCTION SET status=? WHERE id=?";
         try (Connection conn = getConnection();
