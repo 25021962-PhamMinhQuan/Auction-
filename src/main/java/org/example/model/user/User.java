@@ -1,11 +1,19 @@
 package org.example.model.user;
 
 import org.example.model.Entity;
+import org.example.util.IDGenerator;
 
 public abstract class User extends Entity {
     protected String username;
     protected String password;
     protected String role;
+
+    public User(String username, String password, String role) {
+        super(IDGenerator.generatorUID());
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     public User(String id, String username, String password, String role) {
         super(id);
@@ -13,6 +21,7 @@ public abstract class User extends Entity {
         this.password = password;
         this.role = role;
     }
+
     protected User cloneWithNewPassword(User user, String newPassword) {
         switch (user.getRole()) {
             case "ADMIN":

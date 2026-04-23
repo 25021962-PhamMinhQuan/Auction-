@@ -1,6 +1,7 @@
 package org.example.model.item;
 
 import org.example.model.Entity;
+import org.example.util.IDGenerator;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,21 @@ public abstract class Item extends Entity {
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
 
+    public Item(String name,
+                String description,
+                double startPrice,
+                LocalDateTime startTime,
+                LocalDateTime endTime) {
+        super(IDGenerator.generateItemID());
+        this.name = name;
+        this.description = description;
+        this.startPrice = startPrice;
+        this.currentPrice = startPrice;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    // constuctor này để lấy dữ liệu từ database khi id đã có sẵn
     public Item(String id,
                 String name,
                 String description,

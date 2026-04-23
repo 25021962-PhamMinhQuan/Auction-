@@ -23,9 +23,9 @@ public class Main {
         ItemService itemService = ServiceFactory.getInstance().getItemService();
 
         // register
-        auth.register(new Bidder("5", "user_account_A", "Password@123"));
-        auth.register(new Bidder("6", "user_account_B", "Password@123"));
-        auth.register(new Seller("7", "user_account_C", "Password@123"));
+        auth.register(new Bidder( "user_account_A", "Password@123"));
+        auth.register(new Bidder( "user_account_B", "Password@123"));
+        auth.register(new Seller( "user_account_C", "Password@123"));
 
         // login
         User a = auth.login("user_account_A", "Password@123");
@@ -37,7 +37,6 @@ public class Main {
         // đấu giá
         Item item = itemService.CreateItem(
                 "ELECTRONIC",
-                "i1",
                 "Laptop",
                 "Gaming",
                 1000,

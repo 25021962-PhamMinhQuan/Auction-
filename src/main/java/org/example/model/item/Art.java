@@ -5,6 +5,15 @@ import java.time.LocalDateTime;
 
 public class Art extends Item {
 
+    public Art(String name,
+               String description,
+               double price,
+               LocalDateTime start,
+               LocalDateTime end) {
+        super(name, description, price, start, end);
+    }
+
+    // load từ database
     public Art(String id,
                String name,
                String description,

@@ -16,11 +16,11 @@ public class ItemService {
         this.itemDAO = itemDAO;
     }
 
-    public Item CreateItem(String type, String id, String name, String description, double price, LocalDateTime start, LocalDateTime end, Seller seller){
+    public Item CreateItem(String type, String name, String description, double price, LocalDateTime start, LocalDateTime end, Seller seller){
         if(!seller.getRole().equals("SELLER")){
             throw new IllegalStateException("Only seller can add item");
         }
-        Item item = ItemFactory.createItem(type,id,name,description,price,start,end);
+        Item item = ItemFactory.createItem(type,name,description,price,start,end);
 
         itemDAO.save(item,seller.getId());
 

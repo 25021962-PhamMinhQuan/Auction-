@@ -39,7 +39,6 @@ public class ItemFactory {
     }
 
     public static Item createItem(String type,
-                                  String id,
                                   String name,
                                   String description,
                                   double price,
@@ -52,7 +51,7 @@ public class ItemFactory {
             throw new IllegalArgumentException("Unknow item type: " + type);
         }
 
-        return strategy.createItem(id,name,description,price,start,end);
+        return strategy.createItem(name,description,price,start,end);
     }
 
     public static java.util.Set<String> getAvailableTypes() {

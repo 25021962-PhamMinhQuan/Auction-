@@ -5,7 +5,7 @@ import org.example.model.item.Item;
 import java.time.LocalDateTime;
 
 public interface ItemCreationStrategy {
-    Item createItem(String id,
+    Item createItem(
                     String name,
                     String describe,
                     double price,
