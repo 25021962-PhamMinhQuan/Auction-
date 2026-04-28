@@ -4,11 +4,11 @@ import java.util.UUID;
 
 public class IDGenerator {
     public static String generatorUID(){
-        return "USER_" + UUID.randomUUID().toString().substring(0,13);
+        return "USER_" + UUID.randomUUID().toString();
     }
 
     public static String generateItemID(){
-        return "ITEM_" + UUID.randomUUID().toString().substring(0,13);
+        return "ITEM_" + UUID.randomUUID().toString();
     }
 
     public static String generateUUID() {
