@@ -64,5 +64,9 @@ public class BiddingCoordinator {
         return autoBidManager;
     }
 
+    public  Auction getAuction(){
+        return auction;
+    }
+
 
 }

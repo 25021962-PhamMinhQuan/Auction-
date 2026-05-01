@@ -40,7 +40,6 @@ public class AuctionService {
 
     public void StartAuction(Auction auction){
         auction.start();
-
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
         coordinator.setOnBidPersisted(bid -> {
             auctionDAO.update(auction, "RUNNING");
@@ -135,6 +134,13 @@ public class AuctionService {
         if (coordinator != null) {
             coordinator.getNotifier().addObserver(observer);
         }
+    }
+    public Auction findbyId(int id){
+        BiddingCoordinator coord = coordinators.get(id);
+        if (coord==null){
+            return null;
+        }
+        return coord.getAuction();
     }
 }
 
