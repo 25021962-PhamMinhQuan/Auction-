@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import org.example.controller.AuthController;
+import server.AuctionClient;
 
 import java.io.IOException;
 import java.net.URL;
@@ -106,21 +107,26 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    public void handleLogin(ActionEvent e) throws IOException{
+    public void handleLogin(ActionEvent e) {
         if (usernameTextField.getText().isEmpty()) {
             warning.setText("Username is required");
         } else if (passwordfield.getText().isEmpty()) {
             warning.setText("Password is required");
         } else {
-            try{
-                auth.login(usernameTextField.getText(), passwordfield.getText());
-                notif();
-                Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/mainscreen.fxml"));
-                Stage stage = (Stage) spane.getScene().getWindow();
-                stage.setScene(new Scene(root));
-            } catch (RuntimeException ex) {
-                warning.setText(ex.getMessage());
+            try {
+                // Kết nối server lần đầu khi login
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                AuctionClient.getInstance().connect(stage);
+
+                // Gửi lệnh LOGIN lên server
+                AuctionClient.getInstance().login(
+                        usernameTextField.getText(),
+                        passwordfield.getText()
+                );
+            } catch (IOException ex) {
+                warning.setText("Unable to connect to server");
             }
-                }
-            }
+        }
+
+    }
 }
