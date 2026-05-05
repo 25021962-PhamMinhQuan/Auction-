@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="835.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="835.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="51.0" spacing="20.0" BorderPane.alignment="CENTER_LEFT">
          <padding>
@@ -64,7 +64,7 @@
                </padding>
                <children>
                   <Label text="Upcoming Auction" />
-                  <FlowPane alignment="CENTER" hgap="30.0" prefHeight="200.0" prefWidth="200.0" vgap="30.0" />
+                  <FlowPane fx:id="itemContainer" alignment="CENTER" hgap="30.0" prefHeight="200.0" prefWidth="200.0" vgap="30.0" />
                </children>
             </VBox>
          </content></ScrollPane>

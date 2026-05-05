@@ -20,7 +20,7 @@
          <children>
             <ImageView fitHeight="113.0" fitWidth="196.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../Auction%20App.png" />
+                  <Image url="@../../../Auction_App.png" />
                </image>
                <VBox.margin>
                   <Insets left="50.0" top="80.0" />

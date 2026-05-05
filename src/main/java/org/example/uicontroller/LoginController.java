@@ -106,15 +106,21 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    public void handleLogin(ActionEvent e) {
+    public void handleLogin(ActionEvent e) throws IOException{
         if (usernameTextField.getText().isEmpty()) {
             warning.setText("Username is required");
         } else if (passwordfield.getText().isEmpty()) {
             warning.setText("Password is required");
         } else {
-            auth.login(usernameTextField.getText(), passwordfield.getText());
-            notif();
-        }
-
-    }
+            try{
+                auth.login(usernameTextField.getText(), passwordfield.getText());
+                notif();
+                Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/mainscreen.fxml"));
+                Stage stage = (Stage) spane.getScene().getWindow();
+                stage.setScene(new Scene(root));
+            } catch (RuntimeException ex) {
+                warning.setText(ex.getMessage());
+            }
+                }
+            }
 }
