@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="itemcard" prefHeight="415.0" prefWidth="220.0" spacing="10.0" styleClass="item-card" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemCardController">
+   <HBox.margin>
+      <Insets bottom="10" left="10" right="10" top="10" />
+   </HBox.margin>
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+
+   <children>
+      <HBox alignment="TOP_CENTER">
+         <children>
+            <Label styleClass="item-time" text="Open time" />
+         </children>
+      </HBox>
+      <HBox alignment="TOP_CENTER">
+         <children>
+            <Label fx:id="timeopen" styleClass="item-time" text="Time">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <ImageView fx:id="itemImage" fitHeight="162.0" fitWidth="220.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="itemname" maxHeight="120.0" maxWidth="220.0" minWidth="220.0" prefWidth="220.0" styleClass="item-name" text="Item name" wrapText="true">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="price" styleClass="item-price" text="Price">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Region prefHeight="78.0" prefWidth="220.0" VBox.vgrow="ALWAYS" />
+      <Button fx:id="detailsbutton" mnemonicParsing="false" prefHeight="26.0" prefWidth="254.0" styleClass="button-login" text="Detail" />
+   </children>
+</VBox>

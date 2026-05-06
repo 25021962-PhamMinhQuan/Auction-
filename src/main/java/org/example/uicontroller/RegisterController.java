@@ -136,7 +136,7 @@ public class RegisterController implements Initializable {
         else if(!passwordfield.getText().equals(cfpasswordfield.getText())){
             warning.setText("Passwords do not match");
         } else {
-            auth.register(new Bidder("99", usernameTextField.getText(), cfpasswordfield.getText()));
+            auth.register(new Bidder(usernameTextField.getText(), cfpasswordfield.getText()));
             notif();
             gotoLogin(e);
         }
