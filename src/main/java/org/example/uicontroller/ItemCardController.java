@@ -2,6 +2,7 @@ package org.example.uicontroller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import org.example.model.item.Item;
 
 public class ItemCardController {
@@ -11,6 +12,8 @@ public class ItemCardController {
     private Label price;
     @FXML
     private Label timeopen;
+    @FXML
+    private ImageView itemImage;
 
     public void setData(Item item) {
         itemname.setText(item.getName());

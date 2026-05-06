@@ -116,15 +116,17 @@ public class LoginController implements Initializable {
             try {
                 // Kết nối server lần đầu khi login
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                AuctionClient.getInstance().connect(stage);
+                //AuctionClient.getInstance().connect(stage);
 
                 // Gửi lệnh LOGIN lên server
                 AuctionClient.getInstance().login(
                         usernameTextField.getText(),
                         passwordfield.getText()
                 );
+                Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/mainscreen.fxml"));
+                stage.setScene(new Scene(root));
             } catch (IOException ex) {
-                warning.setText("Unable to connect to server");
+                warning.setText(ex.getMessage());
             }
         }
 

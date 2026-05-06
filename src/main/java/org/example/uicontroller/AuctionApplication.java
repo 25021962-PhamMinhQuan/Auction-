@@ -11,7 +11,7 @@ import java.io.IOException;
 public class AuctionApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/mainscreen.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Image icon = new Image("/icon.png");
         stage.getIcons().add(icon);
