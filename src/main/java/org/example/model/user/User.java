@@ -4,6 +4,13 @@ import org.example.model.Entity;
 import org.example.util.IDGenerator;
 
 public abstract class User extends Entity {
+
+    public enum UserRole {
+        ADMIN,
+        SELLER,
+        BIDDER
+    }
+
     protected String username;
     protected String password;
     protected String role;
@@ -22,18 +29,9 @@ public abstract class User extends Entity {
         this.role = role;
     }
 
-    protected User cloneWithNewPassword(User user, String newPassword) {
-        switch (user.getRole()) {
-            case "ADMIN":
-                return new Admin(user.getId(), user.getUsername(), newPassword);
-            case "SELLER":
-                return new Seller(user.getId(), user.getUsername(), newPassword);
-            case "BIDDER":
-                return new Bidder(user.getId(), user.getUsername(), newPassword);
-            default:
-                throw new IllegalArgumentException("Unknown role");
-        }
-    }
+
+    public abstract User cloneWithNewPassword(User user, String newPassword);
+
 
     public String getUsername() {
         return username;

@@ -2,10 +2,15 @@ package org.example.model.user;
 
 public class Seller extends User {
     public Seller(String id, String username, String password) {
-        super(id, username, password, "SELLER");
+        super(id, username, password, UserRole.SELLER.name());
     }
     public Seller(String username, String password) {
-        super(username, password, "SELLER");
+        super(username, password, UserRole.SELLER.name());
+    }
+
+    @Override
+    public User cloneWithNewPassword(User user, String newPassword){
+        return new Seller(user.getId(), user.getUsername(), newPassword);
     }
 }
 

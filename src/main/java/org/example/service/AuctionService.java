@@ -42,10 +42,10 @@ public class AuctionService {
         auction.start();
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
         coordinator.setOnBidPersisted(bid -> {
-            auctionDAO.update(auction, "RUNNING");
+            auctionDAO.update(auction, Auction.Status.RUNNING.name());
             bidDAO.save(bid, auction.getId());
         });
-        auctionDAO.save(auction, "START");
+        auctionDAO.save(auction, Auction.Status.OPEN.name());
         coordinators.put(auction.getId(), coordinator);
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -90,23 +90,23 @@ public class AuctionService {
 
     public void FinishAuction(Auction auction){
         auction.finish();
-        auctionDAO.update(auction, "FINISHED");
+        auctionDAO.update(auction, Auction.Status.FINISHED.name());
         autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
     }
 
     public void cancelAuction(Auction auction, User requester){
 
-        if(requester.getRole().equals("BIDDER")){
+        if(requester.getRole().equals(User.UserRole.BIDDER.name())){
             throw new IllegalStateException("Bidder have no right to cancel this auction");
         }
 
-        if(requester.getRole().equals("SELLER") && auction.getStatus() != Auction.Status.OPEN.name()){
+        if(requester.getRole().equals(User.UserRole.SELLER.name()) && auction.getStatus() != Auction.Status.OPEN.name()){
             throw  new IllegalStateException("Auction can't be cancelled after started ");
         }
 
         auction.cancel();
-        auctionDAO.updateStatus(auction, "CANCELLED");
+        auctionDAO.updateStatus(auction, Auction.Status.CANCELED.name());
         autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
     }
@@ -117,15 +117,16 @@ public class AuctionService {
         }
 
         boolean isWinner = auction.getWinner().getId().equals(requester.getId());
-        boolean isAdmin = requester.getRole().equals("ADMIN");
-        boolean isSeller = requester.getRole().equals("SELLER");
+        boolean isAdmin = requester.getRole().equals(User.UserRole.ADMIN.name());
+        boolean isSeller = requester.getRole().equals(User.UserRole.SELLER.name());
 
         if(!isAdmin && !isWinner){
             throw new IllegalStateException("Unable to paid");
         }
 
         auction.markPaid();
-        auctionDAO.updateStatus(auction, "PAID");
+        auctionDAO.updateStatus(auction, Auction.Status.PAID.name());
+        // không dùng enum vì với đồ vật thì là sold chứ kphai paid
         itemDao.updateStatus(auction.getItem(),"SOLD");
         coordinators.remove(auction.getId());
     }

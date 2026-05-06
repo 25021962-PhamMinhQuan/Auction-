@@ -16,18 +16,6 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    private User cloneWithNewPassword(User user, String newPassword) {
-        switch (user.getRole()) {
-            case "ADMIN":
-                return new Admin(user.getId(), user.getUsername(), newPassword);
-            case "SELLER":
-                return new Seller(user.getId(), user.getUsername(), newPassword);
-            case "BIDDER":
-                return new Bidder(user.getId(), user.getUsername(), newPassword);
-            default:
-                throw new IllegalArgumentException("Unknown role");
-        }
-    }
     private boolean isValidPassword(String password){
         if(password.length() < 8){ return false;}
         boolean hasUpper = false;
@@ -61,7 +49,7 @@ public class UserService {
                     "mật khẩu không được có kí tự đặc biệt ngoại trừ \"_\"";
         }
         String HashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-        user = cloneWithNewPassword(user, HashedPassword);
+        user = user.cloneWithNewPassword(user, HashedPassword);
 
         // sau khi ktra xem tên user này đã tồn tại chx thì sẽ đến đoạn đki và lưu
         userDAO.save(user);

@@ -14,6 +14,11 @@ public abstract class Item extends Entity {
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
 
+    public enum ItemType {
+        ELECTRONICS,
+        ART
+    }
+
     public Item(String name,
                 String description,
                 double startPrice,

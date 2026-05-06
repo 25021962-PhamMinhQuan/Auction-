@@ -17,7 +17,7 @@ public class ItemService {
     }
 
     public Item CreateItem(String type, String name, String description, double price, LocalDateTime start, LocalDateTime end, Seller seller){
-        if(!seller.getRole().equals("SELLER")){
+        if(!seller.getRole().equals(User.UserRole.SELLER.name())){
             throw new IllegalStateException("Only seller can add item");
         }
         Item item = ItemFactory.createItem(type,name,description,price,start,end);
@@ -28,14 +28,14 @@ public class ItemService {
     }
 
     public void updateItem(Item item, Seller seller) {
-        if (!seller.getRole().equals("SELLER")) {
+        if (!seller.getRole().equals(User.UserRole.SELLER.name())) {
             throw new IllegalStateException("This item can only update by seller");
         }
         itemDAO.update(item);
     }
 
     public void deleteItem(String itemId, User requester) {
-        if (!requester.getRole().equals("SELLER") && !requester.getRole().equals("ADMIN")) {
+        if (!requester.getRole().equals(User.UserRole.SELLER.name()) && !requester.getRole().equals(User.UserRole.ADMIN.name())) {
             throw new IllegalStateException("You can not delete this item");
         }
         itemDAO.delete(itemId);

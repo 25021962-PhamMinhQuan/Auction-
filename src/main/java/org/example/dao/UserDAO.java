@@ -38,11 +38,11 @@ public class UserDAO implements UserRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String role = rs.getString("role");
-                if (role.equals("ADMIN")) {
+                if (role.equals(User.UserRole.ADMIN.name())) {
                     return new Admin(rs.getString("id"), rs.getString("username"), rs.getString("password"));
-                } else if (role.equals("SELLER")) {
+                } else if (role.equals(User.UserRole.SELLER.name())) {
                     return new Seller(rs.getString("id"), rs.getString("username"), rs.getString("password"));
-                } else if (role.equals("BIDDER")) {
+                } else if (role.equals(User.UserRole.BIDDER.name())) {
                     return new Bidder(rs.getString("id"), rs.getString("username"), rs.getString("password"));
 
                 }
