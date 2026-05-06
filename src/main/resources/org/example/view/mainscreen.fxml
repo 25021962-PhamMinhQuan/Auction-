@@ -15,112 +15,153 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="835.0" styleClass="root" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
    <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="51.0" spacing="10.0" styleClass="navbar" BorderPane.alignment="CENTER_LEFT">
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
-         <children>
-            <Button mnemonicParsing="false" styleClass="nav-button">
+      <HBox alignment="CENTER_LEFT"
+            spacing="10"
+            styleClass="navbar"
+            BorderPane.alignment="CENTER_LEFT">
+         <padding><Insets top="10" bottom="10" left="10" right="10"/></padding>
+
+         <Button mnemonicParsing="false" styleClass="nav-button">
+            <graphic>
+               <ImageView fitHeight="43" fitWidth="93"
+                          pickOnBounds="true" preserveRatio="true"
+                          styleClass="icon-button">
+                  <image><Image url="@../../../Auction_App.png"/></image>
+               </ImageView>
+            </graphic>
+         </Button>
+
+         <StackPane fx:id="categoryBox">
+            <Button fx:id="categoryButton"
+                    text="Categories"
+                    maxHeight="1.7976931348623157E308"
+                    mnemonicParsing="false"
+                    styleClass="nav-button"/>
+            <VBox fx:id="categoryMenu"
+                  visible="false"
+                  managed="false"
+                  styleClass="dropdown-menu"
+                  translateY="40">
+               <Button text="Art"         mnemonicParsing="false" styleClass="dropdown-item"/>
+               <Button text="Electronics" mnemonicParsing="false" styleClass="dropdown-item"/>
+               <Button text="Other"       mnemonicParsing="false" styleClass="dropdown-item"/>
+            </VBox>
+         </StackPane>
+
+         <StackPane fx:id="auctionBox">
+            <Button fx:id="auctionButton"
+                    text="Auctions"
+                    maxHeight="1.7976931348623157E308"
+                    mnemonicParsing="false"
+                    styleClass="nav-button"/>
+            <VBox fx:id="auctionMenu"
+                  visible="false"
+                  managed="false"
+                  styleClass="dropdown-menu"
+                  translateY="40">
+               <Button text="Upcoming" mnemonicParsing="false" styleClass="dropdown-item"/>
+               <Button text="Ongoing"  mnemonicParsing="false" styleClass="dropdown-item"/>
+            </VBox>
+         </StackPane>
+
+         <Button text="Introduction"
+                 mnemonicParsing="false"
+                 maxHeight="1.7976931348623157E308"
+                 styleClass="nav-button"/>
+         <Button text="Contact"
+                 mnemonicParsing="false"
+                 maxHeight="1.7976931348623157E308"
+                 styleClass="nav-button"/>
+
+         <Region HBox.hgrow="ALWAYS"/>
+
+         <HBox alignment="CENTER_RIGHT" spacing="20">
+            <padding><Insets right="10"/></padding>
+
+            <Label fx:id="usernameLabel" styleClass="label-secondary" text="Guest"/>
+
+            <Button mnemonicParsing="false" styleClass="icon-btn">
                <graphic>
-                  <ImageView fitHeight="43.0" fitWidth="93.0" pickOnBounds="true" preserveRatio="true" styleClass="icon-button">
-                     <image>
-                        <Image url="@../../../Auction_App.png" />
-                     </image></ImageView>
-               </graphic></Button>
-            <StackPane fx:id="categoryBox" prefHeight="33.0" prefWidth="106.0">
-               <children>
-                  <Button fx:id="categoryButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="33.0" prefWidth="104.0" styleClass="nav-button" text="Categories" />
-                  <VBox fx:id="categoryMenu" managed="false" prefHeight="200.0" prefWidth="100.0" styleClass="dropdown-menu" translateY="40.0" visible="false">
-                     <children>
-                        <Button mnemonicParsing="false" styleClass="dropdown-item" text="Button" />
-                        <Button mnemonicParsing="false" styleClass="dropdown-item" text="Button" />
-                        <Button mnemonicParsing="false" styleClass="dropdown-item" text="Button" />
-                     </children>
-                  </VBox>
-               </children>
-            </StackPane>
-            <StackPane fx:id="auctionBox" prefHeight="33.0" prefWidth="90.0">
-               <children>
-                  <Button fx:id="auctionButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="33.0" prefWidth="90.0" styleClass="nav-button" text="Auctions" />
-                  <VBox fx:id="auctionMenu" managed="false" prefHeight="200.0" prefWidth="100.0" styleClass="dropdown-menu" translateY="40.0" visible="false">
-                     <children>
-                        <Button mnemonicParsing="false" styleClass="dropdown-item" text="Button" />
-                        <Button mnemonicParsing="false" styleClass="dropdown-item" text="Button" />
-                     </children>
-                  </VBox>
-               </children>
-            </StackPane>
-            <Button ellipsisString="" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="33.0" prefWidth="108.0" styleClass="nav-button" text="Introduction" />
-            <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="33.0" prefWidth="91.0" styleClass="nav-button" text="Contact" />
-            <Region prefHeight="43.0" prefWidth="2.0" HBox.hgrow="ALWAYS" />
-            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <Label styleClass="label-secondary" text="Label" />
-                  <Button mnemonicParsing="false" prefHeight="19.0" prefWidth="26.0" styleClass="icon-btn">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="13.0" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
-                           <image>
-                              <Image url="@../../../find_icon.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                  <Button mnemonicParsing="false" prefHeight="24.0" prefWidth="24.0" styleClass="icon-btn">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="13.0" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
-                           <image>
-                              <Image url="@../../../icon_user.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <padding>
-                  <Insets right="10.0" />
-               </padding>
-            </HBox>
-         </children>
+                  <ImageView fitHeight="32" fitWidth="13"
+                             pickOnBounds="true" preserveRatio="true"
+                             styleClass="icon-img">
+                     <image><Image url="@../../../find_icon.png"/></image>
+                  </ImageView>
+               </graphic>
+            </Button>
+
+            <Button mnemonicParsing="false" styleClass="icon-btn">
+               <graphic>
+                  <ImageView fitHeight="32" fitWidth="13"
+                             pickOnBounds="true" preserveRatio="true"
+                             styleClass="icon-img">
+                     <image><Image url="@../../../icon_user.png"/></image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </HBox>
       </HBox>
    </top>
+
    <center>
-      <ScrollPane fitToWidth="true" prefHeight="371.0" prefWidth="738.0" BorderPane.alignment="CENTER">
+      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
          <content>
             <VBox>
-               <children>
-                  <Button fx:id="backButton" managed="false" mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" visible="false">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </VBox.margin>
-                  </Button>
-                  <ScrollPane fx:id="gridScroll" fitToWidth="true" managed="false" prefWidth="200.0" visible="false">
+               <Button fx:id="backButton"
+                       text="← Back"
+                       visible="false"
+                       managed="false"
+                       mnemonicParsing="false"
+                       onAction="#handleBack"
+                       styleClass="button-login">
+                  <VBox.margin>
+                     <Insets top="10" bottom="10" left="10" right="10"/>
+                  </VBox.margin>
+               </Button>
+
+               <ScrollPane fx:id="gridScroll"
+                           fitToWidth="true"
+                           visible="false"
+                           managed="false">
+                  <content>
+                     <FlowPane fx:id="gridPane"
+                               hgap="20" vgap="20"
+                               styleClass="grid-pane"/>
+                  </content>
+               </ScrollPane>
+
+               <VBox fx:id="mainContent"
+                     alignment="TOP_CENTER"
+                     spacing="20">
+                  <padding><Insets top="40"/></padding>
+
+                  <Label text="Upcoming Auction" styleClass="section-title"/>
+                  <ScrollPane hbarPolicy="ALWAYS" vbarPolicy="NEVER" fitToWidth="false">
                      <content>
-                        <FlowPane fx:id="gridPane" hgap="20.0" prefWidth="200.0" styleClass="grid-pane" vgap="20.0" />
+                        <HBox fx:id="upcomingHbox" spacing="20"/>
                      </content>
                   </ScrollPane>
-                  <VBox fx:id="mainContent" alignment="TOP_CENTER" spacing="20.0">
-                     <padding>
-                        <Insets top="40.0" />
-                     </padding>
-                     <children>
-                        <Label styleClass="section-title" text="Upcoming Auction" />
-                        <ScrollPane hbarPolicy="ALWAYS" prefWidth="264.0" vbarPolicy="NEVER">
-                           <content>
-                              <HBox fx:id="upcomingHbox" prefWidth="200.0" spacing="20.0" />
-                           </content>
-                        </ScrollPane>
-                        <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
-                        <Label styleClass="section-title" text="Ongoing Auction" />
-                        <ScrollPane hbarPolicy="ALWAYS" prefWidth="264.0" vbarPolicy="NEVER">
-                           <content>
-                              <HBox fx:id="ongoingHbox" prefWidth="200.0" spacing="20.0" />
-                           </content>
-                        </ScrollPane>
-                        <Button fx:id="viewAllOngoing" mnemonicParsing="false" onAction="#handleViewAllOngoing" styleClass="button-login" text="View all" />
-                     </children>
-                  </VBox>
-               </children>
+                  <Button fx:id="viewAllUpcoming"
+                          text="View all"
+                          mnemonicParsing="false"
+                          onAction="#handleViewAllUpcoming"
+                          styleClass="button-login"/>
+
+                  <Label text="Ongoing Auction" styleClass="section-title"/>
+                  <ScrollPane hbarPolicy="ALWAYS" vbarPolicy="NEVER" fitToWidth="false">
+                     <content>
+                        <HBox fx:id="ongoingHbox" spacing="20"/>
+                     </content>
+                  </ScrollPane>
+                  <Button fx:id="viewAllOngoing"
+                          text="View all"
+                          mnemonicParsing="false"
+                          onAction="#handleViewAllOngoing"
+                          styleClass="button-login"/>
+
+               </VBox>
             </VBox>
-         </content></ScrollPane>
+         </content>
+      </ScrollPane>
    </center>
 </BorderPane>

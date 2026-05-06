@@ -1,9 +1,16 @@
 package org.example.uicontroller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 import org.example.model.item.Item;
+
+import java.io.IOException;
 
 public class ItemCardController {
     @FXML
@@ -14,6 +21,8 @@ public class ItemCardController {
     private Label timeopen;
     @FXML
     private ImageView itemImage;
+    @FXML
+    private Button detailsbutton;
 
     public void setData(Item item) {
         itemname.setText(item.getName());
@@ -25,6 +34,20 @@ public class ItemCardController {
         itemname.setText(name);
         price.setText(gia);
         timeopen.setText(opentime);
+    }
+    @FXML
+    private void handleDetail() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/org/example/view/itemdetail.fxml")
+        );
+
+        Parent root = loader.load();
+
+        ItemBidingUIController controller = loader.getController();
+        controller.setData(123, "something", 10000);
+
+        Stage stage = (Stage) detailsbutton.getScene().getWindow();
+        stage.setScene(new Scene(root));
     }
 
 }

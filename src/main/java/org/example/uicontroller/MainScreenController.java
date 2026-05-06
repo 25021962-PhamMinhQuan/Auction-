@@ -1,6 +1,5 @@
 package org.example.uicontroller;
 
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -11,91 +10,115 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.List;
 
 public class MainScreenController {
-    @FXML private HBox upcomingHbox;
-    @FXML private HBox ongoingHbox;
-    @FXML private FlowPane gridPane;
+
+    // ── FXML bindings ──────────────────────────────────────────────────────────
+    @FXML private HBox      upcomingHbox;
+    @FXML private HBox      ongoingHbox;
+    @FXML private FlowPane  gridPane;
     @FXML private ScrollPane gridScroll;
-    @FXML private VBox mainContent;
-    @FXML private Button backButton;
-    @FXML private VBox categoryMenu;
+    @FXML private VBox      mainContent;
+    @FXML private Button    backButton;
     @FXML private StackPane categoryBox;
+    @FXML private VBox      categoryMenu;
     @FXML private StackPane auctionBox;
-    @FXML private VBox auctionMenu;
-    @FXML
-    public void initialize() throws IOException {
-        for (int i = 0; i <= 6; i++){
-            upcomingHbox.getChildren().add(loadItem("Upcoming " + i, String.valueOf(i * 100), "10AM"));
-        }
-        for (int i = 0; i <= 6; i++){
-            ongoingHbox.getChildren().add(loadItem("Ongoing " + i, String.valueOf(i * 100), "10AM"));
-        // hover menu item
-            categoryBox.setOnMouseEntered(e -> {
-                categoryMenu.setVisible(true);
-                categoryMenu.setManaged(true);
-            });
+    @FXML private VBox      auctionMenu;
 
-            categoryBox.setOnMouseExited(e -> {
-                categoryMenu.setVisible(false);
-                categoryMenu.setManaged(false);
-            });
-            auctionBox.setOnMouseEntered(e -> {
-                auctionMenu.setVisible(true);
-                auctionMenu.setManaged(true);
-            });
 
-            auctionMenu.setOnMouseExited(e -> {
-                auctionMenu.setVisible(false);
-                auctionMenu.setManaged(false);
-            });
-        }
-    }
-    private Node loadItem(String name, String price, String time) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/itemcard.fxml"));
-        Node item = loader.load();
-        ItemCardController controller = loader.getController();
-        controller.setData(name, price, time);
+    private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
+    private static final int    PREVIEW_COUNT  = 7;
+    private static final int    GRID_COUNT     = 10;
 
-        return item;
-    }
+
+
     @FXML
-    private void handleViewAllUpcoming() throws IOException {
-        gridPane.getChildren().clear();
-        for (int i = 0; i < 10; i++) {
-            gridPane.getChildren().add(loadItem("Upcoming " + i, String.valueOf(i * 100), "10AM"));
-        }
-        mainContent.setVisible(false);
-        mainContent.setManaged(false);
-        gridScroll.setVisible(true);
-        gridScroll.setManaged(true);
-        backButton.setVisible(true);
-        backButton.setManaged(true);
+    public void initialize() {
+        populateRow(upcomingHbox, "Upcoming", PREVIEW_COUNT);
+        populateRow(ongoingHbox,  "Ongoing",  PREVIEW_COUNT);
+        wireHoverMenus();
     }
+
+
+
     @FXML
-    private void handleViewAllOngoing() throws IOException {
-        gridPane.getChildren().clear();
-        for (int i = 0; i < 10; i++) {
-            gridPane.getChildren().add(loadItem("Ongoing " + i, String.valueOf(i * 100), "10AM"));
-        }
-        mainContent.setVisible(false);
-        mainContent.setManaged(false);
-        gridScroll.setVisible(true);
-        gridScroll.setManaged(true);
-        backButton.setVisible(true);
-        backButton.setManaged(true);
+    private void handleViewAllUpcoming() {
+        showGrid("Upcoming", GRID_COUNT);
     }
+
+    @FXML
+    private void handleViewAllOngoing() {
+        showGrid("Ongoing", GRID_COUNT);
+    }
+
     @FXML
     private void handleBack() {
-        gridScroll.setVisible(false);
-        gridScroll.setManaged(false);
+        setGridVisible(false);
+    }
 
-        mainContent.setVisible(true);
-        mainContent.setManaged(true);
 
-        backButton.setVisible(false);
-        backButton.setManaged(false);
+    private void populateRow(HBox row, String label, int count) {
+        for (int i = 0; i < count; i++) {
+            try {
+                row.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
+            } catch (IOException e) {
+                throw new UncheckedIOException("Failed to load item card for " + label + " " + i, e);
+            }
+        }
+    }
+
+   
+    private void showGrid(String label, int count) {
+        gridPane.getChildren().clear();
+        for (int i = 0; i < count; i++) {
+            try {
+                gridPane.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
+            } catch (IOException e) {
+                throw new UncheckedIOException("Failed to load grid item card " + i, e);
+            }
+        }
+        setGridVisible(true);
+    }
+
+
+    private Node loadItemCard(String name, String price, String time) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
+        Node node = loader.load();
+        ItemCardController ctrl = loader.getController();
+        ctrl.setData(name, price, time);
+        return node;
+    }
+
+   
+    private void setGridVisible(boolean show) {
+        mainContent.setVisible(!show);
+        mainContent.setManaged(!show);
+        gridScroll.setVisible(show);
+        gridScroll.setManaged(show);
+        backButton.setVisible(show);
+        backButton.setManaged(show);
+    }
+
+    
+    private void wireHoverMenus() {
+        // Category dropdown
+        categoryBox.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
+        categoryBox.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
+        categoryMenu.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
+        categoryMenu.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
+
+        // Auction dropdown
+        auctionBox.setOnMouseEntered(e  -> setMenuVisible(auctionMenu, true));
+        auctionBox.setOnMouseExited(e   -> setMenuVisible(auctionMenu, false));
+        auctionMenu.setOnMouseEntered(e -> setMenuVisible(auctionMenu, true));
+        auctionMenu.setOnMouseExited(e  -> setMenuVisible(auctionMenu, false));
+    }
+
+    private void setMenuVisible(VBox menu, boolean visible) {
+        menu.setVisible(visible);
+        menu.setManaged(visible);
     }
 }

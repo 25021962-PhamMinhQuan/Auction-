@@ -1,11 +1,13 @@
 /* css toàn app */
 .root {
-    -fx-background-color: #0f172a;
+    -fx-background-color: linear-gradient(to bottom right, #0f172a, #020617);
     -fx-primary-yellow: #fbbf24;
     -fx-font-family: 'Inter';
-    -fx-background-image: url("/background.jpg");
     -fx-background-size: cover;
     -fx-background-position: center;
+}
+.login_bg {
+    -fx-background-image: url("/background.jpg");
 }
 @font-face {
     font-family: 'Inter';
