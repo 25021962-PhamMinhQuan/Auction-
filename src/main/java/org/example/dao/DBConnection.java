@@ -1,33 +1,40 @@
 package org.example.dao;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.io.*;
 import java.util.Properties;
+import java.io.InputStream;
 
 public class DBConnection {
-    private static String url;
-    private static String username;
-    private static String password;
+    private static HikariDataSource ds;
 
-    static{
-        try{
+    static {
+        try {
             Properties props = new Properties();
             InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config.properties");
-            if(input == null){
-                throw new RuntimeException("config not found");
-            }
+            if (input == null) throw new RuntimeException("config.properties not found");
             props.load(input);
-            url = props.getProperty("db.url");
-            username = props.getProperty("db.username");
-            password = props.getProperty("db.password");
 
-        } catch (IOException e) {
-            throw new RuntimeException("can't read config", e);
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(props.getProperty("db.url"));
+            config.setUsername(props.getProperty("db.username"));
+            config.setPassword(props.getProperty("db.password"));
+            config.setDriverClassName(props.getProperty("db.driver"));
+
+            config.setMaximumPoolSize(10); // Giữ sẵn 10 kết nối luôn mở
+            config.setConnectionTimeout(30000); // Đợi tối đa 30s
+            config.setIdleTimeout(600000);
+
+            ds = new HikariDataSource(config);
+            System.out.println("Connection Pool initialization successful!");
+        } catch (Exception e) {
+            throw new RuntimeException("Connection Pool Configuration Error", e);
         }
     }
-    public static Connection getConnection() throws SQLException{
-        return DriverManager.getConnection(url,username,password);
+
+    public static Connection getConnection() throws SQLException {
+        return ds.getConnection();
     }
 }

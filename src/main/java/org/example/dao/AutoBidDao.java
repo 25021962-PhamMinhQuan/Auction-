@@ -16,7 +16,7 @@ import static org.example.dao.DBConnection.getConnection;
 public class AutoBidDao implements AutoBidRepository {
     @Override
     public void save(AutoBid autoBid, int auctionId) {
-        String sqlINSERT = "INSERT INTO AUTO_BID (AUCTION_ID, BIDDER_ID, MAX_BID, INCREMENT_STEP, REGISTERED_AT) VALUES (?,?,?,?,?)";
+        String sqlINSERT = "insert into auto_bid (auction_id, bidder_id, max_bid, increment_step, registered_at) values (?,?,?,?,?)";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);) {
             pstmt.setInt(1, auctionId);
@@ -33,7 +33,7 @@ public class AutoBidDao implements AutoBidRepository {
     // dung khi server loi va phai restart lại từ đầu
     @Override
     public PriorityQueue<AutoBid> findActiveByAuction(int auctionId){
-        String sql = "SELECT * FROM AUTO_BID WHERE AUCTION_ID = ? AND IS_ACTIVE IS TRUE";
+        String sql = "select * from auto_bid where auction_id = ? and is_active = true";
         PriorityQueue<AutoBid> result = new PriorityQueue<>();
         result = new PriorityQueue<>(
                 (a, b) -> {
@@ -61,7 +61,7 @@ public class AutoBidDao implements AutoBidRepository {
 
     @Override
     public void deactivateByAuction(int auctionId){
-        String sqlUPDATE = "UPDATE AUTO_BID SET IS_ACTIVE = FALSE WHERE AUCTION_ID = ?";
+        String sqlUPDATE = "update auto_bid set is_active = false where auction_id = ?";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE)){
             pstmt.setInt(1,auctionId);

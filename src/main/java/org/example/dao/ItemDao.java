@@ -36,7 +36,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public void save(Item item,String seller_id){
-        String sqlINSERT = "INSERT INTO ITEM (ID, NAME, DESCRIPTION, START_PRICE, TYPE, SELLER_ID) VALUES (?,?,?,?,?,?)";
+        String sqlINSERT = "insert into item (id, name, description, start_price, type, seller_id) values (?,?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);){
             pstmt.setString(1,item.getId());
@@ -53,7 +53,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public Item findById(String id){
-        String sqlSELECT = "SELECT * FROM ITEM WHERE ID = ?";
+        String sqlSELECT = "select * from item where id = ?";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlSELECT);){
             pstmt.setString(1,id);
@@ -69,7 +69,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public List<Item> findBySeller(String sellerId){
-        String sqlSELECT = "SELECT * FROM ITEM WHERE SELLER_ID = ?";
+        String sqlSELECT = "select * from item where seller_id = ?";
         List<Item> items = new ArrayList<>();
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlSELECT);){
@@ -86,7 +86,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public void update(Item item) {
-        String sqlUPDATE = "UPDATE ITEM SET name=?, description=?, start_price=? WHERE id=?";
+        String sqlUPDATE = "update item set name=?, description=?, start_price=? where id=?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE)) {
             pstmt.setString(1, item.getName());
@@ -101,7 +101,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public void updateStatus(Item item,String status){
-        String sqlUPDATE = "UPDATE ITEM SET STATUS = ? WHERE ID = ?";
+        String sqlUPDATE = "update item set status = ? where id = ?";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE)){
             pstmt.setString(1,status);
@@ -114,7 +114,7 @@ public class ItemDao implements ItemRepository {
 
     @Override
     public void delete(String id) {
-        String sqlDELETE = "DELETE FROM ITEM WHERE id = ?";
+        String sqlDELETE = "delete from item where id = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlDELETE)) {
             pstmt.setString(1, id);

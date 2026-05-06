@@ -12,7 +12,7 @@ import static org.example.dao.DBConnection.getConnection;
 public class BidDAO implements BidRepository {
     @Override
     public void save(BidTransaction bids, int auctionId){
-        String sqlINSERT = "INSERT INTO BID_TRANSACTION (auction_id,bidder_id,amount,time,type) VALUES (?,?,?,?,?)";
+        String sqlINSERT = "insert into bid_transaction (auction_id,bidder_id,amount,time,type) values (?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);){
             pstmt.setInt(1,auctionId);

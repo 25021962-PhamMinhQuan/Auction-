@@ -12,7 +12,7 @@ import static org.example.dao.DBConnection.getConnection;
 public class AuctionDAO implements AuctionRepository {
     @Override
     public void save(Auction auction,String status){
-        String sqlINSERT = "INSERT INTO AUCTION (current_price,start_time,end_time,status,item_id) VALUES (?,?,?,?,?)";
+        String sqlINSERT = "insert into auction (current_price,start_time,end_time,status,item_id) values (?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT, Statement.RETURN_GENERATED_KEYS);){
             pstmt.setDouble(1,auction.getCurrentPrice());
@@ -35,7 +35,7 @@ public class AuctionDAO implements AuctionRepository {
 
     @Override
     public void update(Auction auction,String status){
-        String sqlUPDATE = "UPDATE AUCTION SET current_price = ?,highest_bidder_id = ?,status = ? WHERE id = ?";
+        String sqlUPDATE = "update auction set current_price = ?,highest_bidder_id = ?,status = ? where id = ?";
 
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE);){
@@ -54,7 +54,7 @@ public class AuctionDAO implements AuctionRepository {
     // chỉ dùng khi cancel hoặc paid
     @Override
     public void updateStatus(Auction auction, String status) {
-        String sql = "UPDATE AUCTION SET status=? WHERE id=?";
+        String sql = "update auction set status=? where id=?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, status);
