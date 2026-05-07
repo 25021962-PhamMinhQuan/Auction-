@@ -66,11 +66,15 @@ public class Auction {
             bids.add(bid);
 
             // Anti-sniping
+            AntiSniping();
+
+            return bid;
+        }
+
+        public void AntiSniping(){
             if (item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
                 item.extendTime(60);
             }
-
-            return bid;
         }
 
 
