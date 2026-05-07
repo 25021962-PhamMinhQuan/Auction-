@@ -1,10 +1,9 @@
-package server;
+package org.example.server;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.example.Main;
 import org.example.uicontroller.MainScreenController;
 
 import java.io.*;

@@ -1,7 +1,6 @@
-package server;
+package org.example.server;
 
 import java.io.IOException;
-import java.lang.ref.PhantomReference;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -25,11 +24,6 @@ public class AuctionServer {
             connectClient.add(handler);
 
             new Thread(handler).start();
-        }
-    }
-    static void broadCast(String msg){
-        for(ClientHandler client : connectClient){
-            client.sendMesage(msg);
         }
     }
 }

@@ -6,7 +6,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import server.AuctionClient;
+import org.example.server.AuctionClient;
 
 
 public class ItemBidingUIController {

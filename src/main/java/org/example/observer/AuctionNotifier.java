@@ -20,7 +20,6 @@ public class AuctionNotifier {
 
     public void notifyObservers(BidTransaction bid) {
         for (AuctionObserver o : observers) {
-            // đoạn này this có nghĩa là nạp cái auction này vào bâyh thì chx hẳn là có tdung nhma khi thiết kế giao diện thì cnay sẽ cung cấp các thông tin như đang đấu giá sản phẩm nào bla bla
             o.update(auction, bid, auction.getMinIncrement());
         }
     }

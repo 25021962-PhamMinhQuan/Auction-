@@ -143,5 +143,9 @@ public class AuctionService {
         }
         return coord.getAuction();
     }
+
+    public BiddingCoordinator getCoordinator(int auctionId) {
+        return coordinators.get(auctionId);
+    }
 }
 
