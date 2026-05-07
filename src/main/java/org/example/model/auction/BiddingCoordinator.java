@@ -52,7 +52,7 @@ public class BiddingCoordinator {
         }
     }
 
-    public void registerAutoBid(AutoBid autoBid) {
+    public synchronized void registerAutoBid(AutoBid autoBid) {
         autoBidManager.addAutoBid(autoBid);
     }
 

@@ -8,6 +8,7 @@ import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,7 +22,7 @@ public class Auction {
         private Item item;
 
         // cnay để cập nhận trạng thái của giao dịch
-        private Status status;
+        private volatile Status status;
 
         // cái list này để lưu lịch sử giao dịch
         private List<BidTransaction> bids;
@@ -66,11 +67,15 @@ public class Auction {
             bids.add(bid);
 
             // Anti-sniping
+            AntiSniping();
+
+            return bid;
+        }
+
+        public void AntiSniping(){
             if (item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
                 item.extendTime(60);
             }
-
-            return bid;
         }
 
 
@@ -115,7 +120,7 @@ public class Auction {
         }
 
         public List<BidTransaction> getBids() {
-            return bids;
+            return Collections.unmodifiableList(bids);
         }
 
         public void setId(int id) {
@@ -131,8 +136,8 @@ public class Auction {
         public Item getItem() {
             return item;
         }
-        public String getStatus(){
-            return status.name();
+        public Status getStatus(){
+            return status;
         }
 }
 

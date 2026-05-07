@@ -1,9 +1,12 @@
-package server;
+package org.example.server;
 
 import org.example.dao.UserDAO;
 import org.example.model.auction.Auction;
+import org.example.model.auction.BidTransaction;
+import org.example.model.auction.BiddingCoordinator;
 import org.example.model.user.Bidder;
 import org.example.model.user.User;
+import org.example.observer.AuctionObserver;
 import org.example.service.AuctionService;
 import org.example.service.ServiceFactory;
 import org.example.util.AutoBid;
@@ -11,7 +14,7 @@ import org.example.util.AutoBid;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable, AuctionObserver {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
@@ -43,50 +46,72 @@ public class ClientHandler implements Runnable {
             closeConnection();
         }
     }
+
+    public void update(Auction auction, BidTransaction bid, double minIncrement) {
+        String updateMessage = "UPDATE|" + auction.getId() + "|"
+                + bid.getAmount() + "|"
+                + bid.getBidder().getUsername() + "|"
+                + bid.getType();
+        sendMessage(updateMessage);
+    }
+
     // xac dinh xem hanh dong la chi mo
     private void handleCommand(String rawline) {
         String[] parts = rawline.split("\\|");
         String command = parts[0];
-
         switch (command){
-            case "BID":{
-                int auctionId = Integer.parseInt(parts[1]);
-                double ammount = Double.parseDouble(parts[2]);
-                Auction auction = auctionService.findbyId(auctionId);
-                if(auction==null){
-                    sendMesage("Auction not found");
-                }
+            case "BID" : {
                 try {
-                    auctionService.placeBid(auction,(Bidder) currentUser,ammount);
-                    String updateMessage = "UPDATE|" + auctionId + "|"
-                            + auction.getCurrentPrice() + "|"
-                            + currentUser.getUsername();
-                    // thong bao gia moi cho cac bidder khac
-                    AuctionServer.broadCast(updateMessage);
+                    int auctionId = Integer.parseInt(parts[1]);
+                    double amount = Double.parseDouble(parts[2]);
+
+                    BiddingCoordinator coordinator = auctionService.getCoordinator(auctionId);
+                    if (coordinator == null) {
+                        sendMessage("ERROR|Auction not found");
+                        return;
+                    }
+
+                    Auction auction = coordinator.getAuction();
+
+                    auctionService.placeBid(auction, (Bidder) currentUser, amount);
                 } catch (Exception e) {
-                    sendMesage("Lỗi: "+e.getMessage());
+                    sendMessage("ERROR|" + e.getMessage());
                 }
                 break;
             }
             case "AUTOBID":{ //AUTOBID|auctionId|maxbid|increment
-                int auctionId= Integer.parseInt(parts[1]);
-                double maxBid = Double.parseDouble(parts[2]);
-                double increment = Double.parseDouble(parts[3]);
+                try {
+                    int auctionId = Integer.parseInt(parts[1]);
+                    double maxBid = Double.parseDouble(parts[2]);
+                    double increment = Double.parseDouble(parts[3]);
 
-                Auction auction = findbyId(auctionId);
-                AutoBid autoBid = new AutoBid((Bidder) currentUser,maxBid,increment);
-                auctionService.registerAutoBid(auction,autoBid);
-                sendMesage("AUTOBID REGISTERED");
+                    BiddingCoordinator coordinator = auctionService.getCoordinator(auctionId);
+                    if (coordinator == null) {
+                        sendMessage("ERROR|Auction not found");
+                        return;
+                    }
+
+                    Auction auction = coordinator.getAuction();
+                    AutoBid autoBid = new AutoBid((Bidder) currentUser, maxBid, increment);
+                    auctionService.registerAutoBid(auction, autoBid);
+
+                    // Tự động watch khi đăng ký AutoBid
+                    coordinator.getNotifier().addObserver(this);
+                    sendMessage("SUCCESS|AutoBid registered");
+
+                } catch (Exception e) {
+                    sendMessage("ERROR|" + e.getMessage());
+                }
                 break;
             }
             case "STATUS":{
                 int auctionId = Integer.parseInt(parts[1]);
                 Auction auction = findbyId(auctionId);
                 if (auction != null) {
-                    sendMesage("STATUS|" + auction.getStatus()
+                    sendMessage("STATUS|" + auction.getStatus()
                             + "|" + auction.getCurrentPrice());
                 } else {
-                    sendMesage("ERROR|Auction not found");
+                    sendMessage("ERROR|Auction not found");
                 }
                 break;
             }
@@ -99,23 +124,23 @@ public class ClientHandler implements Runnable {
                 User user = userDAO.findByUsername(username); // tìm trong DB
 
                 if (user == null) {
-                    sendMesage("ERROR|Không tìm thấy tài khoản");
+                    sendMessage("ERROR|Không tìm thấy tài khoản");
                 } else if (!user.getPassword().equals(password)) {
-                    sendMesage("ERROR|Sai mật khẩu");
+                    sendMessage("ERROR|Sai mật khẩu");
                 } else {
                     currentUser = user; // lưu lại user đang đăng nhập trên kết nối này
-                    sendMesage("OK|" + user.getRole() + "|" + user.getUsername());
+                    sendMessage("OK|" + user.getRole() + "|" + user.getUsername());
                     // gửi về ROLE để biết là BIDDER, SELLER hay ADMIN
                 }
                 break;
             }
 
             default:
-                sendMesage("ERROR|Unknown command: " + command);
+                sendMessage("ERROR|Unknown command: " + command);
         }
 
     }
-    public void sendMesage(String msg){
+    public void sendMessage(String msg){
         System.out.println(msg);
     }
     private void closeConnection(){

@@ -12,5 +12,14 @@ public interface ItemCreationStrategy {
                     LocalDateTime start,
                     LocalDateTime end);
 
+    Item createItemFromDatabase(
+            String id,
+            String name,
+            String describe,
+            double price,
+            LocalDateTime start,
+            LocalDateTime end
+    );
+
     String getType();
 }

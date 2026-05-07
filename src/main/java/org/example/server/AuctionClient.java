@@ -1,10 +1,9 @@
-package server;
+package org.example.server;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.example.Main;
 import org.example.uicontroller.MainScreenController;
 
 import java.io.*;
@@ -22,7 +21,7 @@ public class AuctionClient {
 
     private Stage stage; // dung cho FX
 
-    public static AuctionClient instance; // tao 1 server dung chung cho tat ca
+    public static volatile AuctionClient instance; // tao 1 server dung chung cho tat ca
     public static AuctionClient getInstance(){
         if (instance==null){
             instance = new AuctionClient();

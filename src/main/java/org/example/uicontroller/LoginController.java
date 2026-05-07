@@ -14,7 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import org.example.controller.AuthController;
-import server.AuctionClient;
+import org.example.server.AuctionClient;
 
 import java.io.IOException;
 import java.net.URL;
