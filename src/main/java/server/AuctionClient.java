@@ -83,10 +83,10 @@ public class AuctionClient {
                 String bidder = parts[3];
 
                 // Cập nhật UI màn hình chính
-                //Platform.runLater(() ->
-                        //MainScreenController.getInstance()
-                                //.updateAuctionPrice(auctionId, newPrice, bidder)
-                //);
+                Platform.runLater(() ->
+                        MainScreenController.getInstance()
+                                .updateAuctionPrice(auctionId, newPrice, bidder)
+                );
                 break;
             }
             case "FINISHED": {
@@ -95,10 +95,10 @@ public class AuctionClient {
                 String winner    = parts[2];
                 double finalPrice = Double.parseDouble(parts[3]);
 
-                //Platform.runLater(() ->
-                        //MainScreenController.getInstance()
-                                //.onAuctionFinished(auctionId, winner, finalPrice)
-                //);
+                Platform.runLater(() ->
+                        MainScreenController.getInstance()
+                                .onAuctionFinished(auctionId, winner, finalPrice)
+                );
                 break;
             }
         }
@@ -127,7 +127,7 @@ public class AuctionClient {
             Parent root = fxmlLoader.load();
 
             MainScreenController controller = fxmlLoader.getController();
-            //controller.setCurrentUser(currentUsername,currentRole);
+            controller.setCurrentUser(currentUsername,currentRole);
 
             stage.setScene(new Scene(root));
             stage.show();

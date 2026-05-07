@@ -30,11 +30,7 @@ public class ItemCardController {
         timeopen.setText("10.AM");
     }
 
-    public void setData(String name, String gia, String opentime) {
-        itemname.setText(name);
-        price.setText(gia);
-        timeopen.setText(opentime);
-    }
+
     @FXML
     private void handleDetail() throws IOException {
         FXMLLoader loader = new FXMLLoader(
@@ -49,5 +45,6 @@ public class ItemCardController {
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
         stage.setScene(new Scene(root));
     }
-
 }
+
+

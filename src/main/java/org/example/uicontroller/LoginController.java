@@ -98,13 +98,6 @@ public class LoginController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-    private void notif() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Attenion!");
-        alert.setHeaderText("Login successfully!");
-        alert.setContentText("");
-        alert.showAndWait();
-    }
 
     @FXML
     public void handleLogin(ActionEvent e) {

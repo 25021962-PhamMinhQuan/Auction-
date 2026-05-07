@@ -16,7 +16,6 @@ import java.util.List;
 
 public class MainScreenController {
 
-    // ── FXML bindings ──────────────────────────────────────────────────────────
     @FXML private HBox      upcomingHbox;
     @FXML private HBox      ongoingHbox;
     @FXML private FlowPane  gridPane;
