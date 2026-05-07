@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +24,10 @@ public class ItemDao implements ItemRepository {
         String name = rs.getString("name");
         String description = rs.getString("description");
         double startPrice = rs.getDouble("start_price");
+        LocalDateTime startTime = rs.getTimestamp("start_time").toLocalDateTime();
+        LocalDateTime endTime = rs.getTimestamp("end_time").toLocalDateTime();
 
-        switch (type) {
-            case "ELECTRONICS":
-                return new Electronics(id, name, description, startPrice, null, null);
-            case "ART":
-                return new Art(id, name, description, startPrice, null, null);
-            default:
-                throw new IllegalArgumentException("Unknown type: " + type);
-        }
+        return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime);
     }
 
     @Override

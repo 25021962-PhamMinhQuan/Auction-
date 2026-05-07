@@ -54,6 +54,22 @@ public class ItemFactory {
         return strategy.createItem(name,description,price,start,end);
     }
 
+    public static Item createItemFromDAO(String type,
+                                  String id,
+                                  String name,
+                                  String description,
+                                  double price,
+                                  LocalDateTime start,
+                                  LocalDateTime end){
+
+        ItemCreationStrategy strategy = strategies.get(type);
+        if(strategy == null){
+            throw new IllegalArgumentException("Unknow item type: " + type);
+        }
+
+        return strategy.createItemFromDatabase(id,name,description,price,start,end);
+    }
+
     public static java.util.Set<String> getAvailableTypes() {
         return strategies.keySet();
     }

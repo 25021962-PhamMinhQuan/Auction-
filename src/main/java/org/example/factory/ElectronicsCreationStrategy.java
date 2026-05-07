@@ -15,6 +15,16 @@ public class ElectronicsCreationStrategy implements ItemCreationStrategy{
         return new Electronics(name, describe, price, start, end);
     }
 
+    public Item createItemFromDatabase(
+            String id,
+            String name,
+            String describe,
+            double price,
+            LocalDateTime start,
+            LocalDateTime end){
+        return new Electronics(name, describe, price, start, end);
+    }
+
     public String getType(){
         return "ELECTRONIC";
     }
