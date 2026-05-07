@@ -1,12 +1,9 @@
 package org.example.service;
 
-import org.example.dao.AuctionDAO;
-import org.example.dao.BidDAO;
-import org.example.dao.ItemDao;
+
 import org.example.model.auction.Auction;
 import org.example.model.auction.BiddingCoordinator;
 import org.example.model.user.Bidder;
-import org.example.dao.AutoBidDao;
 import org.example.model.user.User;
 import org.example.observer.AuctionObserver;
 import org.example.repository.AuctionRepository;
@@ -15,9 +12,7 @@ import org.example.repository.BidRepository;
 import org.example.repository.ItemRepository;
 import org.example.util.AutoBid;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -26,6 +21,7 @@ public class AuctionService {
     private final BidRepository bidDAO;
     private final ItemRepository itemDao;
     private final AutoBidRepository autoBidDao;
+    private final Map<Integer, BiddingCoordinator> coordinators = new ConcurrentHashMap<>();
 
     public AuctionService(AuctionRepository auctionDAO,
                           BidRepository bidDAO,
@@ -36,8 +32,6 @@ public class AuctionService {
         this.bidDAO = bidDAO;
         this.autoBidDao = autoBidDAO;
     }
-    private Map<Integer, BiddingCoordinator> coordinators = new HashMap<>();
-
     public void StartAuction(Auction auction){
         auction.start();
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
@@ -51,7 +45,7 @@ public class AuctionService {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
         scheduler.scheduleAtFixedRate(() -> {
-            if(auction.getStatus() != Auction.Status.RUNNING.name()){
+            if(auction.getStatus() != Auction.Status.RUNNING){
                 scheduler.shutdown();
                 return;
             }
@@ -101,7 +95,7 @@ public class AuctionService {
             throw new IllegalStateException("Bidder have no right to cancel this auction");
         }
 
-        if(requester.getRole().equals(User.UserRole.SELLER.name()) && auction.getStatus() != Auction.Status.OPEN.name()){
+        if(requester.getRole().equals(User.UserRole.SELLER.name()) && auction.getStatus() != Auction.Status.OPEN){
             throw  new IllegalStateException("Auction can't be cancelled after started ");
         }
 
