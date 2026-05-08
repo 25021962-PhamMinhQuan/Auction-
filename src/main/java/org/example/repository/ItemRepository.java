@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.item.Item;
+import org.example.domain.item.Item;
 
 import java.util.List;
 

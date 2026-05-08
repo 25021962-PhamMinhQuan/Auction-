@@ -1,5 +1,5 @@
-package org.example.dao;
-import org.example.model.user.Bidder;
+package org.example.repository.impl;
+import org.example.domain.user.Bidder;
 import org.example.repository.AutoBidRepository;
 import org.example.util.AutoBid;
 
@@ -7,13 +7,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.PriorityQueue;
 
-import static org.example.dao.DBConnection.getConnection;
+import static org.example.repository.impl.DBConnection.getConnection;
 
-public class AutoBidDao implements AutoBidRepository {
+public class AutoBidDAO implements AutoBidRepository {
     @Override
     public void save(AutoBid autoBid, int auctionId) {
         String sqlINSERT = "insert into auto_bid (auction_id, bidder_id, max_bid, increment_step, registered_at) values (?,?,?,?,?)";

@@ -1,6 +1,6 @@
-package org.example.model.user;
+package org.example.domain.user;
 
-import org.example.model.Entity;
+import org.example.domain.Entity;
 import org.example.util.IDGenerator;
 
 public abstract class User extends Entity {

@@ -1,7 +1,7 @@
 package org.example.observer;
 
-import org.example.model.auction.BidTransaction;
-import org.example.model.auction.Auction;
+import org.example.domain.auction.BidTransaction;
+import org.example.domain.auction.Auction;
 
 public class BidderClient implements AuctionObserver {
 

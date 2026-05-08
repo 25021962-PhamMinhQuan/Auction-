@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.auction.Auction;
+import org.example.domain.auction.Auction;
 
 public interface AuctionRepository {
     void save(Auction auction, String status);

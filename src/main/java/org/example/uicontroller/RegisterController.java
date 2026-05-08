@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import org.example.controller.AuthController;
-import org.example.model.user.Bidder;
+import org.example.domain.user.Bidder;
 
 import java.io.IOException;
 import java.net.URL;

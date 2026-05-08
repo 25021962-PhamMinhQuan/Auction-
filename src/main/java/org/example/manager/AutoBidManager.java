@@ -1,17 +1,20 @@
 package org.example.manager;
 
-import org.example.model.auction.Auction;
-import org.example.model.item.Item;
-import org.example.model.user.Bidder;
+import org.example.domain.auction.Auction;
+import org.example.domain.item.Item;
+import org.example.domain.user.Bidder;
 import org.example.util.AutoBid;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AutoBidManager {
     private Auction auction;
-    private PriorityQueue<AutoBid> autoBids;
+    private final PriorityQueue<AutoBid> autoBids;
+    private final ReentrantLock lock = new ReentrantLock();
+
 
     public AutoBidManager(Auction auction){
         this.auction = auction;
@@ -27,52 +30,61 @@ public class AutoBidManager {
     }
 
     public void addAutoBid(AutoBid autoBid) {
-        autoBids.add(autoBid);
+        lock.lock();
+        try {
+            autoBids.add(autoBid);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public AutoBidResult processAuto() {
-        Double minIncreament = auction.getMinIncrement();
-        Item item = auction.getItem();
-        if (autoBids.isEmpty()) return null;
+        lock.lock();
+        try {
+            Double minIncreament = auction.getMinIncrement();
+            Item item = auction.getItem();
+            if (autoBids.isEmpty()) return null;
 
-        AutoBid first=null,second = null;
-        List<AutoBid> skipped = new ArrayList<>();
+            AutoBid first = null, second = null;
+            List<AutoBid> skipped = new ArrayList<>();
 
-        while(!autoBids.isEmpty()){
-            AutoBid candiate = autoBids.poll();
-            if(candiate.getMaxBid() > auction.getCurrentPrice() && candiate.getIncrement() >= minIncreament){
-                first = candiate;
-                break;
+            while (!autoBids.isEmpty()) {
+                AutoBid candiate = autoBids.poll();
+                if (candiate.getMaxBid() > auction.getCurrentPrice() && candiate.getIncrement() >= minIncreament) {
+                    first = candiate;
+                    break;
+                }
+                skipped.add(candiate);
             }
-            skipped.add(candiate);
-        }
-        if(first == null){
+            if (first == null) {
+                autoBids.addAll(skipped);
+                return null;
+            }
+
+            while (!autoBids.isEmpty()) {
+                AutoBid candiate = autoBids.poll();
+                if (candiate.getMaxBid() > item.getCurrentPrice() && candiate.getIncrement() >= minIncreament) {
+                    second = candiate;
+                    break;
+                }
+                skipped.add(candiate);
+            }
+            double priceAfterBid;
+
+            if (second == null) {
+                priceAfterBid = Math.min(first.getMaxBid(), first.getIncrement() + item.getCurrentPrice());
+            } else {
+                priceAfterBid = Math.min(first.getMaxBid(), second.getMaxBid() + first.getIncrement());
+                autoBids.add(second);
+            }
+
+            autoBids.add(first);
             autoBids.addAll(skipped);
-            return null;
-        }
 
-        while(!autoBids.isEmpty()){
-            AutoBid candiate = autoBids.poll();
-            if(candiate.getMaxBid() > item.getCurrentPrice() && candiate.getIncrement() >= minIncreament){
-                second = candiate;
-                break;
-            }
-            skipped.add(candiate);
+            return new AutoBidResult(first.getBidder(), priceAfterBid);
+        } finally {
+            lock.unlock();
         }
-        double priceAfterBid;
-
-        if(second == null){
-            priceAfterBid = Math.min(first.getMaxBid(), first.getIncrement() + item.getCurrentPrice());
-        }
-        else{
-            priceAfterBid = Math.min(first.getMaxBid(), second.getMaxBid() + first.getIncrement());
-            autoBids.add(second);
-        }
-
-        autoBids.add(first);
-        autoBids.addAll(skipped);
-
-        return new AutoBidResult(first.getBidder(), priceAfterBid);
     }
 
     public static class AutoBidResult{

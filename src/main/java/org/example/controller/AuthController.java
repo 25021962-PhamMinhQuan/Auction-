@@ -1,7 +1,7 @@
 package org.example.controller;
 
-import org.example.model.user.User;
-import org.example.service.ServiceFactory;
+import org.example.domain.user.User;
+import org.example.factory.ServiceFactory;
 import org.example.service.UserService;
 
 public class AuthController {

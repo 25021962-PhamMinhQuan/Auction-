@@ -1,19 +1,15 @@
 package org.example.service;
 
-import org.example.dao.UserDAO;
-import org.example.model.user.Admin;
-import org.example.model.user.Bidder;
-import org.example.model.user.Seller;
-import org.example.model.user.User;
+import org.example.domain.user.User;
 
 import org.example.repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
-    private final UserRepository userDAO;
+    private final UserRepository UserRepositoryImpl;
 
-    public UserService(UserRepository userDAO){
-        this.userDAO = userDAO;
+    public UserService(UserRepository UserRepositoryImpl){
+        this.UserRepositoryImpl = UserRepositoryImpl;
     }
 
     private boolean isValidPassword(String password){
@@ -38,7 +34,7 @@ public class UserService {
         if (user.getUsername() == null || user.getUsername().isEmpty()) {
             return "Username cannot be empty";
         }
-        if (userDAO.findByUsername(user.getUsername()) != null) {
+        if (UserRepositoryImpl.findByUsername(user.getUsername()) != null) {
             return "Username already exists";
         }
         if(!isValidPassword(user.getPassword())){
@@ -52,12 +48,12 @@ public class UserService {
         user = user.cloneWithNewPassword(user, HashedPassword);
 
         // sau khi ktra xem tên user này đã tồn tại chx thì sẽ đến đoạn đki và lưu
-        userDAO.save(user);
+        UserRepositoryImpl.save(user);
         return "Register success";
     }
 
     public User login(String username, String password) {
-        User user = userDAO.findByUsername(username);
+        User user = UserRepositoryImpl.findByUsername(username);
         // lấy cái object user ra nếu ko tồn tại thì là do tài khỏan không tồn tại thôi
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -68,6 +64,10 @@ public class UserService {
         }
         // Nếu qua 2 bước trên mà chương trình ko bị throw mấy cái lỗi ra thì trả về user thôi.
         return user;
+    }
+
+    public User findUser(String name){
+        return UserRepositoryImpl.findByUsername(name);
     }
 }
 

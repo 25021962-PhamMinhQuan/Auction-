@@ -1,6 +1,6 @@
 package org.example.util;
 
-import org.example.model.user.Bidder;
+import org.example.domain.user.Bidder;
 
 import java.time.LocalDateTime;
 
