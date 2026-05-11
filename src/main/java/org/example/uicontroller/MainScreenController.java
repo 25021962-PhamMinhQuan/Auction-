@@ -87,7 +87,6 @@ public class MainScreenController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
         Node node = loader.load();
         ItemCardController ctrl = loader.getController();
-        ctrl.setData(name, price, time);
         return node;
     }
 

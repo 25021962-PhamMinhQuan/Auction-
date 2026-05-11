@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
 import org.example.server.AuctionClient;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import server.AuctionClient;
+import org.example.server.AuctionClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -173,7 +173,6 @@ public class ItemBidingUIController {
         long s = secondsLeft % 60;
         timeLeft.setText(String.format("%02d:%02d:%02d còn lại", h, m, s));
 
-        // Anti-snipe flash (< 30s)
         if (secondsLeft < 30) {
             boolean flash = (secondsLeft % 2 == 0);
             timeLeft.setStyle(flash
