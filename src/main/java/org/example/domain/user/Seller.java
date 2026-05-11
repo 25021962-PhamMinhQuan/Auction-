@@ -1,4 +1,4 @@
-package org.example.model.user;
+package org.example.domain.user;
 
 public class Seller extends User {
     public Seller(String id, String username, String password) {

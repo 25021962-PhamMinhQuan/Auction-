@@ -1,6 +1,6 @@
-package org.example.factory;
+package org.example.factory.strategy;
 
-import org.example.model.item.Item;
+import org.example.domain.item.Item;
 
 import java.time.LocalDateTime;
 

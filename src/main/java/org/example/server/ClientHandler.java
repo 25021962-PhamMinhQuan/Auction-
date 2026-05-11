@@ -1,15 +1,16 @@
 package org.example.server;
 
-import org.example.dao.UserDAO;
-import org.example.model.auction.Auction;
-import org.example.model.auction.BidTransaction;
-import org.example.model.auction.BiddingCoordinator;
-import org.example.model.user.Bidder;
-import org.example.model.user.User;
+import org.example.domain.auction.Auction;
+import org.example.domain.auction.BidTransaction;
+import org.example.coordinator.BiddingCoordinator;
+import org.example.domain.user.Bidder;
+import org.example.domain.user.User;
 import org.example.observer.AuctionObserver;
 import org.example.service.AuctionService;
-import org.example.service.ServiceFactory;
+import org.example.factory.ServiceFactory;
+import org.example.service.UserService;
 import org.example.util.AutoBid;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.*;
 import java.net.Socket;
@@ -120,12 +121,12 @@ public class ClientHandler implements Runnable, AuctionObserver {
                 String username = parts[1];
                 String password = parts[2];
 
-                UserDAO userDAO = new UserDAO();
-                User user = userDAO.findByUsername(username); // tìm trong DB
+                UserService userService = ServiceFactory.getInstance().getUserService();
+                User user = userService.findUser(username); // tìm trong DB
 
                 if (user == null) {
                     sendMessage("ERROR|Không tìm thấy tài khoản");
-                } else if (!user.getPassword().equals(password)) {
+                } else if (!BCrypt.checkpw(password, user.getPassword())) {
                     sendMessage("ERROR|Sai mật khẩu");
                 } else {
                     currentUser = user; // lưu lại user đang đăng nhập trên kết nối này

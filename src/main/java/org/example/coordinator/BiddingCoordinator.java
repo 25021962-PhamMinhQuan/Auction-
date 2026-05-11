@@ -1,13 +1,13 @@
-package org.example.model.auction;
+package org.example.coordinator;
 
+import org.example.domain.auction.Auction;
+import org.example.domain.auction.BidTransaction;
 import org.example.manager.AutoBidManager;
-import org.example.model.user.Bidder;
+import org.example.domain.user.Bidder;
 import org.example.observer.AuctionNotifier;
-import org.example.observer.BidderClient;
-import org.example.model.auction.BidTransaction.BidType;
+import org.example.domain.auction.BidTransaction.BidType;
 import org.example.util.AutoBid;
 
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 public class BiddingCoordinator {

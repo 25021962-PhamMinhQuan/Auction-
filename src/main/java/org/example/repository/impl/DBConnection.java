@@ -1,4 +1,4 @@
-package org.example.dao;
+package org.example.repository.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

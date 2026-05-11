@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.domain;
 
 public abstract class Entity {
     protected String id;

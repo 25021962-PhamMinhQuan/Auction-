@@ -1,15 +1,15 @@
 
-package org.example.dao;
+package org.example.repository.impl;
 
-import org.example.model.user.Admin;
-import org.example.model.user.Bidder;
-import org.example.model.user.Seller;
-import org.example.model.user.User;
+import org.example.domain.user.Admin;
+import org.example.domain.user.Bidder;
+import org.example.domain.user.Seller;
+import org.example.domain.user.User;
 import org.example.repository.UserRepository;
 
 import java.sql.*;
 
-import static org.example.dao.DBConnection.getConnection;
+import static org.example.repository.impl.DBConnection.getConnection;
 
 public class UserDAO implements UserRepository {
     @Override

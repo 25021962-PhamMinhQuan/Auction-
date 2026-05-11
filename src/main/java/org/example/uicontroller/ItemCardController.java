@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import org.example.model.item.Item;
+import org.example.domain.item.Item;
 
 import java.io.IOException;
 

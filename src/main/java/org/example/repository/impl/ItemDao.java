@@ -1,9 +1,7 @@
-package org.example.dao;
+package org.example.repository.impl;
 
 import org.example.factory.ItemFactory;
-import org.example.model.item.Art;
-import org.example.model.item.Electronics;
-import org.example.model.item.Item;
+import org.example.domain.item.Item;
 import org.example.repository.ItemRepository;
 
 import java.sql.Connection;
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.dao.DBConnection.getConnection;
+import static org.example.repository.impl.DBConnection.getConnection;
 
 public class ItemDao implements ItemRepository {
 

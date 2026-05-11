@@ -1,6 +1,6 @@
-package org.example.model.item;
+package org.example.domain.item;
 
-import org.example.model.Entity;
+import org.example.domain.Entity;
 import org.example.util.IDGenerator;
 
 import java.time.LocalDateTime;

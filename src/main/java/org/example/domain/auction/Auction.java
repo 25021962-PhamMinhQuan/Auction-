@@ -1,18 +1,13 @@
-package org.example.model.auction;
+package org.example.domain.auction;
 
-import org.example.model.item.Item;
-import org.example.model.user.Bidder;
-import org.example.observer.AuctionObserver;
-import org.example.service.AuctionService;
-import org.example.util.AutoBid;
+import org.example.domain.item.Item;
+import org.example.domain.user.Bidder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Auction {
         private int id;
@@ -25,18 +20,22 @@ public class Auction {
         private volatile Status status;
 
         // cái list này để lưu lịch sử giao dịch
-        private List<BidTransaction> bids;
+        private final List<BidTransaction> bids;
 
         private Bidder highestBidder;
+
+        private final ReentrantLock bidLock = new ReentrantLock();  // Fine-grained lock
 
 
         public Auction(Item item) {
             this.item = item;
             this.status = Status.OPEN;
-            this.bids = new ArrayList<>();
+            this.bids = new CopyOnWriteArrayList<>();
         }
 
         public void validateBid(Bidder bidder, double amount, BidTransaction.BidType type) {
+            if (bidder == null) throw new IllegalArgumentException("Bidder cannot be null");
+
             if (status == Status.CANCELED) {
                 throw new IllegalStateException("Auction cancelled");
             }
@@ -60,21 +59,29 @@ public class Auction {
         }
 
         public BidTransaction recordBid(Bidder bidder, double amount, BidTransaction.BidType type) {
-            item.setCurrentPrice(amount);
-            highestBidder = bidder;
+            bidLock.lock(); // thread safe
+            try {
+                item.setCurrentPrice(amount);
+                highestBidder = bidder;
 
-            BidTransaction bid = new BidTransaction(bidder, amount, type);
-            bids.add(bid);
+                BidTransaction bid = new BidTransaction(bidder, amount, type);
+                bids.add(bid);
 
-            // Anti-sniping
-            AntiSniping();
+                // Anti-sniping
+                AntiSniping();
 
-            return bid;
+                return bid;
+            } finally {
+                bidLock.unlock();
+            }
         }
 
+        private boolean hasExtended = false;
+
         public void AntiSniping(){
-            if (item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
+            if (!hasExtended && item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
                 item.extendTime(60);
+                hasExtended = true;
             }
         }
 

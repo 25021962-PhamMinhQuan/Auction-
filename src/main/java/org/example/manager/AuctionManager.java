@@ -1,19 +1,20 @@
 package org.example.manager;
 
-import org.example.model.auction.Auction;
+import org.example.domain.auction.Auction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AuctionManager {
 
     // cnay là thuật toán singleton
     //tác dụng là để lưu tất cả cái auction cho 1 auctionManager quản lí thôi tránh trg hợp có 2 auction manager khác nhau
     private static AuctionManager instance;
-    private List<Auction> auctions;
+    private final List<Auction> auctions;
 
     private AuctionManager() {
-        auctions = new ArrayList<>();
+        auctions =  new CopyOnWriteArrayList<>();
     }
 
     // tạo ra một cái static auctionManager duy nhất dùng chung cho tất cả phiên đấu giá

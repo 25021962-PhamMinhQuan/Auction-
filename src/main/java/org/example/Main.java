@@ -1,17 +1,15 @@
 package org.example;
 
 import org.example.controller.AuthController;
-import org.example.factory.ItemFactory;
-import org.example.model.auction.Auction;
-import org.example.model.auction.BiddingCoordinator;
-import org.example.model.item.Item;
-import org.example.model.user.Bidder;
-import org.example.model.user.Seller;
-import org.example.model.user.User;
+import org.example.domain.auction.Auction;
+import org.example.domain.item.Item;
+import org.example.domain.user.Bidder;
+import org.example.domain.user.Seller;
+import org.example.domain.user.User;
 import org.example.observer.BidderClient;
 import org.example.service.AuctionService;
 import org.example.service.ItemService;
-import org.example.service.ServiceFactory;
+import org.example.factory.ServiceFactory;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;

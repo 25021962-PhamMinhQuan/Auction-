@@ -1,13 +1,10 @@
-package org.example.dao;
-import org.example.model.auction.BidTransaction;
-import org.example.model.auction.Auction;
-import org.example.model.user.Bidder;
+package org.example.repository.impl;
+import org.example.domain.auction.Auction;
 import org.example.repository.AuctionRepository;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 
-import static org.example.dao.DBConnection.getConnection;
+import static org.example.repository.impl.DBConnection.getConnection;
 
 public class AuctionDAO implements AuctionRepository {
     @Override
