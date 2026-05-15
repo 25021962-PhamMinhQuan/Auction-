@@ -193,7 +193,7 @@
 .icon-btn:hover .icon-img {
     -fx-effect: null;
 }
-/* dropdown menu */
+
 .dropdown-menu {
     -fx-background-color: #1f2933;
     -fx-background-radius: 8;
@@ -202,7 +202,6 @@
     -fx-padding: 5;
 }
 
-/* menu item */
 .dropdown-item {
     -fx-background-color: transparent;
     -fx-text-fill: #e5e7eb;
@@ -213,5 +212,35 @@
 
 .dropdown-item:hover {
     -fx-background-color: #374151;
+}
+.radio-button {
+    -fx-text-fill: #e5e7eb;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.radio-button .radio {
+    -fx-background-color: transparent;
+    -fx-border-color: #6b7280;
+    -fx-border-width: 2;
+    -fx-border-radius: 50%;
+    -fx-padding: 4;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: #fbbf24;
+    -fx-background-insets: 0;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: #fbbf24;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: #fbbf24;
+}
+
+.radio-button:selected {
+    -fx-text-fill: #fbbf24;
 }
 

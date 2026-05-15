@@ -6,17 +6,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import org.example.controller.AuthController;
 import org.example.domain.user.Bidder;
@@ -41,9 +37,12 @@ public class RegisterController implements Initializable {
     @FXML
     private StackPane spane;
     @FXML
+    private ToggleGroup role;
+    @FXML
+    private RadioButton bidderRadio, sellerRadio;
+    @FXML
     ImageView imageview1, imageview2;
 
-    private MediaPlayer mediaPlayer;
     private Image eyeclosed;
     private Image eyeopen;
     AuthController auth = new AuthController();
@@ -56,6 +55,7 @@ public class RegisterController implements Initializable {
             imageview1 = setupButton(showPasswordbtn);
             imageview2 = setupButton(showcfPasswordbtn);
     }
+    //hàm xử lí ẩn hiện mật khẩu
     private void handleTogglemethod(PasswordField pf, TextField tf, ToggleButton tb, ImageView img){
         if (tb.isSelected()){
             tf.setText(pf.getText());
@@ -75,6 +75,7 @@ public class RegisterController implements Initializable {
         }
 
     }
+    //hàm xử lí hiệu ứng nút ẩn hiện mật khẩu
     private ImageView setupButton(ToggleButton button) {
         ImageView img = new ImageView(eyeopen);
         img.setFitWidth(15);
@@ -103,6 +104,12 @@ public class RegisterController implements Initializable {
         });
         return img;
     }
+    public String getRole(){
+        if (bidderRadio.isSelected()){
+            return "BIDDER";
+        }
+        else {return "SELLER";}
+    }
     @FXML
     public void handleTogglePass(ActionEvent e){
         handleTogglemethod(passwordfield, passTextfield, showPasswordbtn, imageview1);
@@ -111,6 +118,7 @@ public class RegisterController implements Initializable {
     public void handleToggleConfirm(ActionEvent e){
         handleTogglemethod(cfpasswordfield, cfpassTextfield, showcfPasswordbtn, imageview2);
     }
+    //hàm chuyển sang scene đăng nhập
     @FXML
     public void gotoLogin(ActionEvent e) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/login.fxml"));
@@ -119,6 +127,7 @@ public class RegisterController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+    //thông báo khi đăng nhập thành công
     private void notif(){
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Attenion!");
@@ -128,17 +137,28 @@ public class RegisterController implements Initializable {
     }
     @FXML
     public void handleRegister(ActionEvent e) throws IOException {
-        if (usernameTextField.getText().isEmpty()){
-            warning.setText("Username is required");
-        } else if (passwordfield.getText().isEmpty()){
+        //check input tên đăng nhập
+        if (usernameTextField.getText().isEmpty()) {
+            warning.setText("Username is required"); //hiển thị lỗi
+            return;
+        }
+        //tương tự
+        if (passwordfield.getText().isEmpty()) {
             warning.setText("Password is required");
+            return;
         }
-        else if(!passwordfield.getText().equals(cfpasswordfield.getText())){
+        //check xác nhận mật khẩu
+        if (!passwordfield.getText().equals(cfpasswordfield.getText())){
             warning.setText("Passwords do not match");
-        } else {
-            auth.register(new Bidder(usernameTextField.getText(), cfpasswordfield.getText()));
-            notif();
-            gotoLogin(e);
+            return;
         }
+        //lấy input để đki
+        String result = auth.register(new Bidder(usernameTextField.getText(),cfpasswordfield.getText(),getRole()));
+        if (!result.equals("Register success")) {
+            warning.setText(result);
+            return;
+        }
+        notif();
+        gotoLogin(e); //chuyển sang đăng nhập
     }
 }
