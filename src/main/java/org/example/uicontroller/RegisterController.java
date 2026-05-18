@@ -162,7 +162,7 @@ public class RegisterController implements Initializable {
             return;
         }
         //check xác nhận mật khẩu
-        if (!password.equals(cfpasswordfield.getText())) {
+        if (!password.equals(confirm)) {
             warning.setText("Passwords do not match");
             return;
         } else {
