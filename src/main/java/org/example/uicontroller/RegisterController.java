@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import org.example.controller.AuthController;
 import org.example.domain.user.Bidder;
+import org.example.domain.user.Seller;
 
 import java.io.IOException;
 import java.net.URL;
@@ -162,19 +163,25 @@ public class RegisterController implements Initializable {
             return;
         }
         //check xác nhận mật khẩu
-        if (!password.equals(confirm)) {
+        if (!password.equals(cfpasswordfield.getText())) {
             warning.setText("Passwords do not match");
             return;
         } else {
-            //lấy input để đki
-            String result = auth.register(new Bidder(usernameTextField.getText(), cfpasswordfield.getText(), getRole()));
+            String roleType = getRole();
+            String result;
+
+            if ("BIDDER".equals(roleType)) {
+                result = auth.register(new Bidder(username, password));
+            } else {
+                result = auth.register(new Seller(username, password));
+            }
             if ("Register success".equals(result)) {
                 notif();
                 gotoLogin(e);
             } else {
                 warning.setText(result);
             }
-            //chuyển sang đăng nhập
         }
+        //chuyển sang đăng nhập
     }
 }
