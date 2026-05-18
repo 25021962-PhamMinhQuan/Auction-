@@ -1,8 +1,6 @@
 package org.example.factory;
 import org.example.domain.item.Item;
-import org.example.factory.strategy.ArtsCreationStrategy;
-import org.example.factory.strategy.ElectronicsCreationStrategy;
-import org.example.factory.strategy.ItemCreationStrategy;
+import org.example.factory.strategy.*;
 
 import java.util.*;
 
@@ -38,6 +36,10 @@ public class ItemFactory {
     static {
         ItemFactory.registerStrategy(new ArtsCreationStrategy());
         ItemFactory.registerStrategy(new ElectronicsCreationStrategy());
+        ItemFactory.registerStrategy(new FashionsCreationStrategy());
+        ItemFactory.registerStrategy(new VehiclesCreationStrategy());
+        ItemFactory.registerStrategy(new EstateCreationStrategy());
+        ItemFactory.registerStrategy(new EstateCreationStrategy());
     }
 
     public static Item createItem(String type,
