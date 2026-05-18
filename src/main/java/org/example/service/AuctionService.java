@@ -16,35 +16,40 @@ import org.example.repository.ItemRepository;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
 public class AuctionService {
-    private final AuctionRepository AuctionRepositoryImpl;
-    private final BidRepository BidRepositoryImpl;
-    private final ItemRepository ItemRepositoryImpl;
-    private final AutoBidRepository AutoBidRepositoryImpl;
+    private final AuctionRepository auctionDAO;
+    private final BidRepository bidDAO;
+    private final ItemRepository itemDao;
+    private final AutoBidRepository autoBidDao;
     private final Map<Integer, BiddingCoordinator> coordinators = new ConcurrentHashMap<>();
     private final Map<Integer, ScheduledExecutorService> schedulers = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
 
-    public AuctionService(AuctionRepository AuctionRepositoryImpl,
-                          BidRepository BidRepositoryImpl,
-                          ItemRepository ItemRepositoryImpl,
-                          AutoBidRepository AutoBidRepositoryImpl){
-        this.ItemRepositoryImpl = ItemRepositoryImpl;
-        this.AuctionRepositoryImpl = AuctionRepositoryImpl;
-        this.BidRepositoryImpl = BidRepositoryImpl;
-        this.AutoBidRepositoryImpl = AutoBidRepositoryImpl;
+    public AuctionService(AuctionRepository auctionDAO,
+                          BidRepository bidDAO,
+                          ItemRepository itemDao,
+                          AutoBidRepository autoBidDAO) {
+        this.itemDao = itemDao;
+        this.auctionDAO = auctionDAO;
+        this.bidDAO = bidDAO;
+        this.autoBidDao = autoBidDAO;
     }
+    public List<Auction> getAuctionsByStatus(String status) {
+        return auctionDAO.findByStatus(status);
+    }
+
     public void StartAuction(Auction auction){
         auction.start();
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
         coordinator.setOnBidPersisted(bid -> {
-            AuctionRepositoryImpl.update(auction, Auction.Status.RUNNING.name());
-            BidRepositoryImpl.save(bid, auction.getId());
+            auctionDAO.update(auction, Auction.Status.RUNNING.name());
+            bidDAO.save(bid, auction.getId());
         });
-        AuctionRepositoryImpl.save(auction, Auction.Status.OPEN.name());
+        auctionDAO.save(auction, Auction.Status.OPEN.name());
         coordinators.put(auction.getId(), coordinator);
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -95,13 +100,13 @@ public class AuctionService {
         }
 
         coordinator.registerAutoBid(autoBid);
-        AutoBidRepositoryImpl.save(autoBid, auction.getId());
+        autoBidDao.save(autoBid, auction.getId());
     }
 
     public void FinishAuction(Auction auction){
         auction.finish();
-        AuctionRepositoryImpl.update(auction, Auction.Status.FINISHED.name());
-        AutoBidRepositoryImpl.deactivateByAuction(auction.getId());
+        auctionDAO.update(auction, Auction.Status.FINISHED.name());
+        autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
     }
 
@@ -116,8 +121,8 @@ public class AuctionService {
         }
 
         auction.cancel();
-        AuctionRepositoryImpl.updateStatus(auction, Auction.Status.CANCELED.name());
-        AutoBidRepositoryImpl.deactivateByAuction(auction.getId());
+        auctionDAO.updateStatus(auction, Auction.Status.CANCELED.name());
+        autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
     }
 
@@ -135,9 +140,9 @@ public class AuctionService {
         }
 
         auction.markPaid();
-        AuctionRepositoryImpl.updateStatus(auction, Auction.Status.PAID.name());
+        auctionDAO.updateStatus(auction, Auction.Status.PAID.name());
         // không dùng enum vì với đồ vật thì là sold chứ kphai paid
-        ItemRepositoryImpl.updateStatus(auction.getItem(),"SOLD");
+        itemDao.updateStatus(auction.getItem(),"SOLD");
         coordinators.remove(auction.getId());
     }
     public void addObserverToAuction(Auction auction, AuctionObserver observer) {

@@ -137,6 +137,11 @@ public class RegisterController implements Initializable {
     }
     @FXML
     public void handleRegister(ActionEvent e) throws IOException {
+        String username = usernameTextField.getText();
+        // lấy password từ field đang visible
+        String password = passwordfield.isVisible() ? passwordfield.getText() : passTextfield.getText();
+        String confirm  = cfpasswordfield.isVisible() ? cfpasswordfield.getText() : cfpassTextfield.getText();
+
         //check input tên đăng nhập
         if (usernameTextField.getText().isEmpty()) {
             warning.setText("Username is required"); //hiển thị lỗi

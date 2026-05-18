@@ -1,8 +1,12 @@
 package org.example.repository.impl;
 import org.example.domain.auction.Auction;
+import org.example.domain.item.Item;
+import org.example.factory.ItemFactory;
 import org.example.repository.AuctionRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.example.repository.impl.DBConnection.getConnection;
 
@@ -63,6 +67,43 @@ public class AuctionDAO implements AuctionRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
     }
+
+    @Override
+    public List<Auction> findByStatus(String status) {
+        String sql = "select a.id, a.current_price, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, " +
+                "i.start_time, i.end_time " +
+                "from auction a join item i on a.item_id = i.id " +
+                "where a.status = ?";
+        List<Auction> result = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Item item = ItemFactory.createItemFromDAO(
+                        rs.getString("type"),
+                        rs.getString("item_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getDouble("start_price"),
+                        rs.getTimestamp("start_time").toLocalDateTime(),
+                        rs.getTimestamp("end_time").toLocalDateTime()
+                );
+                item.setCurrentPrice(rs.getDouble("current_price"));
+
+                Auction auction = new Auction(item);
+                auction.setId(rs.getInt("id"));
+                result.add(auction);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
 }
+
 

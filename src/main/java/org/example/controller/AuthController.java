@@ -7,6 +7,7 @@ import org.example.service.UserService;
 public class AuthController {
 
     private final UserService userService;
+    private User currentUser;
 
     public AuthController(){
         this.userService = ServiceFactory.getInstance().getUserService();
@@ -17,6 +18,13 @@ public class AuthController {
 
     public User login(String username, String password) {
         return userService.login(username, password);
+    }
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void logout() {
+        currentUser = null;
     }
 }
 

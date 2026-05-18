@@ -9,6 +9,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.example.domain.user.User;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,6 +32,8 @@ public class MainScreenController {
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
     private static final int    PREVIEW_COUNT  = 7;
     private static final int    GRID_COUNT     = 10;
+    private static MainScreenController instance;
+    private User currentUser;
 
 
 
@@ -41,7 +44,12 @@ public class MainScreenController {
         wireHoverMenus();
     }
 
-
+    public static synchronized MainScreenController getInstance() {
+        if(instance == null){
+            instance = new MainScreenController();
+        }
+        return instance;
+    }
 
     @FXML
     private void handleViewAllUpcoming() {
@@ -119,4 +127,14 @@ public class MainScreenController {
         menu.setVisible(visible);
         menu.setManaged(visible);
     }
+
+    public void updateAuctionPrice(int auctionId, double newPrice, String bidder) {
+    }
+    public void setCurrentUser(User user){
+        this.currentUser = user;
+    }
+    public void setCurrentUser(String username, String role){
+    }
+    public void onAuctionFinished(int auctionId,String winner,double finalprice){}
+
 }

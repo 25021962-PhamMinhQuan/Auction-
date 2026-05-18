@@ -95,8 +95,7 @@ public class AuctionClient {
                 double finalPrice = Double.parseDouble(parts[3]);
 
                 Platform.runLater(() ->
-                        MainScreenController.getInstance()
-                                .onAuctionFinished(auctionId, winner, finalPrice)
+                        MainScreenController.getInstance().onAuctionFinished(auctionId, winner, finalPrice)
                 );
                 break;
             }
