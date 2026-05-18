@@ -12,6 +12,8 @@ import java.sql.*;
 import static org.example.repository.impl.DBConnection.getConnection;
 
 public class UserDAO implements UserRepository {
+
+
     @Override
     public void save(User user){
         String sqlInsert = "insert into account (id,username,password,role) values (?,?,?,?)";

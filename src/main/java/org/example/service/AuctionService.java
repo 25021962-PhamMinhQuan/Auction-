@@ -1,5 +1,8 @@
 package org.example.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import org.example.domain.auction.Auction;
 import org.example.coordinator.BiddingCoordinator;
@@ -23,7 +26,7 @@ public class AuctionService {
     private final AutoBidRepository AutoBidRepositoryImpl;
     private final Map<Integer, BiddingCoordinator> coordinators = new ConcurrentHashMap<>();
     private final Map<Integer, ScheduledExecutorService> schedulers = new ConcurrentHashMap<>();
-
+    private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
 
     public AuctionService(AuctionRepository AuctionRepositoryImpl,
                           BidRepository BidRepositoryImpl,
@@ -49,18 +52,21 @@ public class AuctionService {
 
 
         scheduler.scheduleAtFixedRate(() -> {
-            if(auction.getStatus() != Auction.Status.RUNNING){
-                scheduler.shutdown();
-                return;
-            }
+            try {
+                if(auction.getStatus() != Auction.Status.RUNNING){
+                    cleanup(auction.getId());
+                    return;
+                }
 
-            LocalDateTime endTime = auction.getItem().getEndTime();
-
-            if(LocalDateTime.now().isAfter(endTime)){
-                FinishAuction(auction);
-                scheduler.shutdown();
+                LocalDateTime endTime = auction.getItem().getEndTime();
+                if(LocalDateTime.now().isAfter(endTime)){
+                    FinishAuction(auction);
+                }
+            } catch (Exception e) {
+                logger.error("Error in auction scheduler for auction {}", auction.getId(), e);
+                cleanup(auction.getId());
             }
-                }, 0, 1,TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void cleanup(int auctionId) {

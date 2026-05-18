@@ -76,14 +76,21 @@ public class Auction {
             }
         }
 
-        private boolean hasExtended = false;
+    private LocalDateTime lastExtensionTime = null;
 
-        public void AntiSniping(){
-            if (!hasExtended && item.getEndTime().minusSeconds(30).isBefore(LocalDateTime.now())) {
-                item.extendTime(60);
-                hasExtended = true;
-            }
+    public void AntiSniping() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime thirtySecBeforeEnd = item.getEndTime().minusSeconds(30);
+
+        // Chỉ extend nếu:
+        // 1. Đang trong 30s cuối
+        // 2. Chưa extend trong vòng 30s gần nhất (tránh extend liên tục)
+        if (now.isAfter(thirtySecBeforeEnd) &&
+                (lastExtensionTime == null || now.isAfter(lastExtensionTime.plusSeconds(30)))) {
+            item.extendTime(60);
+            lastExtensionTime = now;
         }
+    }
 
 
         public double getMinIncrement(){

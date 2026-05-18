@@ -63,7 +63,7 @@ public class AutoBidManager {
 
             while (!autoBids.isEmpty()) {
                 AutoBid candiate = autoBids.poll();
-                if (candiate.getMaxBid() > item.getCurrentPrice() && candiate.getIncrement() >= minIncreament) {
+                if (candiate.getMaxBid() > auction.getCurrentPrice() && candiate.getIncrement() >= minIncreament) {
                     second = candiate;
                     break;
                 }

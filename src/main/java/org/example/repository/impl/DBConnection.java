@@ -13,9 +13,10 @@ public class DBConnection {
     static {
         try {
             Properties props = new Properties();
-            InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config.properties");
-            if (input == null) throw new RuntimeException("config.properties not found");
-            props.load(input);
+            try(InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config.properties")) {
+                if (input == null) throw new RuntimeException("config.properties not found");
+                props.load(input);
+            }
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(props.getProperty("db.url"));
