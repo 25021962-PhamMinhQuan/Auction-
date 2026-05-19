@@ -1,33 +1,48 @@
 package org.example.uicontroller;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import org.example.domain.user.User;
+import org.example.server.AuctionClient;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
 public class MainScreenController {
 
-    @FXML private HBox       upcomingHbox;
-    @FXML private HBox       ongoingHbox;
-    @FXML private FlowPane   gridPane;
-    @FXML private ScrollPane gridScroll;
-    @FXML private VBox       mainContent;
-    @FXML private Button     backButton;
-    @FXML private StackPane  categoryBox;
-    @FXML private VBox       categoryMenu;
-    @FXML private StackPane  auctionBox;
-    @FXML private VBox       auctionMenu;
-    @FXML private Label      usernameLabel; // có trong FXML navbar
+    @FXML
+    private HBox upcomingHbox;
+    @FXML
+    private HBox ongoingHbox;
+    @FXML
+    private FlowPane gridPane;
+    @FXML
+    private ScrollPane gridScroll;
+    @FXML
+    private VBox mainContent;
+    @FXML
+    private Button backButton;
+    @FXML
+    private StackPane categoryBox;
+    @FXML
+    private VBox categoryMenu;
+    @FXML
+    private StackPane auctionBox;
+    @FXML
+    private VBox auctionMenu;
+    @FXML
+    private Label usernameLabel;
+    @FXML
+    private Button addItemBtn;                    // có trong FXML navbar
+    private static final int PREVIEW_COUNT = 7;
+    private String currentGridType;
 
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
 
@@ -41,9 +56,9 @@ public class MainScreenController {
     public void initialize() {
         // Đăng ký instance thực (đã được JavaFX inject @FXML fields) ngay khi load xong
         instance = this;
-        populateRow(upcomingHbox, "Upcoming", PREVIEW_COUNT);
-        populateRow(ongoingHbox,  "Ongoing",  PREVIEW_COUNT);
         wireHoverMenus();
+        loadUpcoming();
+        loadOngoing();
     }
 
     // FIX: chỉ trả về instance hiện tại, không tự tạo mới
@@ -56,45 +71,85 @@ public class MainScreenController {
         instance = ctrl;
     }
 
-    @FXML
-    private void handleViewAllUpcoming() { showGrid("Upcoming", GRID_COUNT); }
 
     @FXML
-    private void handleViewAllOngoing()  { showGrid("Ongoing",  GRID_COUNT); }
-
-    @FXML
-    private void handleBack()            { setGridVisible(false); }
-
-    private void populateRow(HBox row, String label, int count) {
-        for (int i = 0; i < count; i++) {
-            try {
-                row.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load item card for " + label + " " + i, e);
-            }
-        }
-    }
-
-    private void showGrid(String label, int count) {
+    private void handleViewAllUpcoming() {
+        currentGridType = "OPEN";
         gridPane.getChildren().clear();
-        for (int i = 0; i < count; i++) {
-            try {
-                gridPane.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load grid item card " + i, e);
-            }
-        }
         setGridVisible(true);
+        AuctionClient.getInstance().requestAuctions("OPEN", items ->
+                Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    for (String[] item : items) {
+                        gridPane.getChildren().add(
+                                buildCard(item, ItemCardController.CardMode.DETAIL));
+                    }
+                })
+        );
     }
 
-    private Node loadItemCard(String name, String price, String time) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
-        Node node = loader.load();
-        // FIX: truyền dữ liệu vào card (trước đó bị bỏ trống)
-        ItemCardController ctrl = loader.getController();
-        ctrl.setData(name, price, time);
-        return node;
+    @FXML
+    private void handleViewAllOngoing() {
+        currentGridType = "RUNNING";
+        gridPane.getChildren().clear();
+        setGridVisible(true);
+        AuctionClient.getInstance().requestAuctions("RUNNING", items ->
+                Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    for (String[] item : items) {
+                        gridPane.getChildren().add(
+                                buildCard(item, ItemCardController.CardMode.BID));
+                    }
+                })
+        );
     }
+
+    /**
+     * Tạo ItemCard node từ dữ liệu server.
+     * parts = ["AUCTION_ITEM", id, name, price, endTime, status, startTime, description]
+     */
+    private Node buildCard(String[] parts, ItemCardController.CardMode mode) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
+            Node node = loader.load();
+            ItemCardController ctrl = loader.getController();
+
+            int id = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+            String name = parts.length > 2 ? parts[2] : "—";
+            double price = parts.length > 3 ? Double.parseDouble(parts[3]) : 0;
+            String endTime = parts.length > 4 ? parts[4] : "";
+            String startTime = parts.length > 6 ? parts[6] : "";
+            String description = parts.length > 7 ? parts[7] : "";
+
+            ctrl.setAuctionData(id, name, price, startTime, endTime, description, mode);
+            // Gắn controller vào properties để updateAuctionPrice() có thể tìm lại
+            node.getProperties().put("controller", ctrl);
+            return node;
+
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to load item card", e);
+        }
+    }
+
+    private void updateCardsInContainer(Pane container, int auctionId,
+                                        double newPrice, String bidder) {
+        for (Node node : container.getChildren()) {
+            Object ctrl = node.getProperties().get("controller");
+            if (ctrl instanceof ItemCardController) {
+                ItemCardController card = (ItemCardController) ctrl;
+                if (card.getAuctionId() == auctionId) {
+                    card.liveUpdatePrice(newPrice, bidder);
+                }
+            }
+        }
+    }
+
+
+    @FXML
+    private void handleBack() {
+        setGridVisible(false);
+    }
+
 
     private void setGridVisible(boolean show) {
         mainContent.setVisible(!show);
@@ -106,15 +161,15 @@ public class MainScreenController {
     }
 
     private void wireHoverMenus() {
-        categoryBox.setOnMouseEntered(e  -> setMenuVisible(categoryMenu, true));
-        categoryBox.setOnMouseExited(e   -> setMenuVisible(categoryMenu, false));
+        categoryBox.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
+        categoryBox.setOnMouseExited(e -> setMenuVisible(categoryMenu, false));
         categoryMenu.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
-        categoryMenu.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
+        categoryMenu.setOnMouseExited(e -> setMenuVisible(categoryMenu, false));
 
-        auctionBox.setOnMouseEntered(e   -> setMenuVisible(auctionMenu, true));
-        auctionBox.setOnMouseExited(e    -> setMenuVisible(auctionMenu, false));
-        auctionMenu.setOnMouseEntered(e  -> setMenuVisible(auctionMenu, true));
-        auctionMenu.setOnMouseExited(e   -> setMenuVisible(auctionMenu, false));
+        auctionBox.setOnMouseEntered(e -> setMenuVisible(auctionMenu, true));
+        auctionBox.setOnMouseExited(e -> setMenuVisible(auctionMenu, false));
+        auctionMenu.setOnMouseEntered(e -> setMenuVisible(auctionMenu, true));
+        auctionMenu.setOnMouseExited(e -> setMenuVisible(auctionMenu, false));
     }
 
     private void setMenuVisible(VBox menu, boolean visible) {
@@ -124,24 +179,86 @@ public class MainScreenController {
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
-        if (usernameLabel != null) {
+        if (usernameLabel != null)
             usernameLabel.setText(user.getUsername() + " (" + user.getRole() + ")");
+        // Hiện nút Add Item chỉ cho Seller
+        if (addItemBtn != null && "SELLER".equals(user.getRole())) {
+            addItemBtn.setVisible(true);
+            addItemBtn.setManaged(true);
         }
     }
 
     public void setCurrentUser(String username, String role) {
-        if (usernameLabel != null) {
+        if (usernameLabel != null)
             usernameLabel.setText(username + " (" + role + ")");
+        if (addItemBtn != null && "SELLER".equals(role)) {
+            addItemBtn.setVisible(true);
+            addItemBtn.setManaged(true);
         }
     }
 
-    public void updateAuctionPrice(int auctionId, double newPrice, String bidder) {
-        // TODO: tìm card theo auctionId và cập nhật giá
-        System.out.println("Auction #" + auctionId + " updated to " + newPrice + " by " + bidder);
+    /**
+     * Upcoming = status OPEN → card chỉ xem detail
+     */
+    private void loadUpcoming() {
+        AuctionClient.getInstance().requestAuctions("OPEN", items ->
+                Platform.runLater(() -> {
+                    upcomingHbox.getChildren().clear();
+                    int count = Math.min(items.size(), PREVIEW_COUNT);
+                    for (int i = 0; i < count; i++) {
+                        upcomingHbox.getChildren().add(
+                                buildCard(items.get(i), ItemCardController.CardMode.DETAIL));
+                    }
+                })
+        );
     }
 
+    /**
+     * Ongoing = status RUNNING → card mở màn hình bid
+     */
+    private void loadOngoing() {
+        AuctionClient.getInstance().requestAuctions("RUNNING", items ->
+                Platform.runLater(() -> {
+                    ongoingHbox.getChildren().clear();
+                    int count = Math.min(items.size(), PREVIEW_COUNT);
+                    for (int i = 0; i < count; i++) {
+                        ongoingHbox.getChildren().add(
+                                buildCard(items.get(i), ItemCardController.CardMode.BID));
+                    }
+                })
+        );
+    }
+
+    @FXML
+    private void handleAddItem(ActionEvent e) throws java.io.IOException {
+        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/org/example/view/additem.fxml"));
+        javafx.scene.Parent root = loader.load();
+        javafx.stage.Stage stage =
+                (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.show();
+    }
+    /**
+     * Cập nhật giá real-time khi nhận UPDATE từ server
+     */
+    public void updateAuctionPrice(int auctionId, double newPrice, String bidder) {
+        updateCardsInContainer(ongoingHbox, auctionId, newPrice, bidder);
+        if ("RUNNING".equals(currentGridType)) {
+            updateCardsInContainer(gridPane, auctionId, newPrice, bidder);
+        }
+    }
     public void onAuctionFinished(int auctionId, String winner, double finalPrice) {
-        // TODO: hiển thị thông báo kết quả đấu giá
-        System.out.println("Auction #" + auctionId + " finished. Winner: " + winner + ", Price: " + finalPrice);
+        System.out.printf("Auction #%d finished — Winner: %s, Final: %,.0f VND%n",
+                auctionId, winner, finalPrice);
+        // Reload cả hai hàng để đồng bộ trạng thái
+        loadOngoing();
+        loadUpcoming();
+    }
+    public void onNewAuction() {
+        Platform.runLater(() -> {
+            loadUpcoming();
+            loadOngoing();
+        });
     }
 }

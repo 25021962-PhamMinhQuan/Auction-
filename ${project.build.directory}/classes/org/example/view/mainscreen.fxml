@@ -94,17 +94,23 @@
                <!-- Logo -->
                <Button mnemonicParsing="false"
                        styleClass="nav-button">
+
                   <graphic>
+
                      <ImageView fitHeight="43"
                                 fitWidth="93"
                                 pickOnBounds="true"
                                 preserveRatio="true"
                                 styleClass="icon-button">
+
                         <image>
                            <Image url="@../../../Auction_App.png" />
                         </image>
+
                      </ImageView>
+
                   </graphic>
+
                </Button>
 
                <!-- Categories -->
@@ -133,8 +139,11 @@
                      <Button mnemonicParsing="false"
                              styleClass="dropdown-item"
                              text="Other" />
+
                   </VBox>
+
                </StackPane>
+
                <!-- Auctions -->
                <StackPane fx:id="auctionBox">
 
@@ -185,13 +194,7 @@
                   <Label fx:id="usernameLabel"
                          styleClass="label-secondary"
                          text="Guest" />
-                  <Button fx:id="addItemBtn"
-                          managed="false"
-                          mnemonicParsing="false"
-                          onAction="#handleAddItem"
-                          styleClass="button-login"
-                          text="+ Add Item"
-                          visible="false"/>
+
                   <!-- Search -->
                   <Button mnemonicParsing="false"
                           styleClass="icon-btn">
