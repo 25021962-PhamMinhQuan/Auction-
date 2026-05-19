@@ -25,7 +25,7 @@
       <AnchorPane fx:id="previewOverlay"
                   prefHeight="400.0"
                   prefWidth="500.0"
-                  StackPane.alignment="CENTER">
+                  StackPane.alignment="CENTER" visible="false" managed="false">
 
          <children>
 
@@ -355,7 +355,7 @@
 
       <!-- Side Panel -->
       <AnchorPane prefHeight="490.0"
-                  prefWidth="804.0">
+                  prefWidth="804.0" managed="false" visible="false">
 
          <children>
 

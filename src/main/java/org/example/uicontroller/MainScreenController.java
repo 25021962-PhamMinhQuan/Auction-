@@ -30,8 +30,6 @@ public class MainScreenController {
     @FXML private Label      usernameLabel; // có trong FXML navbar
 
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
-    private static final int    PREVIEW_COUNT  = 7;
-    private static final int    GRID_COUNT     = 10;
 
     // FIX: không tự new() — instance được set từ ngoài vào bằng setInstance()
     // Nếu tự new() thì @FXML fields sẽ null hết vì JavaFX không inject vào
