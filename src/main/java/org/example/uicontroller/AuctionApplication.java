@@ -16,7 +16,15 @@ public class AuctionApplication extends Application {
         Image icon = new Image("/icon.png");
         stage.getIcons().add(icon);
         stage.setTitle("Auction App");
+
+        // ✅ Set kích thước window
+        stage.setWidth(1200);
+        stage.setHeight(700);
+        stage.setMinWidth(1000);
+        stage.setMinHeight(600);
+
         stage.setScene(scene);
+        stage.centerOnScreen();  // ✅ Center window trên màn hình
         stage.show();
     }
 }

@@ -13,7 +13,7 @@ public class UserService {
     }
 
     private boolean isValidPassword(String password){
-        if(password.length() < 8){ return false;}
+        if(password.length() < 6){ return false;}
         boolean hasUpper = false;
         boolean hasLower = false;
         boolean hasNumber = false;

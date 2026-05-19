@@ -80,41 +80,87 @@ public class LoginController implements Initializable {
     @FXML
     public void handleLogin(ActionEvent e) {
         String username = usernameTextField.getText().trim();
-        String password = passwordfield.isVisible() ? passwordfield.getText() : passTextfield.getText();
 
-        if (username.isEmpty()) { warning.setText("Username is required"); return; }
-        if (password.isEmpty()) { warning.setText("Password is required"); return; }
+        // Nếu đang hiện PasswordField thì lấy từ passwordfield
+        // còn nếu đang hiện TextField (show password) thì lấy từ passTextfield
+        String password = passwordfield.isVisible()
+                ? passwordfield.getText()
+                : passTextfield.getText();
+
+        // Validation
+        if (username.isEmpty()) {
+            warning.setText("Username is required");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            warning.setText("Password is required");
+            return;
+        }
 
         Button loginBtn = (Button) e.getSource();
-        // FIX: lưu đúng stage gốc (primaryStage từ AuctionApplication)
-        Stage  stage    = (Stage) loginBtn.getScene().getWindow();
+        Stage stage = (Stage) loginBtn.getScene().getWindow();
 
         loginBtn.setDisable(true);
         warning.setText("");
 
         try {
             AuctionClient client = AuctionClient.getInstance();
-            // Truyền stage vào để AuctionClient biết dùng stage nào
+
+            // Connect server bằng stage gốc
             client.connect(stage);
 
+            // Callback sau khi login xong
             client.setLoginCallback((success, message) ->
                     Platform.runLater(() -> {
+
                         loginBtn.setDisable(false);
+
                         if (success) {
-                            // FIX: chuyển scene ngay tại đây trên đúng stage gốc
-                            // thay vì để AuctionClient.openMainScreen() tự mở stage mới
-                            openMainScreen(stage, client.getCurrentUsername(), client.getCurrentRole());
+                            try {
+
+                                FXMLLoader loader = new FXMLLoader(
+                                        getClass().getResource("/org/example/view/mainscreen.fxml")
+                                );
+
+                                Parent root = loader.load();
+
+                                Scene scene = new Scene(root);
+
+                                // Set kích thước window
+                                stage.setWidth(1200);
+                                stage.setHeight(700);
+
+                                // Min size
+                                stage.setMinWidth(1000);
+                                stage.setMinHeight(600);
+
+                                // Đổi scene trên chính stage hiện tại
+                                stage.setScene(scene);
+
+                                // Center lại màn hình
+                                stage.centerOnScreen();
+
+                                stage.show();
+
+                            } catch (IOException ex) {
+                                warning.setText("Không thể mở màn hình chính.");
+                                ex.printStackTrace();
+                            }
+
                         } else {
                             warning.setText(message);
                         }
                     })
             );
 
+            // Gửi request login
             client.login(username, password);
 
         } catch (IOException ex) {
             loginBtn.setDisable(false);
             warning.setText("Không thể kết nối server. Vui lòng thử lại.");
+            ex.printStackTrace();
         }
     }
 
