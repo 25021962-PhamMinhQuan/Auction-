@@ -56,12 +56,16 @@ public class LoginController implements Initializable {
         if (showPasswordbtn.isSelected()) {
             passTextfield.setText(passwordfield.getText());
             passTextfield.setVisible(true);
+            passTextfield.setManaged(true);
+            passwordfield.setManaged(false);
             passwordfield.setVisible(false);
             passTextfield.requestFocus();
             imageview.setImage(eyeclosed);
         } else {
             passwordfield.setText(passTextfield.getText());
             passwordfield.setVisible(true);
+            passwordfield.setManaged(true);
+            passTextfield.setManaged(false);
             passTextfield.setVisible(false);
             passwordfield.requestFocus();
             imageview.setImage(eyeopen);
@@ -117,36 +121,8 @@ public class LoginController implements Initializable {
                         loginBtn.setDisable(false);
 
                         if (success) {
-                            try {
-
-                                FXMLLoader loader = new FXMLLoader(
-                                        getClass().getResource("/org/example/view/mainscreen.fxml")
-                                );
-
-                                Parent root = loader.load();
-
-                                Scene scene = new Scene(root);
-
-                                // Set kích thước window
-                                stage.setWidth(1200);
-                                stage.setHeight(700);
-
-                                // Min size
-                                stage.setMinWidth(1000);
-                                stage.setMinHeight(600);
-
-                                // Đổi scene trên chính stage hiện tại
-                                stage.setScene(scene);
-
-                                // Center lại màn hình
-                                stage.centerOnScreen();
-
-                                stage.show();
-
-                            } catch (IOException ex) {
-                                warning.setText("Không thể mở màn hình chính.");
-                                ex.printStackTrace();
-                            }
+                            AuctionClient client2 = AuctionClient.getInstance();
+                            openMainScreen(stage, client2.getCurrentUsername(), client2.getCurrentRole());
 
                         } else {
                             warning.setText(message);
@@ -173,8 +149,12 @@ public class LoginController implements Initializable {
             MainScreenController.setInstance(controller);
             controller.setCurrentUser(username, role);
 
-            // setScene trên stage gốc → không mở cửa sổ mới
+            stage.setWidth(1200);
+            stage.setHeight(700);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(600);
             stage.setScene(new Scene(root));
+            stage.centerOnScreen();
             stage.show();
         } catch (IOException ex) {
             ex.printStackTrace();

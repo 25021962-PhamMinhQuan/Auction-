@@ -2,6 +2,7 @@ package org.example.uicontroller;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ import org.example.server.AuctionClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 
@@ -35,27 +37,80 @@ public class ItemBidingUIController {
     @FXML private TextField incrementInput;
     @FXML private VBox      historyBox;
     @FXML private VBox      historyPopup;
+    @FXML private Label     description;
+    @FXML private VBox      bidSection;
     private Timeline      countdownTimer;
     private LocalDateTime endTime;
 
 
     private int auctionId;
+    private double        latestPrice;
+    private boolean       readOnly = false;
+    private static final DateTimeFormatter TIME_FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    
 
-    public void setData(int id, String name, double price) {
+
+    public void setAuctionData(int id, String name, double price,
+                               String endTimeStr, String desc) {
         this.auctionId = id;
+        this.latestPrice = price;
+
         itemName.setText(name);
-        currentPrice.setText("VND"+price);
+        currentPrice.setText(formatVND(price));
+        if (description != null) description.setText(desc != null ? desc : "");
+
+        // Parse endTime
+        if (endTimeStr != null && !endTimeStr.isBlank()) {
+            try {
+                this.endTime = LocalDateTime.parse(endTimeStr);
+            } catch (Exception ignored) {
+            }
+        }
+        AuctionClient.getInstance().setActiveBidController(this);
+
         startCountdown();
     }
-
+    public void setData(int id, String name, double price) {
+        setAuctionData(id, name, price, null, "");
+    }
     
-    
+/**
+            * Chế độ read-only (upcoming — chỉ xem, không bid).
+            * Ẩn toàn bộ form bid và auto-bid.
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        if (bidSection != null) {
+            bidSection.setVisible(!readOnly);
+            bidSection.setManaged(!readOnly);
+        }
+        // Thay đổi countdown label nếu chưa bắt đầu
+        if (readOnly && endTime == null && timeLeft != null) {
+            timeLeft.setText("Chưa bắt đầu");
+        }
+    }
     public void updatePrice(double price, String bidder) {
-        currentPrice.setText("VND"+price);
-        Label entry = new Label(bidder + " — " + "VND"+price);
-        historyBox.getChildren().add(0, entry);   
+        this.latestPrice = price;
+        currentPrice.setText(formatVND(price));
+
+        if (highestBidder != null) highestBidder.setText("Highest: " + bidder);
+
+        // Thêm entry vào history
+        Label entry = new Label(
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                        + "  " + bidder
+                        + "  →  " + formatVND(price));
+        entry.getStyleClass().add("history-entry");
+        historyBox.getChildren().add(0, entry);
+
+        // Pulse animation trên giá
+        pulseLabel(currentPrice);
+    }
+    /** Extend endTime khi có anti-snipe từ server */
+    public void updateEndTime(LocalDateTime newEndTime) {
+        this.endTime = newEndTime;
+        // countdown tự refresh ở tick tiếp theo
     }
 
 
@@ -182,7 +237,35 @@ public class ItemBidingUIController {
             timeLeft.setStyle("");
         }
     }
-    public void updateEndTime(LocalDateTime newEndTime) {
-        this.endTime = newEndTime;
+    private String formatVND(double amount) {
+        return String.format("%,.0f VND", amount);
+    }
+
+    private void showAlert(AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /** Hiển thị thông báo ngắn trên label timeLeft rồi khôi phục sau 3s */
+    private void showStatusBrief(String message) {
+        String prev = timeLeft.getText();
+        timeLeft.setText(message);
+        timeLeft.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        pause.setOnFinished(e -> {
+            timeLeft.setStyle("");
+            timeLeft.setText(prev);
+        });
+        pause.play();
+    }
+    private void pulseLabel(Label label) {
+        label.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 16px;");
+        PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+        pause.setOnFinished(e -> label.setStyle(""));
+        pause.play();
     }
 }
+

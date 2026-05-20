@@ -15,26 +15,16 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/25"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.example.uicontroller.MainScreenController">
+<StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
 
    <children>
 
       <!-- Preview Overlay -->
-      <AnchorPane fx:id="previewOverlay"
-                  prefHeight="400.0"
-                  prefWidth="500.0"
-                  StackPane.alignment="CENTER" visible="false" managed="false">
+      <AnchorPane fx:id="previewOverlay" managed="false" prefHeight="400.0" prefWidth="500.0" visible="false" StackPane.alignment="CENTER">
 
          <children>
 
-            <StackPane fx:id="previewPanel"
-                       alignment="TOP_CENTER"
-                       layoutX="78.0"
-                       layoutY="74.0"
-                       prefHeight="400.0"
-                       prefWidth="600.0">
+            <StackPane fx:id="previewPanel" alignment="TOP_CENTER" layoutX="78.0" layoutY="74.0" prefHeight="400.0" prefWidth="600.0">
 
                <children>
 
@@ -42,17 +32,13 @@
 
                      <children>
 
-                        <HBox prefHeight="100.0"
-                              prefWidth="200.0"
-                              VBox.vgrow="ALWAYS">
+                        <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
 
                            <children>
 
-                              <Region prefHeight="200.0"
-                                      prefWidth="200.0" />
+                              <Region prefHeight="200.0" prefWidth="200.0" />
 
-                              <Button mnemonicParsing="false"
-                                      text="Button" />
+                              <Button mnemonicParsing="false" text="Button" />
 
                            </children>
 
@@ -71,37 +57,23 @@
       </AnchorPane>
 
       <!-- Main Layout -->
-      <BorderPane prefHeight="700.0"
-                  prefWidth="1200.0"
-                  styleClass="root"
-                  stylesheets="@../../../css/style.css">
+      <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="root" stylesheets="@../../../css/style.css">
 
          <!-- TOP NAVBAR -->
          <top>
 
-            <HBox alignment="CENTER_LEFT"
-                  spacing="10"
-                  styleClass="navbar"
-                  BorderPane.alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="navbar" BorderPane.alignment="CENTER_LEFT">
 
                <padding>
-                  <Insets bottom="10"
-                          left="10"
-                          right="10"
-                          top="10" />
+                  <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
 
                <!-- Logo -->
-               <Button mnemonicParsing="false"
-                       styleClass="nav-button">
+               <Button mnemonicParsing="false" styleClass="nav-button">
 
                   <graphic>
 
-                     <ImageView fitHeight="43"
-                                fitWidth="93"
-                                pickOnBounds="true"
-                                preserveRatio="true"
-                                styleClass="icon-button">
+                     <ImageView fitHeight="43" fitWidth="93" pickOnBounds="true" preserveRatio="true" styleClass="icon-button">
 
                         <image>
                            <Image url="@../../../Auction_App.png" />
@@ -116,29 +88,15 @@
                <!-- Categories -->
                <StackPane fx:id="categoryBox">
 
-                  <Button fx:id="categoryButton"
-                          maxHeight="1.7976931348623157E308"
-                          mnemonicParsing="false"
-                          styleClass="nav-button"
-                          text="Categories" />
+                  <Button fx:id="categoryButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="Categories" />
 
-                  <VBox fx:id="categoryMenu"
-                        managed="false"
-                        styleClass="dropdown-menu"
-                        translateY="40"
-                        visible="false">
+                  <VBox fx:id="categoryMenu" managed="false" styleClass="dropdown-menu" translateY="40" visible="false">
 
-                     <Button mnemonicParsing="false"
-                             styleClass="dropdown-item"
-                             text="Art" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Art" />
 
-                     <Button mnemonicParsing="false"
-                             styleClass="dropdown-item"
-                             text="Electronics" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Electronics" />
 
-                     <Button mnemonicParsing="false"
-                             styleClass="dropdown-item"
-                             text="Other" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Other" />
 
                   </VBox>
 
@@ -147,65 +105,46 @@
                <!-- Auctions -->
                <StackPane fx:id="auctionBox">
 
-                  <Button fx:id="auctionButton"
-                          maxHeight="1.7976931348623157E308"
-                          mnemonicParsing="false"
-                          styleClass="nav-button"
-                          text="Auctions" />
+                  <Button fx:id="auctionButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="Auctions" />
 
-                  <VBox fx:id="auctionMenu"
-                        managed="false"
-                        styleClass="dropdown-menu"
-                        translateY="40"
-                        visible="false">
+                  <VBox fx:id="auctionMenu" managed="false" styleClass="dropdown-menu" translateY="40" visible="false">
 
-                     <Button mnemonicParsing="false"
-                             styleClass="dropdown-item"
-                             text="Upcoming" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Upcoming" />
 
-                     <Button mnemonicParsing="false"
-                             styleClass="dropdown-item"
-                             text="Ongoing" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Ongoing" />
 
                   </VBox>
 
                </StackPane>
 
-               <Button maxHeight="1.7976931348623157E308"
-                       mnemonicParsing="false"
-                       styleClass="nav-button"
-                       text="Introduction" />
+               <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="Introduction" />
 
-               <Button maxHeight="1.7976931348623157E308"
-                       mnemonicParsing="false"
-                       styleClass="nav-button"
-                       text="Contact" />
+               <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="Contact" />
 
                <Region HBox.hgrow="ALWAYS" />
 
                <!-- Right Side -->
-               <HBox alignment="CENTER_RIGHT"
-                     spacing="20">
+               <HBox alignment="CENTER_RIGHT" spacing="20">
 
                   <padding>
                      <Insets right="10" />
                   </padding>
 
-                  <Label fx:id="usernameLabel"
-                         styleClass="label-secondary"
-                         text="Guest" />
+                  <Label fx:id="usernameLabel" styleClass="label-secondary" text="Guest" />
 
                   <!-- Search -->
-                  <Button mnemonicParsing="false"
-                          styleClass="icon-btn">
+                  <Button fx:id="addItemBtn"
+                          managed="false"
+                          mnemonicParsing="false"
+                          onAction="#handleAddItem"
+                          styleClass="button-login"
+                          text="+ Add Item"
+                          visible="false"/>
+                  <Button mnemonicParsing="false" styleClass="icon-btn">
 
                      <graphic>
 
-                        <ImageView fitHeight="32"
-                                   fitWidth="13"
-                                   pickOnBounds="true"
-                                   preserveRatio="true"
-                                   styleClass="icon-img">
+                        <ImageView fitHeight="32" fitWidth="13" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
 
                            <image>
                               <Image url="@../../../find_icon.png" />
@@ -218,16 +157,11 @@
                   </Button>
 
                   <!-- User -->
-                  <Button mnemonicParsing="false"
-                          styleClass="icon-btn">
+                  <Button mnemonicParsing="false" onAction="#handleDashboard" styleClass="icon-btn">
 
                      <graphic>
 
-                        <ImageView fitHeight="32"
-                                   fitWidth="13"
-                                   pickOnBounds="true"
-                                   preserveRatio="true"
-                                   styleClass="icon-img">
+                        <ImageView fitHeight="32" fitWidth="13" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
 
                            <image>
                               <Image url="@../../../icon_user.png" />
@@ -248,98 +182,64 @@
          <!-- CENTER -->
          <center>
 
-            <ScrollPane fitToWidth="true"
-                        BorderPane.alignment="CENTER">
+            <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
 
                <content>
 
                   <VBox>
 
                      <!-- Back Button -->
-                     <Button fx:id="backButton"
-                             managed="false"
-                             mnemonicParsing="false"
-                             onAction="#handleBack"
-                             styleClass="button-login"
-                             text="← Back"
-                             visible="false">
+                     <Button fx:id="backButton" managed="false" mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" visible="false">
 
                         <VBox.margin>
-                           <Insets bottom="10"
-                                   left="10"
-                                   right="10"
-                                   top="10" />
+                           <Insets bottom="10" left="10" right="10" top="10" />
                         </VBox.margin>
 
                      </Button>
 
                      <!-- Grid -->
-                     <ScrollPane fx:id="gridScroll"
-                                 fitToWidth="true"
-                                 managed="false"
-                                 visible="false">
+                     <ScrollPane fx:id="gridScroll" fitToWidth="true" managed="false" visible="false">
 
                         <content>
 
-                           <FlowPane fx:id="gridPane"
-                                     hgap="20"
-                                     styleClass="grid-pane"
-                                     vgap="20" />
+                           <FlowPane fx:id="gridPane" hgap="20" styleClass="grid-pane" vgap="20" />
 
                         </content>
 
                      </ScrollPane>
 
                      <!-- Main Content -->
-                     <VBox fx:id="mainContent"
-                           alignment="TOP_CENTER"
-                           spacing="20">
+                     <VBox fx:id="mainContent" alignment="TOP_CENTER" spacing="20">
 
                         <padding>
                            <Insets top="40" />
                         </padding>
 
                         <!-- Upcoming -->
-                        <Label styleClass="section-title"
-                               text="Upcoming Auction" />
+                        <Label styleClass="section-title" text="Upcoming Auction" />
 
-                        <ScrollPane fitToWidth="false"
-                                    hbarPolicy="ALWAYS"
-                                    vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="upcomingHbox"
-                                    spacing="20" />
+                              <HBox fx:id="upcomingHbox" spacing="20" />
                            </content>
 
                         </ScrollPane>
 
-                        <Button fx:id="viewAllUpcoming"
-                                mnemonicParsing="false"
-                                onAction="#handleViewAllUpcoming"
-                                styleClass="button-login"
-                                text="View all" />
+                        <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
 
                         <!-- Ongoing -->
-                        <Label styleClass="section-title"
-                               text="Ongoing Auction" />
+                        <Label styleClass="section-title" text="Ongoing Auction" />
 
-                        <ScrollPane fitToWidth="false"
-                                    hbarPolicy="ALWAYS"
-                                    vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="ongoingHbox"
-                                    spacing="20" />
+                              <HBox fx:id="ongoingHbox" spacing="20" />
                            </content>
 
                         </ScrollPane>
 
-                        <Button fx:id="viewAllOngoing"
-                                mnemonicParsing="false"
-                                onAction="#handleViewAllOngoing"
-                                styleClass="button-login"
-                                text="View all" />
+                        <Button fx:id="viewAllOngoing" mnemonicParsing="false" onAction="#handleViewAllOngoing" styleClass="button-login" text="View all" />
 
                      </VBox>
 
@@ -354,44 +254,34 @@
       </BorderPane>
 
       <!-- Side Panel -->
-      <AnchorPane prefHeight="490.0"
-                  prefWidth="804.0" managed="false" visible="false">
+      <AnchorPane fx:id="overlayDashboard" managed="false" prefHeight="490.0" prefWidth="804.0" visible="false">
 
          <children>
 
-            <VBox layoutX="609.5999755859375"
-                  AnchorPane.bottomAnchor="0.0"
-                  AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="0.0">
+            <VBox fx:id="dashboardPanel" alignment="CENTER" layoutX="609.5999755859375" prefHeight="700.0" prefWidth="332.0" styleClass="dashboard-panel" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
                <children>
 
-                  <VBox alignment="CENTER_RIGHT"
-                        prefWidth="225.0">
+                  <VBox alignment="TOP_CENTER" prefHeight="289.0" prefWidth="332.0" spacing="20.0" VBox.vgrow="ALWAYS">
 
                      <children>
 
-                        <HBox alignment="TOP_CENTER"
-                              VBox.vgrow="ALWAYS">
+                        <HBox prefHeight="162.0" prefWidth="332.0" VBox.vgrow="NEVER">
 
                            <children>
 
-                              <Region prefHeight="200.0"
-                                      prefWidth="126.0"
-                                      HBox.hgrow="ALWAYS" />
+                              <Region prefHeight="200.0" prefWidth="309.0" HBox.hgrow="ALWAYS" />
 
-                              <Button mnemonicParsing="false"
-                                      text="X" />
+                              <Button mnemonicParsing="false" onAction="#handleCloseDashboard" prefHeight="40.0" prefWidth="47.0" styleClass="nav-button" text="X" />
 
                            </children>
 
                         </HBox>
 
-                        <Label text="Username" />
-                        <Label text="Label" />
+                        <Label styleClass="label-secondary" text="Username" />
+                        <Label styleClass="item-name" text="Label" />
 
-                        <Button mnemonicParsing="false"
-                                text="Button" />
+                        <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Edit profile" />
 
                      </children>
 
@@ -399,20 +289,13 @@
 
                   <Separator prefWidth="200.0" />
 
-                  <VBox prefHeight="200.0"
-                        prefWidth="100.0"
-                        spacing="10.0" />
-
-                  <VBox prefHeight="200.0"
-                        prefWidth="100.0">
+                  <VBox alignment="CENTER" prefHeight="377.0" prefWidth="332.0" spacing="20.0" VBox.vgrow="ALWAYS">
 
                      <children>
 
-                        <Button mnemonicParsing="false"
-                                text="Button" />
+                        <Button fx:id="settingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Settings" />
 
-                        <Button mnemonicParsing="false"
-                                text="Button" />
+                        <Button fx:id="logOutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Log out" />
 
                      </children>
 

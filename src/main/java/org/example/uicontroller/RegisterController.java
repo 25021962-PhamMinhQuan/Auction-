@@ -48,10 +48,10 @@ public class RegisterController implements Initializable {
 
     private void handleTogglemethod(PasswordField pf, TextField tf, ToggleButton tb, ImageView img) {
         if (tb.isSelected()) {
-            tf.setText(pf.getText()); tf.setVisible(true); pf.setVisible(false);
+            tf.setText(pf.getText()); tf.setVisible(true); tf.setManaged(true);pf.setManaged(false); pf.setVisible(false);
             tf.requestFocus(); img.setImage(eyeclosed);
         } else {
-            pf.setText(tf.getText()); pf.setVisible(true); tf.setVisible(false);
+            pf.setText(tf.getText()); pf.setVisible(true); pf.setManaged(true); tf.setManaged(false); tf.setVisible(false);
             pf.requestFocus(); img.setImage(eyeopen);
         }
         tb.setGraphic(img);

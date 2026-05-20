@@ -243,4 +243,27 @@
 .radio-button:selected {
     -fx-text-fill: #fbbf24;
 }
+.dashboard-panel {
+
+    -fx-background-color: #111827;
+
+    -fx-pref-width: 320;
+    -fx-min-width: 320;
+    -fx-max-width: 320;
+
+    -fx-padding: 25 20 25 20;
+    -fx-spacing: 18;
+
+    -fx-border-color: #1f2937;
+    -fx-border-width: 0 0 0 1;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0,0,0,0.45),
+            30,
+            0.2,
+            -6,
+            0
+    );
+}
 
