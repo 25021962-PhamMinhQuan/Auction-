@@ -49,7 +49,6 @@ public class AuctionClient {
 
     private AuctionClient() {}
 
-    // ── Kết nối ────────────────────────────────────────────────────────────────
 
     public void connect(javafx.stage.Stage stage) throws IOException {
         if (socket != null && !socket.isClosed()) return;
@@ -70,8 +69,6 @@ public class AuctionClient {
         listener.setDaemon(true);
         listener.start();
     }
-
-    // ── Xử lý phản hồi server ─────────────────────────────────────────────────
 
     private void handleServerMessage(String line) {
         System.out.println("[← server] " + line);
@@ -109,7 +106,6 @@ public class AuctionClient {
 
             case "ERROR": {
                 String msg = parts.length > 1 ? parts[1] : "Lỗi không xác định";
-                // FIX 1: check tất cả pending callbacks theo thứ tự ưu tiên
                 if (loginCallback != null) {
                     BiConsumer<Boolean, String> cb = loginCallback;
                     loginCallback = null;
@@ -203,8 +199,6 @@ public class AuctionClient {
             }
 
             case "AUCTION_ITEM": {
-                // FIX 2: không drop item vì check sai số field
-                // format: AUCTION_ITEM|id|name|price|endTime|status|startTime|description
                 if (parts.length < 2) return;
                 synchronized (pendingAuctions) { pendingAuctions.add(parts); }
                 break;
@@ -224,7 +218,6 @@ public class AuctionClient {
         }
     }
 
-    // ── Gửi lệnh ──────────────────────────────────────────────────────────────
 
     public void login(String username, String password) {
         sendCommand("LOGIN|" + username + "|" + password);
