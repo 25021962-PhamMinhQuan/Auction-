@@ -5,7 +5,10 @@ import org.example.uicontroller.MainScreenController;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class AuctionClient {
     private static final String HOST = "localhost";
@@ -20,8 +23,18 @@ public class AuctionClient {
 
     private BiConsumer<Boolean, String> loginCallback;
     private BiConsumer<Boolean, String> registerCallback;
+    private BiConsumer<Boolean, String> addItemCallback;
+    private BiConsumer<Boolean, String> startAuctionCallback;
+    private Consumer<List<String[]>>    auctionListCallback;
+    private Consumer<List<String[]>>    myItemsCallback;
 
-    // ──────────────── Singleton ────────────────
+    private final List<String[]> pendingAuctions = new ArrayList<>();
+    private final List<String[]> pendingMyItems  = new ArrayList<>();
+
+    private org.example.uicontroller.ItemBidingUIController activeBidController;
+    private Runnable newAuctionListener;
+
+    // ── Singleton ──────────────────────────────────────────────────────────────
 
     public static volatile AuctionClient instance;
 
@@ -36,10 +49,9 @@ public class AuctionClient {
 
     private AuctionClient() {}
 
-    // ──────────────── Kết nối ────────────────
+    // ── Kết nối ────────────────────────────────────────────────────────────────
 
     public void connect(javafx.stage.Stage stage) throws IOException {
-        // Chỉ tạo socket mới nếu chưa kết nối
         if (socket != null && !socket.isClosed()) return;
 
         socket = new Socket(HOST, PORT);
@@ -59,7 +71,7 @@ public class AuctionClient {
         listener.start();
     }
 
-    // ──────────────── Xử lý phản hồi server ────────────────
+    // ── Xử lý phản hồi server ─────────────────────────────────────────────────
 
     private void handleServerMessage(String line) {
         System.out.println("[← server] " + line);
@@ -67,54 +79,73 @@ public class AuctionClient {
         String   type  = parts[0];
 
         switch (type) {
+
             case "OK": {
                 // "OK|ROLE|username"
                 if (parts.length < 3) return;
                 currentRole     = parts[1];
                 currentUsername = parts[2];
-
-                // FIX: chỉ gọi callback, không tự openMainScreen()
-                // LoginController sẽ tự chuyển scene trên đúng stage
+                // FIX 4: wrap Platform.runLater — callback thường cập nhật UI
                 BiConsumer<Boolean, String> cb = loginCallback;
                 loginCallback = null;
-                if (cb != null) cb.accept(true, null);
+                if (cb != null) Platform.runLater(() -> cb.accept(true, null));
                 break;
             }
+
             case "REGISTER_OK": {
                 BiConsumer<Boolean, String> cb = registerCallback;
                 registerCallback = null;
-                if (cb != null) cb.accept(true, "Đăng ký thành công");
+                if (cb != null) Platform.runLater(() -> cb.accept(true, "Đăng ký thành công"));
                 break;
             }
+
             case "REGISTER_ERROR": {
                 String reason = parts.length > 1 ? parts[1] : "Đăng ký thất bại";
                 BiConsumer<Boolean, String> cb = registerCallback;
                 registerCallback = null;
-                if (cb != null) cb.accept(false, reason);
+                if (cb != null) Platform.runLater(() -> cb.accept(false, reason));
                 break;
             }
+
             case "ERROR": {
                 String msg = parts.length > 1 ? parts[1] : "Lỗi không xác định";
-                BiConsumer<Boolean, String> cb = loginCallback;
-                if (cb != null) {
+                // FIX 1: check tất cả pending callbacks theo thứ tự ưu tiên
+                if (loginCallback != null) {
+                    BiConsumer<Boolean, String> cb = loginCallback;
                     loginCallback = null;
-                    cb.accept(false, msg);
+                    Platform.runLater(() -> cb.accept(false, msg));
+                } else if (addItemCallback != null) {
+                    BiConsumer<Boolean, String> cb = addItemCallback;
+                    addItemCallback = null;
+                    Platform.runLater(() -> cb.accept(false, msg));
+                } else if (startAuctionCallback != null) {
+                    BiConsumer<Boolean, String> cb = startAuctionCallback;
+                    startAuctionCallback = null;
+                    Platform.runLater(() -> cb.accept(false, msg));
+                } else if (registerCallback != null) {
+                    BiConsumer<Boolean, String> cb = registerCallback;
+                    registerCallback = null;
+                    Platform.runLater(() -> cb.accept(false, msg));
                 } else {
                     Platform.runLater(() -> System.err.println("Server error: " + msg));
                 }
                 break;
             }
+
             case "UPDATE": {
                 if (parts.length < 4) return;
                 int    auctionId = Integer.parseInt(parts[1]);
                 double newPrice  = Double.parseDouble(parts[2]);
                 String bidder    = parts[3];
                 Platform.runLater(() -> {
+                    if (activeBidController != null)
+                        activeBidController.updatePrice(newPrice, bidder);
                     MainScreenController ctrl = MainScreenController.getInstance();
                     if (ctrl != null) ctrl.updateAuctionPrice(auctionId, newPrice, bidder);
                 });
                 break;
             }
+
             case "FINISHED": {
                 if (parts.length < 4) return;
                 int    auctionId  = Integer.parseInt(parts[1]);
@@ -126,10 +157,74 @@ public class AuctionClient {
                 });
                 break;
             }
+
+            case "ITEM_ADDED": {
+                String itemId   = parts.length > 1 ? parts[1] : "";
+                String itemName = parts.length > 2 ? parts[2] : "";
+                BiConsumer<Boolean, String> cb = addItemCallback;
+                addItemCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, itemId + "|" + itemName));
+                break;
+            }
+
+            case "AUCTION_STARTED": {
+                String auctionId = parts.length > 1 ? parts[1] : "";
+                BiConsumer<Boolean, String> cb = startAuctionCallback;
+                startAuctionCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, auctionId));
+                break;
+            }
+
+            case "NEW_AUCTION": {
+                Platform.runLater(() -> {
+                    MainScreenController ctrl = MainScreenController.getInstance();
+                    if (ctrl != null) ctrl.onNewAuction();
+                    if (newAuctionListener != null) newAuctionListener.run();
+                });
+                break;
+            }
+
+            case "MY_ITEM": {
+                if (parts.length < 2) return;
+                synchronized (pendingMyItems) { pendingMyItems.add(parts); }
+                break;
+            }
+
+            case "MY_ITEMS_END": {
+                List<String[]> snapshot;
+                synchronized (pendingMyItems) {
+                    snapshot = new ArrayList<>(pendingMyItems);
+                    pendingMyItems.clear();
+                }
+                Consumer<List<String[]>> cb = myItemsCallback;
+                myItemsCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                break;
+            }
+
+            case "AUCTION_ITEM": {
+                // FIX 2: không drop item vì check sai số field
+                // format: AUCTION_ITEM|id|name|price|endTime|status|startTime|description
+                if (parts.length < 2) return;
+                synchronized (pendingAuctions) { pendingAuctions.add(parts); }
+                break;
+            }
+
+            case "AUCTION_LIST_END": {
+                List<String[]> snapshot;
+                synchronized (pendingAuctions) {
+                    snapshot = new ArrayList<>(pendingAuctions);
+                    pendingAuctions.clear();
+                }
+                Consumer<List<String[]>> cb = auctionListCallback;
+                auctionListCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                break;
+            }
         }
     }
 
-    // ──────────────── Gửi lệnh ────────────────
+    // ── Gửi lệnh ──────────────────────────────────────────────────────────────
 
     public void login(String username, String password) {
         sendCommand("LOGIN|" + username + "|" + password);
@@ -151,13 +246,37 @@ public class AuctionClient {
         sendCommand("STATUS|" + auctionId);
     }
 
-    public void setLoginCallback(BiConsumer<Boolean, String> callback) {
-        this.loginCallback = callback;
+    public void requestAuctions(String status, Consumer<List<String[]>> callback) {
+        // FIX 3: clear pending trước khi gửi request mới
+        synchronized (pendingAuctions) { pendingAuctions.clear(); }
+        auctionListCallback = callback;
+        sendCommand("LIST_AUCTIONS|" + status);
     }
 
-    public void setRegisterCallback(BiConsumer<Boolean, String> callback) {
-        this.registerCallback = callback;
+    public void addItem(String type, String name, String description,
+                        double startPrice, String startTime, String endTime,
+                        BiConsumer<Boolean, String> callback) {
+        addItemCallback = callback;
+        sendCommand("ADD_ITEM|" + type + "|" + name + "|" + description
+                + "|" + startPrice + "|" + startTime + "|" + endTime);
     }
+
+    public void startAuction(String itemId, BiConsumer<Boolean, String> callback) {
+        startAuctionCallback = callback;
+        sendCommand("START_AUCTION|" + itemId);
+    }
+
+    public void requestMyItems(Consumer<List<String[]>> callback) {
+        synchronized (pendingMyItems) { pendingMyItems.clear(); }
+        myItemsCallback = callback;
+        sendCommand("MY_ITEMS");
+    }
+
+    public void setLoginCallback(BiConsumer<Boolean, String> callback)    { this.loginCallback = callback; }
+    public void setRegisterCallback(BiConsumer<Boolean, String> callback) { this.registerCallback = callback; }
+    public void setNewAuctionListener(Runnable listener)                  { this.newAuctionListener = listener; }
+    public void setActiveBidController(org.example.uicontroller.ItemBidingUIController ctrl) { this.activeBidController = ctrl; }
+    public void clearActiveBidController()                                { this.activeBidController = null; }
 
     private void sendCommand(String command) {
         if (out != null) {
