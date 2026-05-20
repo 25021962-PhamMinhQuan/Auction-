@@ -58,7 +58,7 @@
                <children>
                   <StackPane maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field">
                      <children>
-                        <TextField fx:id="passTextfield" styleClass="input_field" />
+                        <TextField fx:id="passTextfield" styleClass="input_field" managed="false" visible="false"/>
                         <PasswordField fx:id="passwordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field" />
                      </children>
                      <HBox.margin>
@@ -80,7 +80,7 @@
                <children>
                   <StackPane maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0">
                      <children>
-                        <TextField fx:id="cfpassTextfield" styleClass="input_field" />
+                        <TextField fx:id="cfpassTextfield" styleClass="input_field" visible="false" managed="false" />
                         <PasswordField fx:id="cfpasswordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field" />
                      </children>
                      <HBox.margin>

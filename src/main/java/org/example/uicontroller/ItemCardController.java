@@ -26,7 +26,7 @@ public class ItemCardController {
     @FXML private Button    detailsbutton;
 
     private int      auctionId;
-    private String   name;
+    private String   auctionName;
     private double   currentPrice;
     private String   startTime;
     private String   endTime;
@@ -36,32 +36,42 @@ public class ItemCardController {
     private static final DateTimeFormatter ISO     = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("HH:mm dd/MM");
 
-    public void setAuctionData(int auctionId, String name, double price,
+    public void setAuctionData(int auctionId, String auctionName, double price,
                                String startTime, String endTime,
                                String description, CardMode mode) {
         this.auctionId    = auctionId;
-        this.name         = name;
+        this.auctionName  = auctionName;
         this.currentPrice = price;
         this.startTime    = startTime;
         this.endTime      = endTime;
         this.description  = description;
         this.mode         = mode;
 
-        itemname.setText(name);
-        this.price.setText(String.format("%,.0f VND", price));
+        itemname.setText(auctionName);
+        this.price.setText(formatVND(price));
 
-        try {
-            LocalDateTime start = LocalDateTime.parse(startTime, ISO);
-            timeopen.setText(start.format(DISPLAY));
-        } catch (Exception ex) {
-            timeopen.setText(startTime != null ? startTime : "");
+        // Hiển thị thời gian phù hợp theo mode
+        if (mode == CardMode.BID) {
+            // Ongoing: hiển thị thời gian kết thúc
+            timeopen.setText("Ends: " + formatTime(endTime));
+            detailsbutton.setText("Place Bid");
+            detailsbutton.getStyleClass().add("button-bid");
+        } else {
+            // Upcoming: hiển thị thời gian mở
+            timeopen.setText("Opens: " + formatTime(startTime));
+            detailsbutton.setText("View Detail");
         }
-
-        detailsbutton.setText(mode == CardMode.DETAIL ? "Xem chi tiết" : "Đặt giá");
     }
     public void liveUpdatePrice(double newPrice, String bidder) {
         this.currentPrice = newPrice;
-        price.setText(String.format("%,.0f VND", newPrice));
+        price.setText(formatVND(newPrice));
+        // Flash effect nhẹ
+        price.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+        // Reset về style gốc sau 2s
+        javafx.animation.PauseTransition pause =
+                new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+        pause.setOnFinished(e -> price.setStyle(""));
+        pause.play();
     }
 
     public int getAuctionId() {
@@ -70,24 +80,47 @@ public class ItemCardController {
 
     @FXML
     private void handleDetail() throws IOException {
+        if (mode == CardMode.BID) {
+            openBidScreen();
+        } else {
+            openDetailScreen();
+        }
+    }
+    /** Upcoming → mở màn detail chỉ đọc (TODO: tạo riêng màn detail nếu cần) */
+    private void openDetailScreen() throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
-
-        ItemBidingUIController controller = loader.getController();
-        controller.setData(auctionId, name, currentPrice);
-
-        // Pass endTime để countdown chạy đúng
-        if (endTime != null && !endTime.isEmpty()) {
-            try {
-                controller.updateEndTime(LocalDateTime.parse(endTime, ISO));
-            } catch (Exception ignored) {}
-        }
-
-        // Đăng ký để nhận UPDATE real-time khi đang ở màn hình bid
-        AuctionClient.getInstance().setActiveBidController(controller);
+        ItemBidingUIController ctrl = loader.getController();
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice, endTime, description);
+        ctrl.setReadOnly(true);   // ẩn form bid, chỉ hiện thông tin
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
-        stage.setScene(new Scene(root));
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.show();
+    }
+    /** Ongoing → mở màn hình đấu giá */
+    private void openBidScreen() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/org/example/view/itemdetail.fxml"));
+        Parent root = loader.load();
+        ItemBidingUIController ctrl = loader.getController();
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice, endTime, description);
+
+        Stage stage = (Stage) detailsbutton.getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.show();
+    }
+    private String formatVND(double amount) {
+        return String.format("%,.0f VND", amount);
+    }
+
+    private String formatTime(String isoDateTime) {
+        if (isoDateTime == null || isoDateTime.isBlank()) return "—";
+        try {
+            return LocalDateTime.parse(isoDateTime, ISO).format(DISPLAY);
+        } catch (Exception e) {
+            return isoDateTime;
+        }
     }
 }

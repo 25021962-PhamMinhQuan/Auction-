@@ -56,12 +56,16 @@ public class LoginController implements Initializable {
         if (showPasswordbtn.isSelected()) {
             passTextfield.setText(passwordfield.getText());
             passTextfield.setVisible(true);
+            passTextfield.setManaged(true);
+            passwordfield.setManaged(false);
             passwordfield.setVisible(false);
             passTextfield.requestFocus();
             imageview.setImage(eyeclosed);
         } else {
             passwordfield.setText(passTextfield.getText());
             passwordfield.setVisible(true);
+            passwordfield.setManaged(true);
+            passTextfield.setManaged(false);
             passTextfield.setVisible(false);
             passwordfield.requestFocus();
             imageview.setImage(eyeopen);

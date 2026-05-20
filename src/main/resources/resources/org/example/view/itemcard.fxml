@@ -44,6 +44,6 @@
          </font>
       </Label>
       <Region prefHeight="78.0" prefWidth="220.0" VBox.vgrow="ALWAYS" />
-      <Button fx:id="detailsbutton" mnemonicParsing="false" prefHeight="26.0" prefWidth="254.0" styleClass="button-login" text="Detail" />
+      <Button fx:id="detailsbutton" mnemonicParsing="false" onAction="#handleDetail" prefHeight="26.0" prefWidth="254.0" styleClass="button-login" text="Detail" />
    </children>
 </VBox>
