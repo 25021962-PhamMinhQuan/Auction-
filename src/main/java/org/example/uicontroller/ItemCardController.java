@@ -8,55 +8,84 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import org.example.domain.item.Item;
+import org.example.server.AuctionClient;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ItemCardController {
+
+    // DETAIL = chỉ xem thông tin, BID = mở màn hình đặt giá
+    public enum CardMode { DETAIL, BID }
+
     @FXML private Label     itemname;
     @FXML private Label     price;
     @FXML private Label     timeopen;
     @FXML private ImageView itemImage;
     @FXML private Button    detailsbutton;
 
-    private Item currentItem;
+    private int      auctionId;
+    private String   name;
+    private double   currentPrice;
+    private String   startTime;
+    private String   endTime;
+    private String   description;
+    private CardMode mode;
 
-    // Dùng khi có Item thực từ server
-    public void setData(Item item) {
-        this.currentItem = item;
-        itemname.setText(item.getName());
-        price.setText(String.valueOf(item.getCurrentPrice()));
-        timeopen.setText(item.getStartTime() != null
-                ? item.getStartTime().toLocalTime().toString()
-                : "N/A");
+    private static final DateTimeFormatter ISO     = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("HH:mm dd/MM");
+
+    public void setAuctionData(int auctionId, String name, double price,
+                               String startTime, String endTime,
+                               String description, CardMode mode) {
+        this.auctionId    = auctionId;
+        this.name         = name;
+        this.currentPrice = price;
+        this.startTime    = startTime;
+        this.endTime      = endTime;
+        this.description  = description;
+        this.mode         = mode;
+
+        itemname.setText(name);
+        this.price.setText(String.format("%,.0f VND", price));
+
+        try {
+            LocalDateTime start = LocalDateTime.parse(startTime, ISO);
+            timeopen.setText(start.format(DISPLAY));
+        } catch (Exception ex) {
+            timeopen.setText(startTime != null ? startTime : "");
+        }
+
+        detailsbutton.setText(mode == CardMode.DETAIL ? "Xem chi tiết" : "Đặt giá");
+    }
+    public void liveUpdatePrice(double newPrice, String bidder) {
+        this.currentPrice = newPrice;
+        price.setText(String.format("%,.0f VND", newPrice));
     }
 
-    // Dùng tạm khi chưa có Item thực (placeholder từ MainScreenController)
-    public void setData(String name, String priceStr, String time) {
-        itemname.setText(name);
-        price.setText(priceStr);
-        timeopen.setText(time);
+    public int getAuctionId() {
+        return auctionId;
     }
 
     @FXML
     private void handleDetail() throws IOException {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/itemdetail.fxml")
-        );
+                getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
+
         ItemBidingUIController controller = loader.getController();
+        controller.setData(auctionId, name, currentPrice);
 
-        if (currentItem != null) {
-            // FIX: getId() trả String, ItemBidingUIController.setData() nhận int
-            // parse sang int, nếu lỗi dùng 0
-            int id;
-            try { id = Integer.parseInt(currentItem.getId()); }
-            catch (NumberFormatException e) { id = 0; }
-
-            controller.setData(id, currentItem.getName(), currentItem.getCurrentPrice());
-        } else {
-            controller.setData(0, itemname.getText(), 0);
+        // Pass endTime để countdown chạy đúng
+        if (endTime != null && !endTime.isEmpty()) {
+            try {
+                controller.updateEndTime(LocalDateTime.parse(endTime, ISO));
+            } catch (Exception ignored) {}
         }
+
+        // Đăng ký để nhận UPDATE real-time khi đang ở màn hình bid
+        AuctionClient.getInstance().setActiveBidController(controller);
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
         stage.setScene(new Scene(root));
