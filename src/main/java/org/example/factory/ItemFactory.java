@@ -66,8 +66,7 @@ public class ItemFactory {
                                   LocalDateTime start,
                                   LocalDateTime end){
 
-        ItemCreationStrategy strategy = strategies.get(type);
-        if(strategy == null){
+        ItemCreationStrategy strategy = strategies.get(type.toUpperCase());        if(strategy == null){
             throw new IllegalArgumentException("Unknow item type: " + type);
         }
 

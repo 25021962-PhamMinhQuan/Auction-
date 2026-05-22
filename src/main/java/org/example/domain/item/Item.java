@@ -14,6 +14,7 @@ public abstract class Item extends Entity {
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
 
+
     public enum ItemType {
         ELECTRONICS,
         ART
@@ -78,6 +79,14 @@ public abstract class Item extends Entity {
     public String getDescription() { return description; }
 
     public abstract String getType();
+
+    public void setEndTime(LocalDateTime localDateTime) {
+        this.endTime = localDateTime;
+    }
+
+    public void setStartTime(LocalDateTime localDateTime) {
+        this.startTime = localDateTime;
+    }
 
 }
 

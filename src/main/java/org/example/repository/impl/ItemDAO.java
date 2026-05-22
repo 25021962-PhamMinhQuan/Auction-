@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.example.repository.impl.DBConnection.getConnection;
 
-public class ItemDao implements ItemRepository {
+public class ItemDAO implements ItemRepository {
 
     private Item buildItem(ResultSet rs) throws SQLException {
         String type = rs.getString("type");
@@ -22,8 +22,10 @@ public class ItemDao implements ItemRepository {
         String name = rs.getString("name");
         String description = rs.getString("description");
         double startPrice = rs.getDouble("start_price");
-        LocalDateTime startTime = rs.getTimestamp("start_time").toLocalDateTime();
-        LocalDateTime endTime = rs.getTimestamp("end_time").toLocalDateTime();
+        java.sql.Timestamp startTs = rs.getTimestamp("start_time");
+        java.sql.Timestamp endTs   = rs.getTimestamp("end_time");
+        LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
+        LocalDateTime endTime   = endTs   != null ? endTs.toLocalDateTime()   : null;
 
         return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime);
     }
@@ -39,6 +41,8 @@ public class ItemDao implements ItemRepository {
             pstmt.setDouble(4,item.getStartPrice());
             pstmt.setString(5,item.getType());
             pstmt.setString(6,seller_id);
+            pstmt.setTimestamp(7, java.sql.Timestamp.valueOf(item.getStartTime()));
+            pstmt.setTimestamp(8, java.sql.Timestamp.valueOf(item.getEndTime()));
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -116,5 +120,7 @@ public class ItemDao implements ItemRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+
     }
 }

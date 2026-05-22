@@ -270,7 +270,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
                             + a.getItem().getDescription()
                     );
                 }
-                sendMessage("AUCTION_LIST_END");
+                sendMessage("AUCTION_LIST_END|" + status);  // ← gửi kèm status
                 break;
             }
 

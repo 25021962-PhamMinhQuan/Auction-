@@ -44,12 +44,21 @@ public class AuctionService {
 
     public void StartAuction(Auction auction){
         auction.start();
+
+        // Nếu item chưa có thời gian, tự động gán: bắt đầu = now, kết thúc = now + 30 phút
+        if (auction.getItem().getStartTime() == null) {
+            auction.getItem().setStartTime(LocalDateTime.now());
+        }
+        if (auction.getItem().getEndTime() == null) {
+            auction.getItem().setEndTime(auction.getItem().getStartTime().plusMinutes(30));
+        }
+
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
         coordinator.setOnBidPersisted(bid -> {
             auctionDAO.update(auction, Auction.Status.RUNNING.name());
             bidDAO.save(bid, auction.getId());
         });
-        auctionDAO.save(auction, Auction.Status.OPEN.name());
+        auctionDAO.save(auction, Auction.Status.RUNNING.name());
         coordinators.put(auction.getId(), coordinator);
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

@@ -25,7 +25,8 @@ public class AuctionClient {
     private BiConsumer<Boolean, String> registerCallback;
     private BiConsumer<Boolean, String> addItemCallback;
     private BiConsumer<Boolean, String> startAuctionCallback;
-    private Consumer<List<String[]>> auctionListCallback;
+    private Consumer<List<String[]>> openAuctionCallback;
+    private Consumer<List<String[]>> runningAuctionCallback;
     private Consumer<List<String[]>>    myItemsCallback;
     private final List<String[]> pendingAuctions = new ArrayList<>();
     private final List<String[]> pendingMyItems  = new ArrayList<>();
@@ -201,13 +202,20 @@ public class AuctionClient {
                 break;
             }
             case "AUCTION_LIST_END": {
+                String status = parts.length > 1 ? parts[1] : "";  // ← đọc từ message
                 List<String[]> snapshot;
                 synchronized (pendingAuctions) {
                     snapshot = new ArrayList<>(pendingAuctions);
                     pendingAuctions.clear();
                 }
-                Consumer<List<String[]>> cb = auctionListCallback;
-                auctionListCallback = null;
+                Consumer<List<String[]>> cb;
+                if ("OPEN".equals(status)) {
+                    cb = openAuctionCallback;
+                    openAuctionCallback = null;
+                } else {
+                    cb = runningAuctionCallback;
+                    runningAuctionCallback = null;
+                }
                 if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
                 break;
             }
@@ -232,13 +240,12 @@ public class AuctionClient {
         sendCommand("AUTOBID|" + auctionId + "|" + maxBid + "|" + increment);
     }
 
-    public void checkStatus(int auctionId) {
-        sendCommand("STATUS|" + auctionId);
-    }
     public void requestAuctions(String status, Consumer<List<String[]>> callback) {
-        this.auctionListCallback = callback;
+        if ("OPEN".equals(status))    this.openAuctionCallback    = callback;
+        else                          this.runningAuctionCallback  = callback;
         sendCommand("LIST_AUCTIONS|" + status);
     }
+
     public void addItem(String type, String name, String description,
                         double startPrice, String startTime, String endTime,
                         BiConsumer<Boolean, String> callback) {

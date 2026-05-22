@@ -23,7 +23,7 @@ public class ServiceFactory {
         this.UserRepositoryImpl = new UserDAO();
         this.AutoBidRepositoryImpl = new AutoBidDAO();
         this.AuctionRepositoryImpl = new AuctionDAO();
-        this.ItemRepositoryImpl = new ItemDao();
+        this.ItemRepositoryImpl = new ItemDAO();
         this.BidRepositoryImpl = new BidDAO();
 
         this.auctionService = new AuctionService(AuctionRepositoryImpl, BidRepositoryImpl, ItemRepositoryImpl, AutoBidRepositoryImpl);

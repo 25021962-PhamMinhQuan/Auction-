@@ -5,6 +5,7 @@ import org.example.factory.ItemFactory;
 import org.example.repository.AuctionRepository;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,14 +84,19 @@ public class AuctionDAO implements AuctionRepository {
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
+                Timestamp startTs = rs.getTimestamp("start_time");
+                Timestamp endTs   = rs.getTimestamp("end_time");
+                LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
+                LocalDateTime endTime   = endTs   != null ? endTs.toLocalDateTime()   : null;
+
                 Item item = ItemFactory.createItemFromDAO(
                         rs.getString("type"),
                         rs.getString("item_id"),
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getDouble("start_price"),
-                        rs.getTimestamp("start_time").toLocalDateTime(),
-                        rs.getTimestamp("end_time").toLocalDateTime()
+                        startTime,
+                        endTime
                 );
                 item.setCurrentPrice(rs.getDouble("current_price"));
 
