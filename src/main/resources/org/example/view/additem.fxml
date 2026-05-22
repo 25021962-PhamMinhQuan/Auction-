@@ -49,7 +49,7 @@
                   <Label text="Thời gian kết thúc (dd/MM/yyyy HH:mm)" />
                   <TextField fx:id="endTimeField" promptText="VD: 25/05/2026 21:00" styleClass="input_field" />
 
-                  <Button fx:id="submitBtn" maxWidth="Infinity" mnemonicParsing="false" styleClass="button-login" text="+ Thêm Item" />
+                  <Button fx:id="submitBtn" maxWidth="Infinity" mnemonicParsing="false" styleClass="button-login" text="+ Thêm Item" onAction="#handleSubmit" />
 
                   <Label fx:id="statusLabel" wrapText="true" />
                </VBox>

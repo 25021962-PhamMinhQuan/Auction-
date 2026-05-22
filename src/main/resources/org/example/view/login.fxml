@@ -76,7 +76,7 @@
             </Label>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="button-login" text="Login">
+                  <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="button-login" text="Login" defaultButton="true">
                      <HBox.margin>
                         <Insets left="50.0" right="15.0" />
                      </HBox.margin>

@@ -5,7 +5,7 @@ import org.example.domain.item.Item;
 
 import java.time.LocalDateTime;
 
-public class OthersCreationStrategy {
+public class OthersCreationStrategy implements ItemCreationStrategy{
     public Item createItem(
             String name,
             String describe,

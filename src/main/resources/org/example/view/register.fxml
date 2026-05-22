@@ -110,7 +110,7 @@
             </HBox>
             <HBox prefHeight="26.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <Button fx:id="registerBtn" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" styleClass="button-login" text="Register">
+                  <Button fx:id="registerBtn" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" styleClass="button-login" text="Register" defaultButton="true">
                      <HBox.margin>
                         <Insets left="50.0" />
                      </HBox.margin>

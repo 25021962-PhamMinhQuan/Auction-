@@ -32,7 +32,7 @@ public class ItemDAO implements ItemRepository {
 
     @Override
     public void save(Item item,String seller_id){
-        String sqlINSERT = "insert into item (id, name, description, start_price, type, seller_id) values (?,?,?,?,?,?)";
+        String sqlINSERT = "insert into item (id, name, description, start_price, type, seller_id, start_time, end_time) values (?,?,?,?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);){
             pstmt.setString(1,item.getId());

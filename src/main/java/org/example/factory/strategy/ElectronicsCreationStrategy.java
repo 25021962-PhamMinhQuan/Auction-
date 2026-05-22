@@ -26,6 +26,6 @@ public class ElectronicsCreationStrategy implements ItemCreationStrategy {
     }
 
     public String getType(){
-        return "ELECTRONIC";
+        return "ELECTRONICS";
     }
 }

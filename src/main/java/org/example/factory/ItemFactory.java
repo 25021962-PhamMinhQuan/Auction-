@@ -39,7 +39,7 @@ public class ItemFactory {
         ItemFactory.registerStrategy(new FashionsCreationStrategy());
         ItemFactory.registerStrategy(new VehiclesCreationStrategy());
         ItemFactory.registerStrategy(new EstateCreationStrategy());
-        ItemFactory.registerStrategy(new EstateCreationStrategy());
+        ItemFactory.registerStrategy(new OthersCreationStrategy());
     }
 
     public static Item createItem(String type,
@@ -50,7 +50,7 @@ public class ItemFactory {
                                   LocalDateTime end){
         ItemFactory.validateItemParameters(name,description,price,start,end);
 
-        ItemCreationStrategy strategy = strategies.get(type);
+        ItemCreationStrategy strategy = strategies.get(type.toUpperCase());
         if(strategy == null){
             throw new IllegalArgumentException("Unknow item type: " + type);
         }
