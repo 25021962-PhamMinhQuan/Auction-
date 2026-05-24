@@ -28,6 +28,7 @@ public class AuctionClient {
     private Consumer<List<String[]>> openAuctionCallback;
     private Consumer<List<String[]>> runningAuctionCallback;
     private Consumer<List<String[]>>    myItemsCallback;
+    private BiConsumer<Boolean, String> deleteItemCallback;
     private final List<String[]> pendingAuctions = new ArrayList<>();
     private final List<String[]> pendingMyItems  = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
@@ -164,6 +165,19 @@ public class AuctionClient {
                 });
                 break;
             }
+            case "ITEM_DELETED": {
+                BiConsumer<Boolean, String> cb = deleteItemCallback;
+                deleteItemCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "DELETE_ERROR": {
+                String reason = parts.length > 1 ? parts[1] : "Xóa thất bại";
+                BiConsumer<Boolean, String> cb = deleteItemCallback;
+                deleteItemCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(false, reason));
+                break;
+            }
             case "MY_ITEMS_LIST": {
                 synchronized (pendingMyItems) {
                     pendingMyItems.clear();
@@ -258,6 +272,10 @@ public class AuctionClient {
     public void startAuction(String itemId, BiConsumer<Boolean, String> callback) {
         this.startAuctionCallback = callback;
         sendCommand("START_AUCTION|" + itemId);
+    }
+    public void deleteItem(String itemId, BiConsumer<Boolean, String> callback) {
+        this.deleteItemCallback = callback;
+        sendCommand("DELETE_ITEM|" + itemId);
     }
 
     /** Lấy danh sách item của seller đang đăng nhập */

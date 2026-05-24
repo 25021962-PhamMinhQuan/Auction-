@@ -41,6 +41,7 @@ public class ItemBidingUIController {
     @FXML private VBox      bidSection;
     private Timeline      countdownTimer;
     private LocalDateTime endTime;
+    private LocalDateTime startTime;
 
 
     private int auctionId;
@@ -51,8 +52,7 @@ public class ItemBidingUIController {
 
 
 
-    public void setAuctionData(int id, String name, double price,
-                               String endTimeStr, String desc) {
+    public void setAuctionData(int id, String name, double price, String startTimeStr, String endTimeStr, String desc) {
         this.auctionId = id;
         this.latestPrice = price;
 
@@ -60,7 +60,11 @@ public class ItemBidingUIController {
         currentPrice.setText(formatVND(price));
         if (description != null) description.setText(desc != null ? desc : "");
 
-        // Parse endTime
+        if (startTimeStr != null && !startTimeStr.isBlank()) {
+            try {
+                this.startTime = LocalDateTime.parse(startTimeStr);
+            } catch (Exception ignored) {}
+        }
         if (endTimeStr != null && !endTimeStr.isBlank()) {
             try {
                 this.endTime = LocalDateTime.parse(endTimeStr);
@@ -72,24 +76,25 @@ public class ItemBidingUIController {
         startCountdown();
     }
     public void setData(int id, String name, double price) {
-        setAuctionData(id, name, price, null, "");
+        setAuctionData(id, name, price,null, null, "");
     }
     
 /**
             * Chế độ read-only (upcoming — chỉ xem, không bid).
             * Ẩn toàn bộ form bid và auto-bid.
      */
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-        if (bidSection != null) {
-            bidSection.setVisible(!readOnly);
-            bidSection.setManaged(!readOnly);
-        }
-        // Thay đổi countdown label nếu chưa bắt đầu
-        if (readOnly && endTime == null && timeLeft != null) {
-            timeLeft.setText("Chưa bắt đầu");
-        }
+public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+    if (bidSection != null) {
+        bidSection.setVisible(!readOnly);
+        bidSection.setManaged(!readOnly);
     }
+    if (readOnly && startTime != null) {
+        // đếm ngược đến lúc bắt đầu thay vì kết thúc
+        this.endTime = startTime; // countdown đến startTime
+        startCountdown();
+    }
+}
     public void updatePrice(double price, String bidder) {
         this.latestPrice = price;
         currentPrice.setText(formatVND(price));
@@ -217,7 +222,8 @@ public class ItemBidingUIController {
         long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime);
 
         if (secondsLeft <= 0) {
-            timeLeft.setText("Hết giờ");
+            // ← SỬA: phân biệt readOnly hay không
+            timeLeft.setText(readOnly ? "Đang diễn ra" : "Hết giờ");
             timeLeft.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
             stopCountdown();
             return;
@@ -226,9 +232,12 @@ public class ItemBidingUIController {
         long h = secondsLeft / 3600;
         long m = (secondsLeft % 3600) / 60;
         long s = secondsLeft % 60;
-        timeLeft.setText(String.format("%02d:%02d:%02d còn lại", h, m, s));
 
-        if (secondsLeft < 30) {
+        // ← SỬA: label khác nhau cho 2 chế độ
+        String label = readOnly ? "Bắt đầu sau: %02d:%02d:%02d" : "Thời gian còn lại: %02d:%02d:%02d";
+        timeLeft.setText(String.format(label, h, m, s));
+
+        if (!readOnly && secondsLeft < 30) {
             boolean flash = (secondsLeft % 2 == 0);
             timeLeft.setStyle(flash
                     ? "-fx-text-fill: red; -fx-font-weight: bold;"

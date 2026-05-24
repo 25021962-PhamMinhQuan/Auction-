@@ -3,12 +3,14 @@ package org.example.server;
 import org.example.domain.auction.Auction;
 import org.example.domain.auction.BidTransaction;
 import org.example.coordinator.BiddingCoordinator;
+import org.example.domain.item.Item;
 import org.example.domain.user.Bidder;
 import org.example.domain.user.Seller;
 import org.example.domain.user.User;
 import org.example.observer.AuctionObserver;
 import org.example.service.AuctionService;
 import org.example.factory.ServiceFactory;
+import org.example.service.ItemService;
 import org.example.service.UserService;
 import org.example.util.AutoBid;
 import org.mindrot.jbcrypt.BCrypt;
@@ -229,7 +231,27 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         + "|" + item.getStartTime());
                 break;
             }
+            case "DELETE_ITEM": {
+                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                if (!currentUser.getRole().equals(User.UserRole.SELLER.name())
+                        && !currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                    sendMessage("DELETE_ERROR|Không có quyền xóa item"); return;
+                }
+                if (parts.length < 2) { sendMessage("DELETE_ERROR|Thiếu itemId"); return; }
 
+                String deleteId = parts[1];
+                ItemService deleteService = ServiceFactory.getInstance().getItemService();
+                Item toDelete = deleteService.getItemById(deleteId);
+                if (toDelete == null) { sendMessage("DELETE_ERROR|Không tìm thấy item"); return; }
+
+                try {
+                    deleteService.deleteItem(deleteId, currentUser);
+                    sendMessage("ITEM_DELETED|" + deleteId);
+                } catch (Exception ex) {
+                    sendMessage("DELETE_ERROR|" + ex.getMessage());
+                }
+                break;
+            }
             case "MY_ITEMS": {
                 // "MY_ITEMS" — lấy danh sách item của seller hiện tại
                 if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }

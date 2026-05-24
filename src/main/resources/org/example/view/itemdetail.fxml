@@ -11,69 +11,57 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane stylesheets="@../../../css/style.css"
-           xmlns="http://javafx.com/javafx/25"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.example.uicontroller.ItemBidingUIController">
+<StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemBidingUIController">
 
     <ScrollPane fitToWidth="true">
         <content>
             <VBox alignment="TOP_CENTER" spacing="30">
-                <padding><Insets bottom="30" left="20" right="20" top="30"/></padding>
+                <padding><Insets bottom="30" left="20" right="20" top="30" /></padding>
 
                 <!-- Back button -->
                 <HBox>
-                    <Button mnemonicParsing="false" onAction="#handleBack"
-                            styleClass="button-login" text="← Back"/>
+                    <Button mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" />
                 </HBox>
 
                 <!-- TOP: image + info -->
                 <HBox alignment="CENTER" maxWidth="1200" spacing="40">
 
-                    <ImageView fx:id="itemImage" fitWidth="400" preserveRatio="true"
-                               HBox.hgrow="ALWAYS"/>
-                    <Region prefHeight="374.0" prefWidth="0.0" HBox.hgrow="ALWAYS"/>
+                    <ImageView fx:id="itemImage" fitWidth="400" preserveRatio="true" HBox.hgrow="ALWAYS" />
+                    <Region prefHeight="374.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
 
                     <VBox spacing="15" HBox.hgrow="ALWAYS">
 
-                        <Label fx:id="itemName" styleClass="title"/>
-                        <Label fx:id="currentPrice" styleClass="item-price"/>
-                        <Label fx:id="highestBidder" styleClass="label-secondary"/>
-                        <Label fx:id="timeLeft" styleClass="label-secondary"/>
+                        <Label fx:id="itemName" styleClass="title" />
+                        <Label fx:id="currentPrice" styleClass="item-price" />
+                        <Label fx:id="highestBidder" styleClass="label-secondary" />
+                        <Label fx:id="timeLeft" styleClass="label-secondary" />
 
                         <!-- Bid section — hidden in read-only (upcoming) mode -->
                         <VBox fx:id="bidSection" spacing="15">
 
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <TextField fx:id="bidInput" maxWidth="175.0"
-                                           promptText="Nhập số tiền đặt bid"
-                                           styleClass="input_field" HBox.hgrow="ALWAYS"/>
-                                <Button fx:id="placeBidButton" onAction="#handleBid"
-                                        styleClass="button-login" text="Place Bid"/>
+                                <TextField fx:id="bidInput" maxWidth="175.0" promptText="Nhập số tiền đặt bid" styleClass="input_field" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="placeBidButton" onAction="#handleBid" styleClass="button-login" text="Place Bid" />
                             </HBox>
 
                             <VBox spacing="8" styleClass="section-box">
-                                <Label styleClass="section-title" text="Auto Bid"/>
-                                <TextField fx:id="maxBidInput" maxWidth="250.0"
-                                           promptText="Max price" styleClass="input_field"/>
-                                <TextField fx:id="incrementInput" maxWidth="250.0"
-                                           promptText="Increment per bid" styleClass="input_field"/>
-                                <Button onAction="#handleAutoBid" styleClass="button-login"
-                                        text="Start Auto Bid"/>
+                                <Label styleClass="section-title" text="Auto Bid" />
+                                <TextField fx:id="maxBidInput" maxWidth="250.0" promptText="Max price" styleClass="input_field" />
+                                <TextField fx:id="incrementInput" maxWidth="250.0" promptText="Increment per bid" styleClass="input_field" />
+                                <Button onAction="#handleAutoBid" styleClass="button-login" text="Start Auto Bid" />
                             </VBox>
 
                         </VBox>
 
-                        <Button onAction="#handleShowHistory" styleClass="button-login"
-                                text="Show Bid History"/>
+                        <Button onAction="#handleShowHistory" styleClass="button-login" text="Show Bid History" />
 
                     </VBox>
                 </HBox>
 
                 <!-- Description -->
                 <VBox maxWidth="1000" spacing="10">
-                    <Label styleClass="section-title" text="Description"/>
-                    <Label fx:id="description" wrapText="true"/>
+                    <Label styleClass="section-title" text="Description" />
+                    <Label fx:id="description" styleClass="item-time" text="des" wrapText="true" />
                 </VBox>
 
             </VBox>
@@ -81,20 +69,19 @@
     </ScrollPane>
 
     <!-- Bid history popup -->
-    <VBox fx:id="historyPopup" managed="false" maxHeight="500" maxWidth="420"
-          styleClass="popup" visible="false" StackPane.alignment="CENTER">
-        <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
+    <VBox fx:id="historyPopup" managed="false" maxHeight="500" maxWidth="420" styleClass="popup" visible="false" StackPane.alignment="CENTER">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
         <spacing>12</spacing>
 
-        <Label styleClass="section-title" text="Bid History"/>
+        <Label styleClass="section-title" text="Bid History" />
 
         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
             <content>
-                <VBox fx:id="historyBox" spacing="8"/>
+                <VBox fx:id="historyBox" spacing="8" />
             </content>
         </ScrollPane>
 
-        <Button onAction="#handleCloseHistory" styleClass="button-login" text="Close"/>
+        <Button onAction="#handleCloseHistory" styleClass="button-login" text="Close" />
     </VBox>
 
 </StackPane>

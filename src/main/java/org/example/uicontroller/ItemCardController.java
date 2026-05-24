@@ -1,5 +1,8 @@
 package org.example.uicontroller;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,11 +11,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.example.domain.item.Item;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class ItemCardController {
     @FXML private Label     itemname;
@@ -32,6 +37,7 @@ public class ItemCardController {
     private String  startTime;
     private String  endTime;
     private String  description;
+    private Timeline cardCountdown;
 
     // Dùng khi có Item thực từ server
     public void setAuctionData(int id, String name, double price,
@@ -54,6 +60,7 @@ public class ItemCardController {
             timeopen.setText("Ends: " + formatTime(endTime));
             detailsbutton.setText("Place Bid");
             detailsbutton.getStyleClass().add("button-bid");
+            startCardCountdown(endTime);
         } else {
             // Upcoming: hiển thị thời gian mở
             timeopen.setText("Opens: " + formatTime(startTime));
@@ -72,6 +79,23 @@ public class ItemCardController {
         pause.setOnFinished(e -> price.setStyle(""));
         pause.play();
     }
+    private void startCardCountdown(String endTimeStr) {
+        try {
+            LocalDateTime end = LocalDateTime.parse(endTimeStr);
+            cardCountdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                long sec = ChronoUnit.SECONDS.between(LocalDateTime.now(), end);
+                if (sec <= 0) {
+                    timeopen.setText("Hết giờ");
+                    cardCountdown.stop();
+                } else {
+                    long h = sec / 3600, m = (sec % 3600) / 60, s = sec % 60;
+                    timeopen.setText(String.format("Còn: %02d:%02d:%02d", h, m, s));
+                }
+            }));
+            cardCountdown.setCycleCount(Animation.INDEFINITE);
+            cardCountdown.play();
+        } catch (Exception ignored) {}
+    }
     public int getAuctionId() { return auctionId; }
 
     @FXML
@@ -88,7 +112,7 @@ public class ItemCardController {
                 getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
-        ctrl.setAuctionData(auctionId, auctionName, currentPrice, endTime, description);
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description);
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
         stage.setScene(new javafx.scene.Scene(root));
@@ -101,7 +125,7 @@ public class ItemCardController {
                 getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
-        ctrl.setAuctionData(auctionId, auctionName, currentPrice, endTime, description);
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice,startTime, endTime, description);
         ctrl.setReadOnly(true);   // ẩn form bid, chỉ hiện thông tin
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();

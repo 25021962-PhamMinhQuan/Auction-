@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.server.AuctionClient;
@@ -39,7 +40,7 @@ public class AddItemController {
     @FXML
     public void initialize() {
         typeCombo.setItems(FXCollections.observableArrayList(
-                "ART", "ELECTRONIC", "ESTATE", "FASHIONS", "VEHICLES", "OTHERS"));
+                "ART", "ELECTRONICS", "ESTATE", "FASHIONS", "VEHICLES", "OTHERS"));
         typeCombo.getSelectionModel().selectFirst();
         loadMyItems();
     }
@@ -78,7 +79,13 @@ public class AddItemController {
                             + "-fx-font-weight: bold; -fx-cursor: hand;");
                     startBtn.setOnAction(e -> handleStartAuction(id, name, startBtn));
 
-                    card.getChildren().addAll(lName, lInfo, startBtn);
+                    Button deleteBtn = new Button("🗑 Xóa");
+                    deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; "
+                            + "-fx-font-weight: bold; -fx-cursor: hand;");
+                    deleteBtn.setOnAction(e -> handleDeleteItem(id, name, card));
+
+                    HBox btnRow = new HBox(8, startBtn, deleteBtn);
+                    card.getChildren().addAll(lName, lInfo, btnRow);
                     myItemsBox.getChildren().add(card);
                 }
             });
@@ -165,6 +172,30 @@ public class AddItemController {
             }
         });
     }
+    private void handleDeleteItem(String itemId, String itemName, VBox card) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Xác nhận xóa");
+        confirm.setHeaderText("Xóa item \"" + itemName + "\"?");
+        confirm.setContentText("Hành động này không thể hoàn tác.");
+
+        confirm.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.OK) {
+                AuctionClient.getInstance().deleteItem(itemId, (success, msg) -> {
+                    if (success) {
+                        Platform.runLater(() -> {
+                            myItemsBox.getChildren().remove(card);
+                            if (myItemsBox.getChildren().isEmpty()) {
+                                myItemsBox.getChildren().add(new Label("Chưa có item nào."));
+                            }
+                            showStatus("✓ Đã xóa item \"" + itemName + "\".", true);
+                        });
+                    } else {
+                        showStatus("Lỗi khi xóa: " + msg, false);
+                    }
+                });
+            }
+        });
+    }
 
     // ─── Back ───
 
@@ -173,6 +204,13 @@ public class AddItemController {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/org/example/view/mainscreen.fxml"));
         Parent root = loader.load();
+        MainScreenController controller = loader.getController();
+        MainScreenController.setInstance(controller);
+        String username = AuctionClient.getInstance().getCurrentUsername();
+        String role = AuctionClient.getInstance().getCurrentRole();
+        if (username != null && role != null) {
+            controller.setCurrentUser(username, role);
+        }
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
