@@ -95,7 +95,7 @@ public class AuctionDAO implements AuctionRepository {
     public List<Auction> findByName(String keyword) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type,  i.image_url, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "WHERE i.name LIKE ?";
@@ -127,7 +127,8 @@ public class AuctionDAO implements AuctionRepository {
                 rs.getString("description"),
                 rs.getDouble("start_price"),
                 startTime,
-                endTime
+                endTime,
+                rs.getString("image_url")
         );
 
         item.setCurrentPrice(rs.getDouble("current_price"));

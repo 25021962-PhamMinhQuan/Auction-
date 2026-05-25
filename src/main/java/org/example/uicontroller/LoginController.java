@@ -156,7 +156,7 @@ public class LoginController implements Initializable {
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.show();
-        } catch (IOException ex) {
+        } catch (Exception  ex) {
             ex.printStackTrace();
             warning.setText("Không thể mở màn hình chính.");
         }

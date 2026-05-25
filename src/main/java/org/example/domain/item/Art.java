@@ -9,8 +9,9 @@ public class Art extends Item {
                String description,
                double price,
                LocalDateTime start,
-               LocalDateTime end) {
-        super(name, description, price, start, end);
+               LocalDateTime end,
+               String imageUrl) {
+        super(name, description, price, start, end, imageUrl);
     }
 
     // load từ database
@@ -19,8 +20,9 @@ public class Art extends Item {
                String description,
                double price,
                LocalDateTime start,
-               LocalDateTime end) {
-        super(id, name, description, price, start, end);
+               LocalDateTime end,
+               String imageUrl) {
+        super(id, name, description, price, start, end, imageUrl);
     }
 
     @Override

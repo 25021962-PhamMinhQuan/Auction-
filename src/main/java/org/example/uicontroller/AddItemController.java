@@ -11,9 +11,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.server.AuctionClient;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import org.example.util.SupabaseStorage;
 
+import java.io.File;
+
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +37,9 @@ public class AddItemController {
     @FXML private TextField        endTimeField;
     @FXML private Label            statusLabel;
     @FXML private Button           submitBtn;
+    @FXML private javafx.scene.image.ImageView imagePreview;
+    @FXML private Label            imagePathLabel;
+    private String selectedImagePath = null;
 
     // Panel danh sách item của seller
     @FXML private VBox             myItemsBox;
@@ -104,6 +114,40 @@ public class AddItemController {
         });
     }
 
+    @FXML
+    private void handleChooseImage() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Chọn ảnh sản phẩm");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+
+        Stage stage = (Stage) submitBtn.getScene().getWindow();
+        File file = chooser.showOpenDialog(stage);
+        if (file == null) return;
+
+        // Preview ngay lập tức
+        imagePreview.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+        imagePathLabel.setText("Đang upload...");
+        submitBtn.setDisable(true);
+
+        // Upload lên Supabase trên background thread
+        Thread uploadThread = new Thread(() -> {
+            String url = SupabaseStorage.uploadImage(file);
+            javafx.application.Platform.runLater(() -> {
+                submitBtn.setDisable(false);
+                if (url != null) {
+                    selectedImagePath = url;   // ← lưu URL thay vì đường dẫn local
+                    imagePathLabel.setText("✓ Upload thành công");
+                } else {
+                    selectedImagePath = null;
+                    imagePathLabel.setText("✗ Upload thất bại");
+                }
+            });
+        });
+        uploadThread.setDaemon(true);
+        uploadThread.start();
+    }
+
     // ─── Submit item mới ───
 
     @FXML
@@ -153,6 +197,7 @@ public class AddItemController {
         AuctionClient.getInstance().addItem(
                 type, name, description, price,
                 start.format(ISO), end.format(ISO),
+                selectedImagePath,
                 (success, msg) -> {
                     submitBtn.setDisable(false);
                     if (success) {
@@ -244,5 +289,8 @@ public class AddItemController {
         startTimeField.clear();
         endTimeField.clear();
         typeCombo.getSelectionModel().selectFirst();
+        selectedImagePath = null;
+        imagePreview.setImage(null);
+        imagePathLabel.setText("Chưa chọn ảnh");
     }
 }

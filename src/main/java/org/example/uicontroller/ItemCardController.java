@@ -42,7 +42,7 @@ public class ItemCardController {
     // Dùng khi có Item thực từ server
     public void setAuctionData(int id, String name, double price,
                                String startTime, String endTime,
-                               String description, CardMode mode) {
+                               String description, CardMode mode, String imageUrl) {
         this.auctionId   = id;
         this.auctionName = name;
         this.currentPrice = price;
@@ -65,6 +65,14 @@ public class ItemCardController {
             // Upcoming: hiển thị thời gian mở
             timeopen.setText("Opens: " + formatTime(startTime));
             detailsbutton.setText("View Detail");
+        }
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                itemImage.setImage(new javafx.scene.image.Image(imageUrl, true)); // true = background loading
+            } catch (Exception e) {
+                System.err.println("Không load được ảnh: " + imageUrl);
+            }
         }
     }
     /** Cập nhật giá live từ MainScreenController (nhận UPDATE từ server) */

@@ -10,7 +10,8 @@ public interface ItemCreationStrategy {
                     String describe,
                     double price,
                     LocalDateTime start,
-                    LocalDateTime end);
+                    LocalDateTime end,
+                    String imageUrl);
 
     Item createItemFromDatabase(
             String id,
@@ -18,7 +19,8 @@ public interface ItemCreationStrategy {
             String describe,
             double price,
             LocalDateTime start,
-            LocalDateTime end
+            LocalDateTime end,
+            String imageUrl
     );
 
     String getType();

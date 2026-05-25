@@ -47,7 +47,8 @@ public class ItemFactory {
                                   String description,
                                   double price,
                                   LocalDateTime start,
-                                  LocalDateTime end){
+                                  LocalDateTime end,
+                                  String imageUrl){
         ItemFactory.validateItemParameters(name,description,price,start,end);
 
         ItemCreationStrategy strategy = strategies.get(type.toUpperCase());
@@ -55,7 +56,7 @@ public class ItemFactory {
             throw new IllegalArgumentException("Unknow item type: " + type);
         }
 
-        return strategy.createItem(name,description,price,start,end);
+        return strategy.createItem(name,description,price,start,end,imageUrl);
     }
 
     public static Item createItemFromDAO(String type,
@@ -64,13 +65,14 @@ public class ItemFactory {
                                   String description,
                                   double price,
                                   LocalDateTime start,
-                                  LocalDateTime end){
+                                  LocalDateTime end,
+                                         String imageUrl){
 
         ItemCreationStrategy strategy = strategies.get(type.toUpperCase());        if(strategy == null){
             throw new IllegalArgumentException("Unknow item type: " + type);
         }
 
-        return strategy.createItemFromDatabase(id,name,description,price,start,end);
+        return strategy.createItemFromDatabase(id,name,description,price,start,end,imageUrl);
     }
 
     public static java.util.Set<String> getAvailableTypes() {

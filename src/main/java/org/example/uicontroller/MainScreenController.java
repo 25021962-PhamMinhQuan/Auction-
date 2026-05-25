@@ -136,13 +136,14 @@ public class MainScreenController {
             ItemCardController ctrl = loader.getController();
 
             int    id          = parts.length > 1 ? Integer.parseInt(parts[1])   : 0;
-            String name        = parts.length > 2 ? parts[2]                    : "—";
+            String name        = parts.length > 2 ? parts[2]                     : "—";
             double price       = parts.length > 3 ? Double.parseDouble(parts[3]) : 0;
-            String endTime     = parts.length > 4 ? parts[4]                    : "";
-            String startTime   = parts.length > 6 ? parts[6]                    : "";
-            String description = parts.length > 7 ? parts[7]                    : "";
+            String endTime     = parts.length > 4 ? parts[4]                     : "";
+            String startTime   = parts.length > 6 ? parts[6]                     : "";
+            String description = parts.length > 7 ? parts[7]                     : "";
+            String imageUrl    = parts.length > 8 ? parts[8]                     : "";
 
-            ctrl.setAuctionData(id, name, price, startTime, endTime, description, mode);
+            ctrl.setAuctionData(id, name, price, startTime, endTime, description, mode, imageUrl);
             // Gắn controller vào properties để updateAuctionPrice() có thể tìm lại
             node.getProperties().put("controller", ctrl);
             return node;

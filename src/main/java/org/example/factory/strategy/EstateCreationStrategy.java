@@ -11,8 +11,9 @@ public class EstateCreationStrategy implements ItemCreationStrategy{
             String describe,
             double price,
             LocalDateTime start,
-            LocalDateTime end){
-        return new Estate(name, describe, price, start, end);
+            LocalDateTime end,
+            String imageUrl){
+        return new Estate(name, describe, price, start, end, imageUrl);
     }
 
     public Item createItemFromDatabase(
@@ -21,8 +22,9 @@ public class EstateCreationStrategy implements ItemCreationStrategy{
             String describe,
             double price,
             LocalDateTime start,
-            LocalDateTime end){
-        return new Estate(name, describe, price, start, end);
+            LocalDateTime end,
+            String imageUrl){
+        return new Estate(name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){

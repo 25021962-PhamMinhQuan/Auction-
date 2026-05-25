@@ -40,6 +40,7 @@ public class Main {
                 1000,
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(2),
+                "cgi do",
                 (Seller) c
         );
         Auction auction = new Auction(item);

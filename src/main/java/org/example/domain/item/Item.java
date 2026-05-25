@@ -13,6 +13,8 @@ public abstract class Item extends Entity {
 
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
+    protected String imageUrl;
+
 
 
     public enum ItemType {
@@ -24,7 +26,8 @@ public abstract class Item extends Entity {
                 String description,
                 double startPrice,
                 LocalDateTime startTime,
-                LocalDateTime endTime) {
+                LocalDateTime endTime,
+                String imageUrl) {
         super(IDGenerator.generateItemID());
         this.name = name;
         this.description = description;
@@ -32,6 +35,7 @@ public abstract class Item extends Entity {
         this.currentPrice = startPrice;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.imageUrl = imageUrl;
     }
 
     // constuctor này để lấy dữ liệu từ database khi id đã có sẵn
@@ -40,7 +44,8 @@ public abstract class Item extends Entity {
                 String description,
                 double startPrice,
                 LocalDateTime startTime,
-                LocalDateTime endTime) {
+                LocalDateTime endTime,
+                String imageUrl) {
         super(id);
         this.name = name;
         this.description = description;
@@ -48,7 +53,11 @@ public abstract class Item extends Entity {
         this.currentPrice = startPrice;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.imageUrl = imageUrl;
+
     }
+
+    public String getImageUrl() { return imageUrl; }
 
     public double getStartPrice() {
         return startPrice;

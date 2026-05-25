@@ -22,17 +22,18 @@ public class ItemDAO implements ItemRepository {
         String name = rs.getString("name");
         String description = rs.getString("description");
         double startPrice = rs.getDouble("start_price");
+        String imageUrl    = rs.getString("image_url");
         java.sql.Timestamp startTs = rs.getTimestamp("start_time");
         java.sql.Timestamp endTs   = rs.getTimestamp("end_time");
         LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
         LocalDateTime endTime   = endTs   != null ? endTs.toLocalDateTime()   : null;
 
-        return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime);
+        return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime,imageUrl);
     }
 
     @Override
     public void save(Item item,String seller_id){
-        String sqlINSERT = "insert into item (id, name, description, start_price, type, seller_id, start_time, end_time) values (?,?,?,?,?,?,?,?)";
+        String sqlINSERT = "INSERT INTO item (id, name, description, start_price, type, " + "seller_id, start_time, end_time, image_url) VALUES (?,?,?,?,?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);){
             pstmt.setString(1,item.getId());
@@ -43,6 +44,7 @@ public class ItemDAO implements ItemRepository {
             pstmt.setString(6,seller_id);
             pstmt.setTimestamp(7, java.sql.Timestamp.valueOf(item.getStartTime()));
             pstmt.setTimestamp(8, java.sql.Timestamp.valueOf(item.getEndTime()));
+            pstmt.setString(9, item.getImageUrl());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

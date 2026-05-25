@@ -54,7 +54,15 @@ public class AuctionClient {
 
     public void connect(javafx.stage.Stage stage) throws IOException {
         // Chỉ tạo socket mới nếu chưa kết nối
-        if (socket != null && !socket.isClosed()) return;
+        if (socket != null && !socket.isClosed()) {
+            if (out != null && out.checkError()) {
+                // Connection chết nhưng socket chưa isClosed() → reconnect
+                try { socket.close(); } catch (IOException ignored) {}
+                socket = null; in = null; out = null;
+            } else {
+                return;
+            }
+        }
 
         socket = new Socket(HOST, PORT);
         in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -270,11 +278,12 @@ public class AuctionClient {
     }
 
     public void addItem(String type, String name, String description,
-                        double startPrice, String startTime, String endTime,
+                        double startPrice, String startTime, String endTime,  String imageUrl,
                         BiConsumer<Boolean, String> callback) {
         this.addItemCallback = callback;
         sendCommand("ADD_ITEM|" + type + "|" + name + "|" + description
-                + "|" + startPrice + "|" + startTime + "|" + endTime);
+                + "|" + startPrice + "|" + startTime + "|" + endTime
+                + "|" + (imageUrl != null ? imageUrl : ""));
     }
 
     /** Seller khởi động phiên đấu giá cho item đã tạo */

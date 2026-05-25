@@ -15,11 +15,11 @@ public class ItemService {
         this.ItemRepositoryImpl = ItemRepositoryImpl;
     }
 
-    public Item CreateItem(String type, String name, String description, double price, LocalDateTime start, LocalDateTime end, Seller seller){
+    public Item CreateItem(String type, String name, String description, double price, LocalDateTime start, LocalDateTime end, String imageUrl, Seller seller){
         if(!seller.getRole().equals(User.UserRole.SELLER.name())){
             throw new IllegalStateException("Only seller can add item");
         }
-        Item item = ItemFactory.createItem(type,name,description,price,start,end);
+        Item item = ItemFactory.createItem(type,name,description,price,start,end,imageUrl);
 
         ItemRepositoryImpl.save(item,seller.getId());
 

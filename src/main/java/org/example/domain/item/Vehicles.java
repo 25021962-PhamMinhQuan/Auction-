@@ -8,8 +8,9 @@ public class Vehicles extends Item {
                   String description,
                   double price,
                   LocalDateTime start,
-                  LocalDateTime end) {
-        super(name, description, price, start, end);
+                  LocalDateTime end,
+                    String imangeUrl) {
+        super(name, description, price, start, end, imangeUrl);
     }
 
 
@@ -19,8 +20,9 @@ public class Vehicles extends Item {
                   String description,
                   double price,
                   LocalDateTime start,
-                  LocalDateTime end) {
-        super(id, name, description, price, start, end);
+                  LocalDateTime end,
+                    String imageUrl) {
+        super(id, name, description, price, start, end, imageUrl);
     }
 
     @Override

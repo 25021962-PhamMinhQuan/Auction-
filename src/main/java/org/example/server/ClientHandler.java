@@ -187,11 +187,12 @@ public class ClientHandler implements Runnable, AuctionObserver {
                 double startPrice  = Double.parseDouble(parts[4]);
                 java.time.LocalDateTime startTime = java.time.LocalDateTime.parse(parts[5]);
                 java.time.LocalDateTime endTime   = java.time.LocalDateTime.parse(parts[6]);
+                String imageUrl    = parts.length > 7 ? parts[7] : null;
 
                 org.example.service.ItemService itemService =
                         ServiceFactory.getInstance().getItemService();
                 org.example.domain.item.Item item = itemService.CreateItem(
-                        type, name, description, startPrice, startTime, endTime,
+                        type, name, description, startPrice, startTime, endTime, imageUrl,
                         (org.example.domain.user.Seller) currentUser);
 
                 sendMessage("ITEM_ADDED|" + item.getId() + "|" + item.getName());
