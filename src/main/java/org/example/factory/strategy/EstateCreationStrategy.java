@@ -1,6 +1,6 @@
 package org.example.factory.strategy;
 
-import org.example.domain.item.Electronics;
+import org.example.domain.item.Estate;
 import org.example.domain.item.Item;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class EstateCreationStrategy implements ItemCreationStrategy{
             double price,
             LocalDateTime start,
             LocalDateTime end){
-        return new Electronics(name, describe, price, start, end);
+        return new Estate(name, describe, price, start, end);
     }
 
     public Item createItemFromDatabase(
@@ -22,7 +22,7 @@ public class EstateCreationStrategy implements ItemCreationStrategy{
             double price,
             LocalDateTime start,
             LocalDateTime end){
-        return new Electronics(name, describe, price, start, end);
+        return new Estate(name, describe, price, start, end);
     }
 
     public String getType(){

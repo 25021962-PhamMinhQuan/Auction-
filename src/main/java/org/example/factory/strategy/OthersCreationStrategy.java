@@ -1,6 +1,6 @@
 package org.example.factory.strategy;
 
-import org.example.domain.item.Electronics;
+import org.example.domain.item.Others;
 import org.example.domain.item.Item;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class OthersCreationStrategy implements ItemCreationStrategy{
             double price,
             LocalDateTime start,
             LocalDateTime end){
-        return new Electronics(name, describe, price, start, end);
+        return new Others(name, describe, price, start, end);
     }
 
     public Item createItemFromDatabase(
@@ -22,7 +22,7 @@ public class OthersCreationStrategy implements ItemCreationStrategy{
             double price,
             LocalDateTime start,
             LocalDateTime end){
-        return new Electronics(name, describe, price, start, end);
+        return new Others(name, describe, price, start, end);
     }
 
     public String getType(){
