@@ -84,30 +84,58 @@ public class AuctionDAO implements AuctionRepository {
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                Timestamp startTs = rs.getTimestamp("start_time");
-                Timestamp endTs   = rs.getTimestamp("end_time");
-                LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
-                LocalDateTime endTime   = endTs   != null ? endTs.toLocalDateTime()   : null;
-
-                Item item = ItemFactory.createItemFromDAO(
-                        rs.getString("type"),
-                        rs.getString("item_id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getDouble("start_price"),
-                        startTime,
-                        endTime
-                );
-                item.setCurrentPrice(rs.getDouble("current_price"));
-
-                Auction auction = new Auction(item);
-                auction.setId(rs.getInt("id"));
-                result.add(auction);
+                result.add(parseAuction(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    public List<Auction> findByName(String keyword) {
+        List<Auction> result = new ArrayList<>();
+        String sql = "SELECT a.id, a.current_price, a.status, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, " +
+                "i.start_time, i.end_time " +
+                "FROM auction a JOIN item i ON a.item_id = i.id " +
+                "WHERE i.name LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                // parse giống hệt findByStatus()
+                result.add(parseAuction(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private Auction parseAuction(ResultSet rs) throws SQLException {
+        Timestamp startTs = rs.getTimestamp("start_time");
+        Timestamp endTs = rs.getTimestamp("end_time");
+
+        LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
+        LocalDateTime endTime = endTs != null ? endTs.toLocalDateTime() : null;
+
+        Item item = ItemFactory.createItemFromDAO(
+                rs.getString("type"),
+                rs.getString("item_id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getDouble("start_price"),
+                startTime,
+                endTime
+        );
+
+        item.setCurrentPrice(rs.getDouble("current_price"));
+
+        Auction auction = new Auction(item);
+        auction.setId(rs.getInt("id"));
+
+        return auction;
     }
 
 }

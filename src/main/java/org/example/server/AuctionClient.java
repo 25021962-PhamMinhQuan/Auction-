@@ -28,6 +28,7 @@ public class AuctionClient {
     private Consumer<List<String[]>> openAuctionCallback;
     private Consumer<List<String[]>> runningAuctionCallback;
     private Consumer<List<String[]>>    myItemsCallback;
+    private Consumer<List<String[]>> searchAuctionCallback;
     private BiConsumer<Boolean, String> deleteItemCallback;
     private final List<String[]> pendingAuctions = new ArrayList<>();
     private final List<String[]> pendingMyItems  = new ArrayList<>();
@@ -226,6 +227,9 @@ public class AuctionClient {
                 if ("OPEN".equals(status)) {
                     cb = openAuctionCallback;
                     openAuctionCallback = null;
+                } else if ("SEARCH".equals(status)) {
+                    cb = searchAuctionCallback;
+                    searchAuctionCallback = null;
                 } else {
                     cb = runningAuctionCallback;
                     runningAuctionCallback = null;
@@ -237,6 +241,11 @@ public class AuctionClient {
     }
 
     // ──────────────── Gửi lệnh ────────────────
+
+    public void requestSearchAuctions(String keyword, Consumer<List<String[]>> callback) {
+        this.searchAuctionCallback = callback;
+        sendCommand("SEARCH_AUCTIONS|" + keyword);
+    }
 
     public void login(String username, String password) {
         sendCommand("LOGIN|" + username + "|" + password);

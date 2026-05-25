@@ -275,6 +275,25 @@ public class ClientHandler implements Runnable, AuctionObserver {
                 break;
             }
 
+            case "SEARCH_AUCTIONS": {
+                // "SEARCH_AUCTIONS|keyword"
+                String keyword = parts[1];
+                List<Auction> results = auctionService.searchByName(keyword);
+                sendMessage("AUCTION_LIST|" + results.size());
+                for (Auction a : results) {
+                    sendMessage("AUCTION_ITEM|"
+                            + a.getId()          + "|"
+                            + a.getItem().getName()        + "|"
+                            + a.getCurrentPrice()          + "|"
+                            + a.getItem().getEndTime()         + "|"
+                            + a.getStatus()                + "|"
+                            + a.getItem().getStartTime()       + "|"
+                            + a.getItem().getDescription());
+                }
+                sendMessage("AUCTION_LIST_END|SEARCH");
+                break;
+            }
+
             case "LIST_AUCTIONS": {
                 // "LIST_AUCTIONS|status"  (OPEN = upcoming, RUNNING = ongoing)
                 String status = parts.length > 1 ? parts[1] : "RUNNING";

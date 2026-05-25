@@ -9,4 +9,5 @@ public interface AuctionRepository {
     void update(Auction auction,String status);
     void updateStatus(Auction auction, String status);
     List<Auction> findByStatus(String status);
+    List<Auction> findByName(String keyword);
 }

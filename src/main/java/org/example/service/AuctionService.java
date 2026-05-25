@@ -83,6 +83,11 @@ public class AuctionService {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    //searcj
+    public List<Auction> searchByName(String keyword) {
+        return auctionDAO.findByName(keyword);
+    }
+
     public void cleanup(int auctionId) {
         ScheduledExecutorService scheduler = schedulers.remove(auctionId);
         if (scheduler != null) scheduler.shutdownNow();

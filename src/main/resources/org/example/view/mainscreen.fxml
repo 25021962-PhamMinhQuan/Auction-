@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextField?>
 <StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
 
    <children>
@@ -133,28 +134,22 @@
                   <Label fx:id="usernameLabel" styleClass="label-secondary" text="Guest" />
 
                   <!-- Search -->
-                  <Button fx:id="addItemBtn"
-                          managed="false"
-                          mnemonicParsing="false"
-                          onAction="#handleAddItem"
-                          styleClass="button-login"
-                          text="+ Add Item"
-                          visible="false"/>
-                  <Button mnemonicParsing="false" styleClass="icon-btn">
-
-                     <graphic>
-
-                        <ImageView fitHeight="32" fitWidth="13" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
-
-                           <image>
+                  <HBox alignment="CENTER_LEFT" spacing="6">
+                     <TextField fx:id="searchField"
+                                promptText="Search auction by name..."
+                                prefWidth="220"
+                                onAction="#handleSearch"
+                                styleClass="text-field" />
+                     <Button mnemonicParsing="false"
+                             onAction="#handleSearch"
+                             styleClass="icon-btn">
+                        <graphic>
+                           <ImageView fitWidth="18" fitHeight="18" pickOnBounds="true">
                               <Image url="@../../../find_icon.png" />
-                           </image>
-
-                        </ImageView>
-
-                     </graphic>
-
-                  </Button>
+                           </ImageView>
+                        </graphic>
+                     </Button>
+                  </HBox>
 
                   <!-- User -->
                   <Button mnemonicParsing="false" onAction="#handleDashboard" styleClass="icon-btn">

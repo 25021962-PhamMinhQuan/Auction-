@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import org.example.domain.user.User;
 import org.example.server.AuctionClient;
@@ -30,6 +31,8 @@ public class MainScreenController {
     @FXML private Label      usernameLabel; // có trong FXML navbar
     @FXML private AnchorPane overlayDashboard;
     @FXML private Button     addItemBtn;
+    @FXML private TextField searchField;  // thêm vào đầu class
+
 
     private String currentGridType; // "OPEN" hoặc "RUNNING" – để biết grid đang xem loại nào
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
@@ -231,6 +234,31 @@ public class MainScreenController {
         loadOngoing();
         loadUpcoming();
     }
+
+
+    @FXML
+    private void handleSearch() {
+        String keyword = searchField.getText().trim();
+        if (keyword.isEmpty()) return;
+
+        currentGridType = "SEARCH";
+        setGridVisible(true);
+        gridPane.getChildren().clear();
+
+        AuctionClient.getInstance().requestSearchAuctions(keyword, items ->
+                Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    if (items.isEmpty()) {
+                        gridPane.getChildren().add(new Label("No results for: " + keyword));
+                    }
+                    for (String[] item : items) {
+                        gridPane.getChildren().add(
+                                buildCard(item, ItemCardController.CardMode.BID));
+                    }
+                })
+        );
+    }
+
     private void updateCardsInContainer(Pane container, int auctionId,
                                         double newPrice, String bidder) {
         for (Node node : container.getChildren()) {
