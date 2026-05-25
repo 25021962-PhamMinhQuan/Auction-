@@ -38,6 +38,7 @@ public class ItemCardController {
     private String  endTime;
     private String  description;
     private Timeline cardCountdown;
+    private String imageUrl;
 
     // Dùng khi có Item thực từ server
     public void setAuctionData(int id, String name, double price,
@@ -50,6 +51,7 @@ public class ItemCardController {
         this.endTime     = endTime;
         this.description = description;
         this.mode        = mode;
+        this.imageUrl = imageUrl;
 
         itemname.setText(name);
         this.price.setText(formatVND(price));
@@ -120,7 +122,7 @@ public class ItemCardController {
                 getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
-        ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description);
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description, imageUrl);
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
         stage.setScene(new javafx.scene.Scene(root));
@@ -133,7 +135,7 @@ public class ItemCardController {
                 getClass().getResource("/org/example/view/itemdetail.fxml"));
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
-        ctrl.setAuctionData(auctionId, auctionName, currentPrice,startTime, endTime, description);
+        ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description, imageUrl);
         ctrl.setReadOnly(true);   // ẩn form bid, chỉ hiện thông tin
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();

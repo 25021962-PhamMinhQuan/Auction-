@@ -14,6 +14,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.example.server.AuctionClient;
 import javafx.stage.Stage;
@@ -28,31 +30,43 @@ import java.time.temporal.ChronoUnit;
 
 public class ItemBidingUIController {
 
-    @FXML private Label     itemName;
-    @FXML private Label     currentPrice;
-    @FXML private Label     highestBidder;
-    @FXML private Label     timeLeft;
-    @FXML private TextField bidInput;
-    @FXML private TextField maxBidInput;
-    @FXML private TextField incrementInput;
-    @FXML private VBox      historyBox;
-    @FXML private VBox      historyPopup;
-    @FXML private Label     description;
-    @FXML private VBox      bidSection;
-    private Timeline      countdownTimer;
+    @FXML
+    private Label itemName;
+    @FXML
+    private Label currentPrice;
+    @FXML
+    private Label highestBidder;
+    @FXML
+    private Label timeLeft;
+    @FXML
+    private TextField bidInput;
+    @FXML
+    private TextField maxBidInput;
+    @FXML
+    private TextField incrementInput;
+    @FXML
+    private VBox historyBox;
+    @FXML
+    private VBox historyPopup;
+    @FXML
+    private Label description;
+    @FXML
+    private VBox bidSection;
+    @FXML
+    private ImageView itemImage;
+    private Timeline countdownTimer;
     private LocalDateTime endTime;
     private LocalDateTime startTime;
 
 
     private int auctionId;
-    private double        latestPrice;
-    private boolean       readOnly = false;
+    private double latestPrice;
+    private boolean readOnly = false;
     private static final DateTimeFormatter TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
 
-
-    public void setAuctionData(int id, String name, double price, String startTimeStr, String endTimeStr, String desc) {
+    public void setAuctionData(int id, String name, double price, String startTimeStr, String endTimeStr, String desc, String imageUrl) {
         this.auctionId = id;
         this.latestPrice = price;
 
@@ -63,7 +77,8 @@ public class ItemBidingUIController {
         if (startTimeStr != null && !startTimeStr.isBlank()) {
             try {
                 this.startTime = LocalDateTime.parse(startTimeStr);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         if (endTimeStr != null && !endTimeStr.isBlank()) {
             try {
@@ -72,11 +87,11 @@ public class ItemBidingUIController {
             }
         }
         AuctionClient.getInstance().setActiveBidController(this);
-
+        loadImage(imageUrl);
         startCountdown();
     }
-    public void setData(int id, String name, double price) {
-        setAuctionData(id, name, price,null, null, "");
+    public void setData(int id, String name, double price, String imageUrl) {
+        setAuctionData(id, name, price,null, null, "", imageUrl);
     }
     
 /**
@@ -275,6 +290,19 @@ public void setReadOnly(boolean readOnly) {
         PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
         pause.setOnFinished(e -> label.setStyle(""));
         pause.play();
+    }
+    private void loadImage(String imageUrl) {
+        if (itemImage == null) return;
+        if (imageUrl == null || imageUrl.isBlank()) {
+            itemImage.setImage(null);
+            return;
+        }
+        try {
+            Image image = new Image(imageUrl, true); // true = load background
+            itemImage.setImage(image);
+        } catch (Exception e) {
+            itemImage.setImage(null);
+        }
     }
 }
 

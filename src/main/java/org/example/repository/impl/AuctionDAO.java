@@ -13,15 +13,15 @@ import static org.example.repository.impl.DBConnection.getConnection;
 
 public class AuctionDAO implements AuctionRepository {
     @Override
-    public void save(Auction auction,String status){
+    public void save(Auction auction, String status) {
         String sqlINSERT = "insert into auction (current_price,start_time,end_time,status,item_id) values (?,?,?,?,?)";
-        try(Connection conn = getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sqlINSERT, Statement.RETURN_GENERATED_KEYS);){
-            pstmt.setDouble(1,auction.getCurrentPrice());
-            pstmt.setObject(2,auction.getItem().getStartTime());
-            pstmt.setObject(3,auction.getItem().getEndTime());
-            pstmt.setString(4,status);
-            pstmt.setString(5,auction.getItem().getId());
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT, Statement.RETURN_GENERATED_KEYS);) {
+            pstmt.setDouble(1, auction.getCurrentPrice());
+            pstmt.setObject(2, auction.getItem().getStartTime());
+            pstmt.setObject(3, auction.getItem().getEndTime());
+            pstmt.setString(4, status);
+            pstmt.setString(5, auction.getItem().getId());
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -36,19 +36,19 @@ public class AuctionDAO implements AuctionRepository {
     }
 
     @Override
-    public void update(Auction auction,String status){
+    public void update(Auction auction, String status) {
         String sqlUPDATE = "update auction set current_price = ?,highest_bidder_id = ?,status = ? where id = ?";
 
-        try(Connection conn = getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE);){
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE);) {
 
-            pstmt.setDouble(1,auction.getCurrentPrice());
+            pstmt.setDouble(1, auction.getCurrentPrice());
             if (auction.getHighestBidder() == null) {
                 throw new IllegalStateException("Cannot update auction without highest bidder");
             }
             pstmt.setString(2, auction.getHighestBidder().getId());
-            pstmt.setString(3,status);
-            pstmt.setInt(4,auction.getId());
+            pstmt.setString(3, status);
+            pstmt.setInt(4, auction.getId());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -73,8 +73,8 @@ public class AuctionDAO implements AuctionRepository {
 
     @Override
     public List<Auction> findByStatus(String status) {
-        String sql = "select a.id, a.current_price, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, " +
+        String sql = "select a.id, a.current_price, a.status, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
                 "i.start_time, i.end_time " +
                 "from auction a join item i on a.item_id = i.id " +
                 "where a.status = ?";
@@ -135,10 +135,25 @@ public class AuctionDAO implements AuctionRepository {
 
         Auction auction = new Auction(item);
         auction.setId(rs.getInt("id"));
+        String dbStatus = rs.getString("status");
+        switch (dbStatus) {
+            case "RUNNING" -> auction.start();
+            case "FINISHED" -> {
+                auction.start();
+                auction.finish();
+            }
+            case "CANCELED" -> auction.cancel();
+            case "PAID" -> {
+                auction.start();
+                auction.finish();
+                auction.markPaid();
+            }
+        }
 
-        return auction;
+            return auction;
+        }
     }
 
-}
+
 
 

@@ -194,11 +194,21 @@ public class ClientHandler implements Runnable, AuctionObserver {
                 org.example.domain.item.Item item = itemService.CreateItem(
                         type, name, description, startPrice, startTime, endTime, imageUrl,
                         (org.example.domain.user.Seller) currentUser);
-
+                org.example.domain.auction.Auction auction =
+                        new org.example.domain.auction.Auction(item);
+                getAuctionService().StartAuction(auction);
+                for (ClientHandler client : AuctionServer.connectClient) {
+                    getAuctionService().addObserverToAuction(auction, client);
+                }
                 sendMessage("ITEM_ADDED|" + item.getId() + "|" + item.getName());
+                AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
+                        + "|" + item.getName()
+                        + "|" + item.getCurrentPrice()
+                        + "|" + item.getEndTime()
+                        + "|" + item.getStartTime()
+                        + "|" + auction.getStatus().name());
                 break;
             }
-
             case "START_AUCTION": {
                 // "START_AUCTION|itemId"
                 if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
@@ -298,7 +308,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                             + a.getItem().getEndTime()         + "|"
                             + a.getStatus()                + "|"
                             + a.getItem().getStartTime()       + "|"
-                            + a.getItem().getDescription());
+                            + a.getItem().getDescription() + "|"
+                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
                 }
                 sendMessage("AUCTION_LIST_END|SEARCH");
                 break;
@@ -318,7 +329,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                             + a.getItem().getEndTime() + "|"
                             + a.getStatus().name() + "|"
                             + a.getItem().getStartTime() + "|"
-                            + a.getItem().getDescription()
+                            + a.getItem().getDescription() + "|"
+                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : "")
                     );
                 }
                 sendMessage("AUCTION_LIST_END|" + status);  // ← gửi kèm status

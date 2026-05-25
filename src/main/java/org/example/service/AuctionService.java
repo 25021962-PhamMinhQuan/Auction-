@@ -57,7 +57,7 @@ public class AuctionService {
             auctionDAO.update(auction, Auction.Status.RUNNING.name());
             bidDAO.save(bid, auction.getId());
         });
-        auctionDAO.save(auction, Auction.Status.RUNNING.name());
+        auctionDAO.save(auction, Auction.Status.OPEN.name());
         coordinators.put(auction.getId(), coordinator);
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -75,7 +75,7 @@ public class AuctionService {
                     }
                     // Đến giờ rồi → chuyển sang RUNNING
                     auction.start();
-                    auctionDAO.update(auction, Auction.Status.RUNNING.name());
+                    auctionDAO.updateStatus(auction, Auction.Status.RUNNING.name());
                     return;
                 }
 
