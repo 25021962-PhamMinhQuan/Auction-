@@ -266,4 +266,391 @@
             0
     );
 }
+/* ════════════════════════════════════════════
+   ADMIN PANEL — style bổ sung cho adminscreen.fxml
+   Nhập vào sau style.css chính
+   ════════════════════════════════════════════ */
+
+/* ── Admin Badge (topbar) ── */
+.admin-badge {
+    -fx-background-color: rgba(251,191,36,0.15);
+    -fx-text-fill: #fbbf24;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 4 10 4 10;
+    -fx-border-color: rgba(251,191,36,0.3);
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+}
+
+/* ══════════════════════════════════════
+   LEFT SIDEBAR
+══════════════════════════════════════ */
+.admin-sidebar {
+    -fx-background-color: #0d1424;
+    -fx-min-width: 220px;
+    -fx-max-width: 220px;
+    -fx-pref-width: 220px;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-section-label {
+    -fx-text-fill: #4b5563;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 16 4 16;
+}
+
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 13px;
+    -fx-padding: 11 16 11 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    -fx-border-width: 0 0 0 3;
+    -fx-border-color: transparent;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.05);
+    -fx-text-fill: #e5e7eb;
+}
+
+.sidebar-btn-active {
+    -fx-background-color: rgba(251,191,36,0.1);
+    -fx-text-fill: #fbbf24;
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 0 0 0 3;
+}
+
+.sidebar-btn-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 13px;
+    -fx-padding: 11 16 11 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+.sidebar-btn-danger:hover {
+    -fx-background-color: rgba(239,68,68,0.1);
+}
+
+/* ══════════════════════════════════════
+   CONTENT AREA
+══════════════════════════════════════ */
+.admin-content-section {
+    -fx-background-color: transparent;
+}
+
+.admin-page-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f1f5f9;
+}
+
+.admin-page-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+}
+
+/* ══════════════════════════════════════
+   STAT CARDS (Dashboard)
+══════════════════════════════════════ */
+.stat-card {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+    -fx-alignment: TOP_LEFT;
+}
+
+.stat-card:hover {
+    -fx-border-color: #374151;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.stat-card-accent {
+    -fx-border-color: rgba(251,191,36,0.25);
+    -fx-background-color: rgba(251,191,36,0.05);
+}
+
+.stat-icon {
+    -fx-font-size: 24px;
+}
+
+.stat-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f1f5f9;
+}
+
+.stat-number-accent {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fbbf24;
+}
+
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+/* ══════════════════════════════════════
+   ADMIN CARDS (panels)
+══════════════════════════════════════ */
+.admin-card {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+}
+
+.admin-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5e7eb;
+}
+
+/* Quick stat rows */
+.quick-stat-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 4 0;
+}
+
+.quick-stat-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #9ca3af;
+}
+
+.quick-stat-value {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5e7eb;
+}
+
+.quick-stat-value-danger {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ef4444;
+}
+
+.quick-stat-value-warn {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f59e0b;
+}
+
+/* ══════════════════════════════════════
+   TOOLBAR / FILTER BAR
+══════════════════════════════════════ */
+.toolbar-bar {
+    -fx-background-color: #0d1424;
+    -fx-background-radius: 8;
+    -fx-padding: 10 12;
+    -fx-border-color: #1f2937;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.admin-search-field {
+    -fx-background-color: #1f2933;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #4b5563;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+}
+
+.admin-search-field:focused {
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 1.5;
+}
+
+.filter-btn {
+    -fx-background-color: #1f2933;
+    -fx-text-fill: #9ca3af;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-padding: 6 14;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.filter-btn:hover {
+    -fx-background-color: #374151;
+    -fx-text-fill: #e5e7eb;
+}
+
+.filter-btn-active {
+    -fx-background-color: rgba(251,191,36,0.12);
+    -fx-text-fill: #fbbf24;
+    -fx-border-color: rgba(251,191,36,0.4);
+}
+
+/* ══════════════════════════════════════
+   TABLES
+══════════════════════════════════════ */
+.admin-table {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 1;
+    -fx-table-cell-border-color: transparent;
+}
+
+.admin-table .column-header-background {
+    -fx-background-color: #0d1424;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.admin-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 38;
+}
+
+.admin-table .column-header .label {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.admin-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #1f2937 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-table-cell-border-color: transparent;
+}
+
+.admin-table .table-row-cell:hover {
+    -fx-background-color: rgba(255,255,255,0.03);
+}
+
+.admin-table .table-row-cell:selected {
+    -fx-background-color: rgba(251,191,36,0.08);
+}
+
+.admin-table .table-cell {
+    -fx-text-fill: #d1d5db;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8;
+}
+
+/* ══════════════════════════════════════
+   ACTION BUTTONS
+══════════════════════════════════════ */
+.button-secondary {
+    -fx-background-color: #1f2933;
+    -fx-text-fill: #e5e7eb;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-padding: 8 18;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #374151;
+    -fx-border-color: #4b5563;
+}
+
+.btn-warn {
+    -fx-background-color: rgba(245,158,11,0.15);
+    -fx-text-fill: #f59e0b;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: rgba(245,158,11,0.4);
+    -fx-border-width: 1;
+    -fx-padding: 8 18;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.btn-warn:hover {
+    -fx-background-color: rgba(245,158,11,0.25);
+}
+
+.btn-danger {
+    -fx-background-color: rgba(239,68,68,0.15);
+    -fx-text-fill: #ef4444;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: rgba(239,68,68,0.4);
+    -fx-border-width: 1;
+    -fx-padding: 8 18;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: rgba(239,68,68,0.25);
+}
+
+.button-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fbbf24;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.button-link:hover {
+    -fx-text-fill: #f59e0b;
+}
+
+/* ══════════════════════════════════════
+   CONFIRM DIALOG
+══════════════════════════════════════ */
+.confirm-overlay {
+    -fx-background-color: rgba(0,0,0,0.6);
+}
+
+.confirm-dialog {
+    -fx-background-color: #111827;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-padding: 28 32 24 32;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 30, 0.4, 0, 8);
+}
+
+.confirm-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f1f5f9;
+}
+
+.confirm-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: #9ca3af;
+    -fx-text-alignment: center;
+}
+
+/* ══════════════════════════════════════
+   ADMIN SIDE PANEL
+══════════════════════════════════════ */
+.admin-avatar-icon {
+    -fx-font-size: 48px;
+}
+
 

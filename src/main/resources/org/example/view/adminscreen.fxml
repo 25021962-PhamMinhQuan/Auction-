@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane stylesheets="@../../../css/style.css%20@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AdminScreenController">
+
+    <children>
+
+        <!-- ══════════════════════════════════════
+             MAIN LAYOUT
+        ══════════════════════════════════════ -->
+        <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="root">
+
+            <!-- ── TOP NAVBAR (giống mainscreen) ── -->
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="navbar" BorderPane.alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10" />
+                    </padding>
+
+                    <!-- Logo -->
+                    <Button mnemonicParsing="false" styleClass="nav-button">
+                        <graphic>
+                            <ImageView fitHeight="43" fitWidth="93" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../../../Auction_App.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <!-- Admin Badge -->
+                    <Label styleClass="admin-badge" text="ADMIN PANEL" />
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <!-- Right Side -->
+                    <HBox alignment="CENTER_RIGHT" spacing="20">
+                        <padding>
+                            <Insets right="10" />
+                        </padding>
+                        <Label fx:id="adminUsernameLabel" styleClass="label-secondary" text="Admin" />
+                        <!-- User icon -->
+                        <Button mnemonicParsing="false" onAction="#handleOpenAdminPanel" styleClass="icon-btn">
+                            <graphic>
+                                <ImageView fitHeight="32" fitWidth="13" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
+                                    <image>
+                                        <Image url="@../../../icon_user.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </HBox>
+            </top>
+
+            <!-- ── CENTER: Sidebar + Content ── -->
+            <center>
+                <HBox BorderPane.alignment="CENTER">
+
+                    <!-- ── LEFT SIDEBAR ── -->
+                    <VBox spacing="4" styleClass="admin-sidebar">
+                        <padding>
+                            <Insets bottom="24" left="0" right="0" top="24" />
+                        </padding>
+
+                        <Label styleClass="sidebar-section-label" text="TỔNG QUAN" />
+                        <Button fx:id="navDashboard" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="sidebar-btn, sidebar-btn-active" text="📊  Dashboard" />
+
+                        <Label styleClass="sidebar-section-label" text="QUẢN LÝ">
+                            <VBox.margin>
+                                <Insets top="16" />
+                            </VBox.margin>
+                        </Label>
+                        <Button fx:id="navUsers" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showUserManagement" styleClass="sidebar-btn" text="👤  Tài Khoản" />
+                        <Button fx:id="navItems" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showItemManagement" styleClass="sidebar-btn" text="🏷️  Sản Phẩm" />
+                        <Button fx:id="navAuctions" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showAuctionManagement" styleClass="sidebar-btn" text="🔨  Phiên Đấu Giá" />
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <Separator />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-btn-danger" text="⏻  Đăng Xuất" />
+                    </VBox>
+
+                    <!-- ── MAIN CONTENT AREA ── -->
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane" HBox.hgrow="ALWAYS">
+                        <content>
+                            <VBox fx:id="contentArea" spacing="0">
+
+                                <!-- ════════════════════════════
+                                     SECTION 1: DASHBOARD
+                                ════════════════════════════ -->
+                                <VBox fx:id="sectionDashboard" spacing="24" styleClass="admin-content-section">
+                                    <padding>
+                                        <Insets bottom="28" left="28" right="28" top="28" />
+                                    </padding>
+
+                                    <Label styleClass="admin-page-title" text="Dashboard" />
+                                    <Label styleClass="admin-page-subtitle" text="Tổng quan hệ thống đấu giá" />
+
+                                    <!-- Stat Cards Row -->
+                                    <HBox spacing="16">
+                                        <!-- Card 1 -->
+                                        <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="stat-icon" text="👥" />
+                                            <Label fx:id="statTotalUsers" styleClass="stat-number" text="0" />
+                                            <Label styleClass="stat-label" text="Tổng người dùng" />
+                                        </VBox>
+                                        <!-- Card 2 -->
+                                        <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="stat-icon" text="🏷️" />
+                                            <Label fx:id="statTotalItems" styleClass="stat-number" text="0" />
+                                            <Label styleClass="stat-label" text="Tổng sản phẩm" />
+                                        </VBox>
+                                        <!-- Card 3 -->
+                                        <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="stat-icon" text="🔨" />
+                                            <Label fx:id="statActiveAuctions" styleClass="stat-number" text="0" />
+                                            <Label styleClass="stat-label" text="Phiên đang diễn ra" />
+                                        </VBox>
+                                        <!-- Card 4 -->
+                                        <VBox spacing="8" styleClass="stat-card stat-card-accent" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="stat-icon" text="💰" />
+                                            <Label fx:id="statTotalRevenue" styleClass="stat-number-accent" text="0 ₫" />
+                                            <Label styleClass="stat-label" text="Tổng giá trị giao dịch" />
+                                        </VBox>
+                                    </HBox>
+
+                                    <!-- Recent Activity + Top Items Row -->
+                                    <HBox spacing="16">
+                                        <!-- Recent Activity -->
+                                        <VBox spacing="12" styleClass="admin-card" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="admin-card-title" text="Hoạt động gần đây" />
+                                            <Separator />
+                                            <VBox fx:id="recentActivityList" spacing="8" />
+                                            <Button mnemonicParsing="false" styleClass="button-link" text="Xem tất cả →" />
+                                        </VBox>
+
+                                        <!-- Quick Stats -->
+                                        <VBox prefWidth="280" spacing="12" styleClass="admin-card">
+                                            <Label styleClass="admin-card-title" text="Thống kê nhanh" />
+                                            <Separator />
+                                            <HBox styleClass="quick-stat-row">
+                                                <Label styleClass="quick-stat-label" text="Tài khoản bị khóa" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statBanned" styleClass="quick-stat-value-danger" text="0" />
+                                            </HBox>
+                                            <HBox styleClass="quick-stat-row">
+                                                <Label styleClass="quick-stat-label" text="Phiên sắp diễn ra" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statUpcoming" styleClass="quick-stat-value" text="0" />
+                                            </HBox>
+                                            <HBox styleClass="quick-stat-row">
+                                                <Label styleClass="quick-stat-label" text="Sản phẩm chờ duyệt" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statPendingItems" styleClass="quick-stat-value-warn" text="0" />
+                                            </HBox>
+                                            <HBox styleClass="quick-stat-row">
+                                                <Label styleClass="quick-stat-label" text="Lượt đặt giá hôm nay" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statTodayBids" styleClass="quick-stat-value" text="0" />
+                                            </HBox>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+
+                                <!-- ════════════════════════════
+                                     SECTION 2: USER MANAGEMENT
+                                ════════════════════════════ -->
+                                <VBox fx:id="sectionUsers" managed="false" spacing="20" styleClass="admin-content-section" visible="false">
+                                    <padding>
+                                        <Insets bottom="28" left="28" right="28" top="28" />
+                                    </padding>
+
+                                    <!-- Header -->
+                                    <HBox alignment="CENTER_LEFT" spacing="12">
+                                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="admin-page-title" text="Quản Lý Tài Khoản" />
+                                            <Label styleClass="admin-page-subtitle" text="Xem, khóa và xóa tài khoản người dùng" />
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#refreshUsers" styleClass="button-secondary" text="↻  Làm mới" />
+                                    </HBox>
+
+                                    <!-- Search & Filter Bar -->
+                                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
+                                        <TextField fx:id="userSearchField" promptText="🔍  Tìm theo tên hoặc email..." styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
+                                        <Button mnemonicParsing="false" onAction="#filterLockedUsers" styleClass="filter-btn" text="🔒 Đã khóa" />
+                                        <Button mnemonicParsing="false" onAction="#filterAllUsers" styleClass="filter-btn filter-btn-active" text="Tất cả" />
+                                    </HBox>
+
+                                    <!-- User Table -->
+                                    <TableView fx:id="userTable" styleClass="admin-table">
+                                        <columns>
+                                            <TableColumn fx:id="colUserId" prefWidth="60" text="ID" />
+                                            <TableColumn fx:id="colUsername" prefWidth="180" text="Tên đăng nhập" />
+                                            <TableColumn fx:id="colEmail" prefWidth="220" text="Email" />
+                                            <TableColumn fx:id="colRole" prefWidth="90" text="Vai trò" />
+                                            <TableColumn fx:id="colUserStatus" prefWidth="100" text="Trạng thái" />
+                                            <TableColumn fx:id="colUserDate" prefWidth="140" text="Ngày tạo" />
+                                        </columns>
+                                    </TableView>
+
+                                    <!-- Action Buttons -->
+                                    <HBox spacing="12">
+                                        <Button fx:id="btnBanUser" mnemonicParsing="false" onAction="#handleBanUser" styleClass="btn-warn" text="🔒  Khóa tài khoản" />
+                                        <Button fx:id="btnUnbanUser" mnemonicParsing="false" onAction="#handleUnbanUser" styleClass="button-secondary" text="🔓  Mở khóa" />
+                                        <Button fx:id="btnViewUserDetail" mnemonicParsing="false" onAction="#handleViewUserDetail" styleClass="button-secondary" text="👁  Xem chi tiết" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="btnDeleteUser" mnemonicParsing="false" onAction="#handleDeleteUser" styleClass="btn-danger" text="🗑  Xóa tài khoản" />
+                                    </HBox>
+                                </VBox>
+
+                                <!-- ════════════════════════════
+                                     SECTION 3: ITEM MANAGEMENT
+                                ════════════════════════════ -->
+                                <VBox fx:id="sectionItems" managed="false" spacing="20" styleClass="admin-content-section" visible="false">
+                                    <padding>
+                                        <Insets bottom="28" left="28" right="28" top="28" />
+                                    </padding>
+
+                                    <!-- Header -->
+                                    <HBox alignment="CENTER_LEFT" spacing="12">
+                                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="admin-page-title" text="Quản Lý Sản Phẩm" />
+                                            <Label styleClass="admin-page-subtitle" text="Duyệt, chỉnh sửa và xóa sản phẩm đấu giá" />
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#refreshItems" styleClass="button-secondary" text="↻  Làm mới" />
+                                    </HBox>
+
+                                    <!-- Search & Filter -->
+                                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
+                                        <TextField fx:id="itemSearchField" promptText="🔍  Tìm theo tên sản phẩm..." styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
+                                        <Button mnemonicParsing="false" onAction="#filterPendingItems" styleClass="filter-btn" text="⏳ Chờ duyệt" />
+                                        <Button mnemonicParsing="false" onAction="#filterActiveItems" styleClass="filter-btn" text="✅ Đang đấu" />
+                                        <Button mnemonicParsing="false" onAction="#filterAllItems" styleClass="filter-btn filter-btn-active" text="Tất cả" />
+                                    </HBox>
+
+                                    <!-- Item Table -->
+                                    <TableView fx:id="itemTable" styleClass="admin-table">
+                                        <columns>
+                                            <TableColumn fx:id="colItemId" prefWidth="60" text="ID" />
+                                            <TableColumn fx:id="colItemName" prefWidth="220" text="Tên sản phẩm" />
+                                            <TableColumn fx:id="colItemSeller" prefWidth="140" text="Người bán" />
+                                            <TableColumn fx:id="colItemCategory" prefWidth="110" text="Danh mục" />
+                                            <TableColumn fx:id="colItemPrice" prefWidth="120" text="Giá khởi điểm" />
+                                            <TableColumn fx:id="colItemStatus" prefWidth="110" text="Trạng thái" />
+                                        </columns>
+                                    </TableView>
+
+                                    <!-- Action Buttons -->
+                                    <HBox spacing="12">
+                                        <Button fx:id="btnApproveItem" mnemonicParsing="false" onAction="#handleApproveItem" styleClass="button-login" text="✅  Duyệt sản phẩm" />
+                                        <Button fx:id="btnViewItemDetail" mnemonicParsing="false" onAction="#handleViewItemDetail" styleClass="button-secondary" text="👁  Xem chi tiết" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="btnDeleteItem" mnemonicParsing="false" onAction="#handleDeleteItem" styleClass="btn-danger" text="🗑  Xóa sản phẩm" />
+                                    </HBox>
+                                </VBox>
+
+                                <!-- ════════════════════════════
+                                     SECTION 4: AUCTION MANAGEMENT
+                                ════════════════════════════ -->
+                                <VBox fx:id="sectionAuctions" managed="false" spacing="20" styleClass="admin-content-section" visible="false">
+                                    <padding>
+                                        <Insets bottom="28" left="28" right="28" top="28" />
+                                    </padding>
+
+                                    <HBox alignment="CENTER_LEFT" spacing="12">
+                                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="admin-page-title" text="Quản Lý Phiên Đấu Giá" />
+                                            <Label styleClass="admin-page-subtitle" text="Theo dõi và kiểm soát các phiên đấu giá" />
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#refreshAuctions" styleClass="button-secondary" text="↻  Làm mới" />
+                                    </HBox>
+
+                                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
+                                        <TextField fx:id="auctionSearchField" promptText="🔍  Tìm phiên đấu giá..." styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
+                                        <Button mnemonicParsing="false" styleClass="filter-btn" text="🔴 Đang diễn ra" />
+                                        <Button mnemonicParsing="false" styleClass="filter-btn" text="🕒 Sắp tới" />
+                                        <Button mnemonicParsing="false" styleClass="filter-btn filter-btn-active" text="Tất cả" />
+                                    </HBox>
+
+                                    <TableView fx:id="auctionTable" styleClass="admin-table">
+                                        <columns>
+                                            <TableColumn fx:id="colAuctionId" prefWidth="60" text="ID" />
+                                            <TableColumn fx:id="colAuctionItem" prefWidth="200" text="Sản phẩm" />
+                                            <TableColumn fx:id="colAuctionStart" prefWidth="150" text="Bắt đầu" />
+                                            <TableColumn fx:id="colAuctionEnd" prefWidth="150" text="Kết thúc" />
+                                            <TableColumn fx:id="colAuctionPrice" prefWidth="130" text="Giá hiện tại" />
+                                            <TableColumn fx:id="colAuctionStatus" prefWidth="110" text="Trạng thái" />
+                                        </columns>
+                                    </TableView>
+
+                                    <HBox spacing="12">
+                                        <Button fx:id="btnStopAuction" mnemonicParsing="false" onAction="#handleStopAuction" styleClass="btn-warn" text="⏸  Dừng phiên" />
+                                        <Button fx:id="btnViewAuction" mnemonicParsing="false" onAction="#handleViewAuction" styleClass="button-secondary" text="👁  Xem chi tiết" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="btnDeleteAuction" mnemonicParsing="false" onAction="#handleDeleteAuction" styleClass="btn-danger" text="🗑  Xóa phiên" />
+                                    </HBox>
+                                </VBox>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+
+                </HBox>
+            </center>
+        </BorderPane>
+
+        <!-- ══════════════════════════════════════
+             SIDE PANEL (Admin Profile)
+        ══════════════════════════════════════ -->
+        <AnchorPane fx:id="overlayAdminPanel" managed="false" visible="false">
+            <children>
+                <VBox fx:id="adminPanelContent" alignment="TOP_CENTER" layoutX="880" prefHeight="700.0" prefWidth="320.0" spacing="16" styleClass="dashboard-panel" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+                    <!-- Close -->
+                    <HBox prefWidth="320">
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#handleCloseAdminPanel" prefHeight="40" prefWidth="47" styleClass="nav-button" text="✕" />
+                    </HBox>
+
+                    <!-- Avatar area -->
+                    <Label styleClass="admin-avatar-icon" text="🛡" />
+                    <Label styleClass="label-secondary" text="Quản trị viên" />
+                    <Label fx:id="panelAdminName" styleClass="item-name" text="Admin" />
+
+                    <Separator />
+
+                    <VBox spacing="12">
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="⚙  Cài đặt hệ thống" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="nav-button" text="⏻  Đăng xuất" />
+                    </VBox>
+                </VBox>
+            </children>
+        </AnchorPane>
+
+        <!-- ══════════════════════════════════════
+             CONFIRM DIALOG OVERLAY
+        ══════════════════════════════════════ -->
+        <StackPane fx:id="confirmOverlay" managed="false" styleClass="confirm-overlay" visible="false">
+            <VBox alignment="CENTER" maxWidth="400" spacing="16" styleClass="confirm-dialog">
+                <Label fx:id="confirmTitle" styleClass="confirm-title" text="Xác nhận" />
+                <Label fx:id="confirmMessage" styleClass="confirm-message" text="Bạn có chắc chắn muốn thực hiện thao tác này?" wrapText="true" />
+                <HBox alignment="CENTER" spacing="12">
+                    <Button fx:id="confirmCancelBtn" mnemonicParsing="false" onAction="#handleConfirmCancel" prefWidth="120" styleClass="button-secondary" text="Hủy" />
+                    <Button fx:id="confirmOkBtn" mnemonicParsing="false" onAction="#handleConfirmOk" prefWidth="120" styleClass="btn-danger" text="Xác nhận" />
+                </HBox>
+            </VBox>
+        </StackPane>
+
+    </children>
+</StackPane>

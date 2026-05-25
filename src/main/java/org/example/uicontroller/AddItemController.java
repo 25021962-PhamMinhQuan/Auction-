@@ -62,6 +62,12 @@ public class AddItemController {
                     String name  = p.length > 2 ? p[2] : "";
                     double price = p.length > 3 ? Double.parseDouble(p[3]) : 0;
                     String type  = p.length > 4 ? p[4] : "";
+                    String startStr = p.length > 5 ? p[5] : "";
+                    LocalDateTime itemStartTime = null;
+                    try {
+                        if (!startStr.isEmpty() && !startStr.equals("null"))
+                            itemStartTime = LocalDateTime.parse(startStr);
+                    } catch (Exception ignored) {}
 
                     VBox card = new VBox(4);
                     card.setStyle("-fx-border-color: #dee2e6; -fx-border-radius: 6; "
@@ -73,18 +79,24 @@ public class AddItemController {
                     Label lInfo  = new Label(type + "  |  Giá khởi điểm: "
                             + String.format("%,.0f VND", price));
                     lInfo.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
-
-                    Button startBtn = new Button("▶ Bắt đầu đấu giá");
-                    startBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; "
-                            + "-fx-font-weight: bold; -fx-cursor: hand;");
-                    startBtn.setOnAction(e -> handleStartAuction(id, name, startBtn));
-
+                    HBox btnRow = new HBox(8);
+                    if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now())) {
+                        // Đã lên lịch, chưa đến giờ → không cho start thủ công
+                        Label scheduledLbl = new Label("⏳ Đã lên lịch: " + itemStartTime.format(INPUT_FMT));
+                        scheduledLbl.setStyle("-fx-text-fill: #fd7e14; -fx-font-weight: bold;");
+                        btnRow.getChildren().add(scheduledLbl);
+                    } else {
+                        Button startBtn = new Button("▶ Bắt đầu đấu giá");
+                        startBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; "
+                                + "-fx-font-weight: bold; -fx-cursor: hand;");
+                        startBtn.setOnAction(e -> handleStartAuction(id, name, startBtn));
+                    }
                     Button deleteBtn = new Button("🗑 Xóa");
                     deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; "
                             + "-fx-font-weight: bold; -fx-cursor: hand;");
                     deleteBtn.setOnAction(e -> handleDeleteItem(id, name, card));
 
-                    HBox btnRow = new HBox(8, startBtn, deleteBtn);
+
                     card.getChildren().addAll(lName, lInfo, btnRow);
                     myItemsBox.getChildren().add(card);
                 }

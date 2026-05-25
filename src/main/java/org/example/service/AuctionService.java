@@ -43,7 +43,6 @@ public class AuctionService {
     }
 
     public void StartAuction(Auction auction){
-        auction.start();
 
         // Nếu item chưa có thời gian, tự động gán: bắt đầu = now, kết thúc = now + 30 phút
         if (auction.getItem().getStartTime() == null) {
@@ -67,13 +66,26 @@ public class AuctionService {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
+                LocalDateTime now = LocalDateTime.now();
+
+                // Chưa đến startTime → chưa bắt đầu, bỏ qua
+                if (auction.getStatus() == Auction.Status.OPEN) {
+                    if (now.isBefore(auction.getItem().getStartTime())) {
+                        return; // chờ đến giờ
+                    }
+                    // Đến giờ rồi → chuyển sang RUNNING
+                    auction.start();
+                    auctionDAO.update(auction, Auction.Status.RUNNING.name());
+                    return;
+                }
+
                 if(auction.getStatus() != Auction.Status.RUNNING){
                     cleanup(auction.getId());
                     return;
                 }
 
                 LocalDateTime endTime = auction.getItem().getEndTime();
-                if(LocalDateTime.now().isAfter(endTime)){
+                if(now.isAfter(endTime)){
                     FinishAuction(auction);
                 }
             } catch (Exception e) {

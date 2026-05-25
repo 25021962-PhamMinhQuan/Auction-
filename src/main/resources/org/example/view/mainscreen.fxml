@@ -135,6 +135,13 @@
 
                   <!-- Search -->
                   <HBox alignment="CENTER_LEFT" spacing="6">
+                     <Button fx:id="addItemBtn"
+                             managed="false"
+                             mnemonicParsing="false"
+                             onAction="#handleAddItem"
+                             styleClass="button-login"
+                             text="+ Add Item"
+                             visible="false"/>
                      <TextField fx:id="searchField"
                                 promptText="Search auction by name..."
                                 prefWidth="220"

@@ -212,6 +212,14 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         ServiceFactory.getInstance().getItemService();
                 org.example.domain.item.Item item = itemService.getItemById(itemId);
                 if (item == null) { sendMessage("ERROR|Không tìm thấy item"); return; }
+                if (item.getStartTime() == null || item.getEndTime() == null) {
+                    sendMessage("ERROR|Item chưa có lịch đấu giá");
+                    return;
+                }
+                if (item.getEndTime().isBefore(java.time.LocalDateTime.now())) {
+                    sendMessage("ERROR|Thời gian kết thúc đã qua");
+                    return;
+                }
 
                 org.example.domain.auction.Auction auction =
                         new org.example.domain.auction.Auction(item);
@@ -228,7 +236,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         + "|" + item.getName()
                         + "|" + item.getCurrentPrice()
                         + "|" + item.getEndTime()
-                        + "|" + item.getStartTime());
+                        + "|" + item.getStartTime()
+                        + "|" + auction.getStatus().name());
                 break;
             }
             case "DELETE_ITEM": {
