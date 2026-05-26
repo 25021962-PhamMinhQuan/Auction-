@@ -34,6 +34,7 @@ public class AuctionClient {
     private final List<String[]> pendingMyItems  = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
     private Runnable newAuctionListener;
+    private Consumer<List<String>> suggestCallback;
 
     // ──────────────── Singleton ────────────────
 
@@ -245,6 +246,15 @@ public class AuctionClient {
                 if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
                 break;
             }
+
+            case "SUGGEST_RESULT": {
+                List<String> names = new ArrayList<>();
+                for (int i = 1; i < parts.length; i++) names.add(parts[i]);
+                Consumer<List<String>> cb2 = suggestCallback;
+                suggestCallback = null;
+                if (cb2 != null) Platform.runLater(() -> cb2.accept(names));
+                break;
+            }
         }
     }
 
@@ -253,6 +263,11 @@ public class AuctionClient {
     public void requestSearchAuctions(String keyword, Consumer<List<String[]>> callback) {
         this.searchAuctionCallback = callback;
         sendCommand("SEARCH_AUCTIONS|" + keyword);
+    }
+
+    public void requestSuggestAuctions(String keyword, Consumer<List<String>> callback) {
+        this.suggestCallback = callback;
+        sendCommand("SUGGEST_AUCTIONS|" + keyword);
     }
 
     public void login(String username, String password) {

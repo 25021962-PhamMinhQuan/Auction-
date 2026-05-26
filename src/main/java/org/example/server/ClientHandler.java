@@ -319,6 +319,18 @@ public class ClientHandler implements Runnable, AuctionObserver {
                 break;
             }
 
+            case "SUGGEST_AUCTIONS": {
+                String keyword = parts.length > 1 ? parts[1] : "";
+                List<Auction> suggestions = auctionService.searchByName(keyword);
+                StringBuilder sb = new StringBuilder("SUGGEST_RESULT");
+                int max = Math.min(suggestions.size(), 8);
+                for (int i = 0; i < max; i++) {
+                    sb.append("|").append(suggestions.get(i).getItem().getName());
+                }
+                sendMessage(sb.toString());
+                break;
+            }
+
             case "LIST_AUCTIONS": {
                 // "LIST_AUCTIONS|status"  (OPEN = upcoming, RUNNING = ongoing)
                 String status = parts.length > 1 ? parts[1] : "RUNNING";

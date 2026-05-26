@@ -12,6 +12,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import org.example.domain.user.User;
 import org.example.server.AuctionClient;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,12 +35,17 @@ public class MainScreenController {
     @FXML private Label      usernameLabel; // có trong FXML navbar
     @FXML private AnchorPane overlayDashboard;
     @FXML private Button     addItemBtn;
-    @FXML private TextField searchField;  // thêm vào đầu class
+    @FXML private TextField searchField;
+    @FXML private VBox suggestionBox;
+
+
 
 
     private String currentGridType; // "OPEN" hoặc "RUNNING" – để biết grid đang xem loại nào
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
     private static final int PREVIEW_COUNT = 7;
+    private final ScheduledExecutorService debounceExecutor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> pendingSuggest;
 
     // FIX: không tự new() — instance được set từ ngoài vào bằng setInstance()
     // Nếu tự new() thì @FXML fields sẽ null hết vì JavaFX không inject vào
@@ -48,6 +57,7 @@ public class MainScreenController {
     public void initialize() {
         instance = this;
         wireHoverMenus();
+        wireAutocomplete();
         loadUpcoming();
     }
 
@@ -235,27 +245,67 @@ public class MainScreenController {
     }
 
 
+    private void wireAutocomplete() {
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String trimmed = newVal.trim();
+            if (trimmed.isEmpty()) { hideSuggestions(); return; }
+            if (pendingSuggest != null && !pendingSuggest.isDone()) pendingSuggest.cancel(false);
+            pendingSuggest = debounceExecutor.schedule(() ->
+                    AuctionClient.getInstance().requestSuggestAuctions(trimmed, names ->
+                            Platform.runLater(() -> showSuggestions(names))
+                    ), 250, TimeUnit.MILLISECONDS
+            );
+        });
+        searchField.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) hideSuggestions();
+        });
+        searchField.focusedProperty().addListener((obs, was, isFocused) -> {
+            if (!isFocused)
+                debounceExecutor.schedule(() -> Platform.runLater(this::hideSuggestions), 150, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private void showSuggestions(java.util.List<String> names) {
+        suggestionBox.getChildren().clear();
+        if (names.isEmpty()) { hideSuggestions(); return; }
+        for (String name : names) {
+            Button item = new Button("🔍  " + name);
+            item.getStyleClass().add("suggest-item");
+            item.setMaxWidth(Double.MAX_VALUE);
+            item.setOnAction(e -> { searchField.setText(name); hideSuggestions(); triggerSearch(name); });
+            suggestionBox.getChildren().add(item);
+        }
+        suggestionBox.setVisible(true);
+        suggestionBox.setManaged(true);
+        suggestionBox.toFront();
+    }
+
+    private void hideSuggestions() {
+        suggestionBox.setVisible(false);
+        suggestionBox.setManaged(false);
+        suggestionBox.getChildren().clear();
+    }
+
+    private void triggerSearch(String keyword) {
+        currentGridType = "SEARCH";
+        setGridVisible(true);
+        gridPane.getChildren().clear();
+        AuctionClient.getInstance().requestSearchAuctions(keyword, items ->
+                Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    if (items.isEmpty()) gridPane.getChildren().add(new Label("No results for: " + keyword));
+                    for (String[] item : items)
+                        gridPane.getChildren().add(buildCard(item, ItemCardController.CardMode.BID));
+                })
+        );
+    }
+
     @FXML
     private void handleSearch() {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) return;
-
-        currentGridType = "SEARCH";
-        setGridVisible(true);
-        gridPane.getChildren().clear();
-
-        AuctionClient.getInstance().requestSearchAuctions(keyword, items ->
-                Platform.runLater(() -> {
-                    gridPane.getChildren().clear();
-                    if (items.isEmpty()) {
-                        gridPane.getChildren().add(new Label("No results for: " + keyword));
-                    }
-                    for (String[] item : items) {
-                        gridPane.getChildren().add(
-                                buildCard(item, ItemCardController.CardMode.BID));
-                    }
-                })
-        );
+        hideSuggestions();
+        triggerSearch(keyword);
     }
 
     private void updateCardsInContainer(Pane container, int auctionId,

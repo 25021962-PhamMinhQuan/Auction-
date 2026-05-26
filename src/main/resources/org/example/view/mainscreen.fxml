@@ -142,11 +142,19 @@
                              styleClass="button-login"
                              text="+ Add Item"
                              visible="false"/>
-                     <TextField fx:id="searchField"
-                                promptText="Search auction by name..."
-                                prefWidth="220"
-                                onAction="#handleSearch"
-                                styleClass="text-field" />
+                     <StackPane>
+                        <TextField fx:id="searchField"
+                                   promptText="Search auction by name..."
+                                   prefWidth="220"
+                                   onAction="#handleSearch"
+                                   styleClass="text-field" />
+                        <VBox fx:id="suggestionBox"
+                              managed="false"
+                              visible="false"
+                              styleClass="suggest-dropdown"
+                              translateY="60"
+                              StackPane.alignment="TOP_LEFT" />
+                     </StackPane>
                      <Button mnemonicParsing="false"
                              onAction="#handleSearch"
                              styleClass="icon-btn">
