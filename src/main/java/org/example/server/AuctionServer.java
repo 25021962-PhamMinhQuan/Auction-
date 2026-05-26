@@ -4,13 +4,18 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AuctionServer {
     private static final int PORT = 2501;
 
-    //danh client đag connect
+    //ds client đag connect
     public static List<ClientHandler> connectClient = new CopyOnWriteArrayList<>();
+
+    // username đang đăng nhập, lưu username k đc lặp lại
+    public static Set<String> loggedInUsers = ConcurrentHashMap.newKeySet();
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT);

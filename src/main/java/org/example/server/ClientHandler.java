@@ -39,7 +39,6 @@ public class ClientHandler implements Runnable, AuctionObserver {
         this.socket = socket;
         try {
             in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            // FIX: out phai dung socket.getOutputStream() chu khong phai System.out
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,6 +56,9 @@ public class ClientHandler implements Runnable, AuctionObserver {
         } catch (IOException e) {
             System.out.println("Client disconnected: " + socket.getInetAddress());
         } finally {
+            if (currentUser != null) {
+                AuctionServer.loggedInUsers.remove(currentUser.getUsername());
+            }
             AuctionServer.connectClient.remove(this);
             closeConnection();
         }
@@ -89,6 +91,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     sendMessage("ERROR|Không tìm thấy tài khoản");
                 } else if (!BCrypt.checkpw(password, user.getPassword())) {
                     sendMessage("ERROR|Sai mật khẩu");
+                } else if (!AuctionServer.loggedInUsers.add(user.getUsername())) {
+                    sendMessage("ERROR|Tài khoản đã đăng nhập ở nơi khác");
                 } else {
                     currentUser = user;
                     sendMessage("OK|" + user.getRole() + "|" + user.getUsername());
