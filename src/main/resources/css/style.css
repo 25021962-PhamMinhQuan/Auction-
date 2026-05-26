@@ -653,4 +653,271 @@
     -fx-font-size: 48px;
 }
 
+/* ══════════════════════════════════════
+   DATE/TIME PICKER — additem.fxml
+══════════════════════════════════════ */
+
+/* ── Label tiêu đề (Thời gian bắt đầu / kết thúc) ── */
+.datetime-label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 0 2 0;
+}
+
+/* ── DatePicker (phần text field bên ngoài) ── */
+/* ── Popup lịch ── */
+.date-picker {
+    -fx-background-color: #1f2933;
+    -fx-background-radius: 8;
+    -fx-border-color: #374151;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-background-insets: 0;
+}
+
+/* Text field */
+.date-picker .text-field {
+    -fx-background-color: #1f2933;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #6b7280;
+
+    -fx-background-radius: 8 0 0 8;
+    -fx-border-width: 0;
+
+    -fx-padding: 6 10;
+    -fx-font-size: 13px;
+}
+
+/* Focus */
+.date-picker:focused {
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 1.5;
+}
+
+.date-picker .text-field:focused {
+    -fx-background-color: #1f2933;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Arrow button */
+.date-picker .arrow-button {
+    -fx-background-color: #111827;
+    -fx-background-radius: 0 8 8 0;
+    -fx-cursor: hand;
+
+    -fx-border-width: 0 0 0 1;
+    -fx-border-color: #374151;
+
+    -fx-padding: 0 10;
+}
+
+/* Arrow icon */
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #9ca3af;
+}
+
+.date-picker:hover .arrow-button .arrow {
+    -fx-background-color: #fbbf24;
+}
+
+/* =========================
+   POPUP
+   ========================= */
+
+.date-picker-popup {
+    -fx-background-color: #111827;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0,0,0,0.45),
+            18,
+            0.2,
+            0,
+            5
+    );
+}
+
+/* Calendar background */
+.date-picker-popup .calendar-grid {
+    -fx-background-color: #111827;
+}
+
+/* Month year header */
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #0d1424;
+
+    -fx-border-color: #1f2937;
+    -fx-border-width: 0 0 1 0;
+
+    -fx-padding: 10;
+}
+
+/* Month / year text */
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: #f9fafb;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Navigation buttons */
+.date-picker-popup .button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.date-picker-popup .button:hover {
+    -fx-background-color: rgba(251,191,36,0.12);
+    -fx-background-radius: 6;
+}
+
+/* Arrows */
+.date-picker-popup .left-button .left-arrow,
+.date-picker-popup .right-button .right-arrow {
+    -fx-background-color: #9ca3af;
+}
+
+/* Day names */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* All cells */
+.date-picker-popup .cell {
+    -fx-background-color: #111827;
+    -fx-text-fill: #d1d5db;
+}
+
+/* Day cells */
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d1d5db;
+
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+
+    -fx-padding: 6;
+    -fx-font-size: 12px;
+
+    -fx-cursor: hand;
+}
+
+/* Hover */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: rgba(251,191,36,0.18);
+    -fx-text-fill: #fbbf24;
+}
+
+/* Selected day */
+.date-picker-popup .day-cell.selected {
+    -fx-background-color: #fbbf24;
+    -fx-text-fill: #111827;
+
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+}
+
+/* Remove ugly focus inset */
+.date-picker-popup .day-cell:focused,
+.date-picker-popup .day-cell:selected {
+    -fx-background-insets: 0;
+}
+
+/* Today */
+.date-picker-popup .today {
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 1.2;
+    -fx-border-radius: 8;
+}
+
+/* Other month days */
+.date-picker-popup .previous-month,
+.date-picker-popup .next-month {
+    -fx-text-fill: #4b5563;
+}
+/* ── ComboBox giờ và phút ── */
+.time-combo {
+    -fx-background-color: #1f2933;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.time-combo .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e5e7eb;
+    -fx-padding: 4 10;
+    -fx-font-size: 13px;
+}
+
+.time-combo:focused,
+.time-combo:showing {
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 1.5;
+}
+
+.time-combo:hover {
+    -fx-border-color: #4b5563;
+}
+
+.time-combo .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6;
+}
+
+.time-combo .arrow {
+    -fx-background-color: #9ca3af;
+}
+
+.time-combo:hover .arrow,
+.time-combo:showing .arrow {
+    -fx-background-color: #fbbf24;
+}
+
+/* Dropdown list */
+.time-combo .combo-box-popup .list-view {
+    -fx-background-color: #111827;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 12, 0.3, 0, 4);
+}
+
+.time-combo .combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d1d5db;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+}
+
+.time-combo .combo-box-popup .list-cell:hover {
+    -fx-background-color: rgba(251,191,36,0.12);
+    -fx-text-fill: #fbbf24;
+}
+
+.time-combo .combo-box-popup .list-cell:selected {
+    -fx-background-color: rgba(251,191,36,0.2);
+    -fx-text-fill: #fbbf24;
+    -fx-font-weight: bold;
+}
+
+/* ── Dấu ":" ngăn cách giờ và phút ── */
+.time-separator {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 2;
+}
+
 

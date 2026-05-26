@@ -211,9 +211,15 @@ public void setReadOnly(boolean readOnly) {
         Stage stage = (Stage)((Node)e.getSource())
                 .getScene()
                 .getWindow();
-
+        MainScreenController ctrl = loader.getController();
+        String username = AuctionClient.getInstance().getCurrentUsername();
+        String role     = AuctionClient.getInstance().getCurrentRole();
+        if (username != null && role != null) {
+            ctrl.setCurrentUser(username, role);
+        }
         stage.setScene(new Scene(root));
         stage.show();
+
 
     }
     private void startCountdown() {

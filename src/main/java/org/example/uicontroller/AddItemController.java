@@ -2,6 +2,7 @@ package org.example.uicontroller;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +23,7 @@ import java.io.File;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -33,8 +35,12 @@ public class AddItemController {
     @FXML private TextField        nameField;
     @FXML private TextField         descField;
     @FXML private TextField        priceField;
-    @FXML private TextField        startTimeField;   // "dd/MM/yyyy HH:mm"
-    @FXML private TextField        endTimeField;
+    @FXML private DatePicker       startDatePicker;
+    @FXML private ComboBox<String> startHourCombo;
+    @FXML private ComboBox<String> startMinuteCombo;
+    @FXML private DatePicker       endDatePicker;
+    @FXML private ComboBox<String> endHourCombo;
+    @FXML private ComboBox<String> endMinuteCombo;
     @FXML private Label            statusLabel;
     @FXML private Button           submitBtn;
     @FXML private javafx.scene.image.ImageView imagePreview;
@@ -44,14 +50,32 @@ public class AddItemController {
     // Panel danh sách item của seller
     @FXML private VBox             myItemsBox;
 
-    private static final DateTimeFormatter INPUT_FMT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML
     public void initialize() {
         typeCombo.setItems(FXCollections.observableArrayList(
                 "ART", "ELECTRONICS", "ESTATE", "FASHIONS", "VEHICLES", "OTHERS"));
         typeCombo.getSelectionModel().selectFirst();
+        ObservableList<String> hours = FXCollections.observableArrayList();
+        for (int h = 0; h < 24; h++) hours.add(String.format("%02d", h));
+
+// Populate phút theo bước 5
+        ObservableList<String> minutes = FXCollections.observableArrayList();
+        for (int m = 0; m < 60; m += 5) minutes.add(String.format("%02d", m));
+
+        startHourCombo.setItems(hours);
+        endHourCombo.setItems(FXCollections.observableArrayList(hours));
+        startMinuteCombo.setItems(minutes);
+        endMinuteCombo.setItems(FXCollections.observableArrayList(minutes));
+
+        // Mặc định: hôm nay, bắt đầu 09:00 / kết thúc 21:00
+        LocalDate today = LocalDate.now();
+        startDatePicker.setValue(today);
+        endDatePicker.setValue(today);
+        startHourCombo.setValue("09");
+        startMinuteCombo.setValue("00");
+        endHourCombo.setValue("21");
+        endMinuteCombo.setValue("00");
         loadMyItems();
     }
 
@@ -92,7 +116,7 @@ public class AddItemController {
                     HBox btnRow = new HBox(8);
                     if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now())) {
                         // Đã lên lịch, chưa đến giờ → không cho start thủ công
-                        Label scheduledLbl = new Label("⏳ Đã lên lịch: " + itemStartTime.format(INPUT_FMT));
+                        Label scheduledLbl = new Label("⏳ Đã lên lịch: " + itemStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                         scheduledLbl.setStyle("-fx-text-fill: #fd7e14; -fx-font-weight: bold;");
                         btnRow.getChildren().add(scheduledLbl);
                     } else {
@@ -156,12 +180,21 @@ public class AddItemController {
         String name        = nameField.getText().trim();
         String description = descField.getText().trim();
         String priceStr    = priceField.getText().trim();
-        String startStr    = startTimeField.getText().trim();
-        String endStr      = endTimeField.getText().trim();
 
-        // Validate
-        if (name.isEmpty() || priceStr.isEmpty() || startStr.isEmpty() || endStr.isEmpty()) {
+        // Validate text fields
+        if (name.isEmpty() || priceStr.isEmpty()) {
             showStatus("Vui lòng điền đầy đủ thông tin.", false);
+            return;
+        }
+
+        // Validate date/time pickers
+        if (startDatePicker.getValue() == null
+                || startHourCombo.getValue() == null
+                || startMinuteCombo.getValue() == null
+                || endDatePicker.getValue() == null
+                || endHourCombo.getValue() == null
+                || endMinuteCombo.getValue() == null) {
+            showStatus("Vui lòng chọn đầy đủ ngày và giờ.", false);
             return;
         }
 
@@ -174,14 +207,17 @@ public class AddItemController {
             return;
         }
 
-        LocalDateTime start, end;
-        try {
-            start = LocalDateTime.parse(startStr, INPUT_FMT);
-            end   = LocalDateTime.parse(endStr,   INPUT_FMT);
-        } catch (DateTimeParseException e) {
-            showStatus("Định dạng thời gian: dd/MM/yyyy HH:mm", false);
-            return;
-        }
+        LocalDateTime start = LocalDateTime.of(
+                startDatePicker.getValue(),
+                java.time.LocalTime.of(
+                        Integer.parseInt(startHourCombo.getValue()),
+                        Integer.parseInt(startMinuteCombo.getValue())));
+
+        LocalDateTime end = LocalDateTime.of(
+                endDatePicker.getValue(),
+                java.time.LocalTime.of(
+                        Integer.parseInt(endHourCombo.getValue()),
+                        Integer.parseInt(endMinuteCombo.getValue())));
 
         if (!end.isAfter(start)) {
             showStatus("Thời gian kết thúc phải sau thời gian bắt đầu.", false);
@@ -191,7 +227,6 @@ public class AddItemController {
         submitBtn.setDisable(true);
         showStatus("Đang gửi...", true);
 
-        // ISO format để gửi lên server
         DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
         AuctionClient.getInstance().addItem(
@@ -203,7 +238,7 @@ public class AddItemController {
                     if (success) {
                         showStatus("✓ Đã thêm item \"" + name + "\" thành công!", true);
                         clearForm();
-                        loadMyItems();   // refresh danh sách
+                        loadMyItems();
                     } else {
                         showStatus("Lỗi: " + msg, false);
                     }
@@ -286,11 +321,17 @@ public class AddItemController {
         nameField.clear();
         descField.clear();
         priceField.clear();
-        startTimeField.clear();
-        endTimeField.clear();
+        LocalDate today = LocalDate.now();
+        startDatePicker.setValue(today);
+        endDatePicker.setValue(today);
+        startHourCombo.setValue("09");
+        startMinuteCombo.setValue("00");
+        endHourCombo.setValue("21");
+        endMinuteCombo.setValue("00");
         typeCombo.getSelectionModel().selectFirst();
         selectedImagePath = null;
         imagePreview.setImage(null);
         imagePathLabel.setText("Chưa chọn ảnh");
     }
+
 }

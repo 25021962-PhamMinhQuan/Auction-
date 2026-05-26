@@ -3,14 +3,15 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.image.ImageView?>
 <BorderPane prefHeight="700.0" prefWidth="1100.0" styleClass="root" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AddItemController">
 
    <!-- NAVBAR giản lược -->
@@ -31,21 +32,16 @@
                <!-- ═══ LEFT: Form thêm item mới ═══ -->
                <VBox prefWidth="420" spacing="14">
                   <Label text="Hình ảnh sản phẩm" />
-                  <HBox spacing="8" alignment="CENTER_LEFT">
-                     <Button text="📷 Chọn ảnh"
-                             mnemonicParsing="false"
-                             onAction="#handleChooseImage"
-                             styleClass="button-login" />
-                     <Label fx:id="imagePathLabel" text="Chưa chọn ảnh"
-                            style="-fx-text-fill: #6c757d;" />
+                  <HBox alignment="CENTER_LEFT" spacing="8">
+                     <Button mnemonicParsing="false" onAction="#handleChooseImage" styleClass="button-login" text="📷 Chọn ảnh" />
+                     <Label fx:id="imagePathLabel" style="-fx-text-fill: #6c757d;" text="Chưa chọn ảnh" />
                   </HBox>
-                  <ImageView fx:id="imagePreview" fitWidth="380" fitHeight="200"
-                             preserveRatio="true" pickOnBounds="true">
+                  <ImageView fx:id="imagePreview" fitHeight="200" fitWidth="380" pickOnBounds="true" preserveRatio="true">
                   </ImageView>
                   <Label styleClass="section-title" text="Thêm Item Mới" />
 
                   <Label text="Loại item" />
-                  <ComboBox fx:id="typeCombo" maxWidth="Infinity" />
+                  <ComboBox fx:id="typeCombo" maxWidth="Infinity" styleClass="time-combo" />
 
                   <Label text="Tên item" />
                   <TextField fx:id="nameField" promptText="VD: Tranh sơn dầu thế kỷ 18" styleClass="input_field" />
@@ -55,14 +51,26 @@
 
                   <Label text="Giá khởi điểm (VND)" />
                   <TextField fx:id="priceField" promptText="VD: 500000" styleClass="input_field" />
+                  <Label styleClass="datetime-label" text="Thời gian bắt đầu" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                     <children>
+                        <DatePicker fx:id="startDatePicker" prefWidth="185.0" promptText="Chọn ngày" />
+                        <ComboBox fx:id="startHourCombo" prefWidth="72.0" promptText="Giờ" styleClass="time-combo" />
+                        <Label styleClass="time-separator" text=":" />
+                        <ComboBox fx:id="startMinuteCombo" prefWidth="72.0" promptText="Phút" styleClass="time-combo" />
+                     </children>
+                  </HBox>
+                  <Label styleClass="datetime-label" text="Thời gian kết thúc" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                     <children>
+                        <DatePicker fx:id="endDatePicker" prefWidth="185.0" promptText="Chọn ngày" />
+                        <ComboBox fx:id="endHourCombo" prefWidth="72.0" promptText="Giờ" styleClass="time-combo" />
+                        <Label styleClass="time-separator" text=":" />
+                        <ComboBox fx:id="endMinuteCombo" prefWidth="72.0" promptText="Phút" styleClass="time-combo" />
+                     </children>
+                  </HBox>
 
-                  <Label text="Thời gian bắt đầu (dd/MM/yyyy HH:mm)" />
-                  <TextField fx:id="startTimeField" promptText="VD: 25/05/2026 09:00" styleClass="input_field" />
-
-                  <Label text="Thời gian kết thúc (dd/MM/yyyy HH:mm)" />
-                  <TextField fx:id="endTimeField" promptText="VD: 25/05/2026 21:00" styleClass="input_field" />
-
-                  <Button fx:id="submitBtn" maxWidth="Infinity" mnemonicParsing="false" styleClass="button-login" text="+ Thêm Item" onAction="#handleSubmit" />
+                  <Button fx:id="submitBtn" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSubmit" styleClass="button-login" text="+ Thêm Item" />
 
                   <Label fx:id="statusLabel" wrapText="true" />
                </VBox>

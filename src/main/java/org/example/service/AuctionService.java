@@ -37,6 +37,55 @@ public class AuctionService {
         this.auctionDAO = auctionDAO;
         this.bidDAO = bidDAO;
         this.autoBidDao = autoBidDAO;
+        restoreSchedulers();
+    }
+    private void restoreSchedulers() {
+        try {
+            List<Auction> openAuctions    = auctionDAO.findByStatus("OPEN");
+            List<Auction> runningAuctions = auctionDAO.findByStatus("RUNNING");
+            for (Auction auction : openAuctions) {
+                if (!schedulers.containsKey(auction.getId())) {
+                    registerScheduler(auction);
+                    logger.info("[RESTORE] Scheduler registered for OPEN auction id={}", auction.getId());
+                }
+            }
+            for (Auction auction : runningAuctions) {
+                if (!schedulers.containsKey(auction.getId())) {
+                    BiddingCoordinator coordinator = new BiddingCoordinator(auction);
+                    coordinators.put(auction.getId(), coordinator);
+                    registerScheduler(auction);
+                    logger.info("[RESTORE] Scheduler registered for RUNNING auction id={}", auction.getId());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to restore schedulers on startup", e);
+        }
+    }
+
+    private void registerScheduler(Auction auction) {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        schedulers.put(auction.getId(), scheduler);
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                LocalDateTime now = LocalDateTime.now();
+                if (auction.getStatus() == Auction.Status.OPEN) {
+                    if (now.isBefore(auction.getItem().getStartTime())) return;
+                    auction.start();
+                    auctionDAO.updateStatus(auction, Auction.Status.RUNNING.name());
+                    return;
+                }
+                if (auction.getStatus() != Auction.Status.RUNNING) {
+                    cleanup(auction.getId());
+                    return;
+                }
+                if (now.isAfter(auction.getItem().getEndTime())) {
+                    FinishAuction(auction);
+                }
+            } catch (Exception e) {
+                logger.error("Error in restored scheduler for auction {}", auction.getId(), e);
+                cleanup(auction.getId());
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
     public List<Auction> getAuctionsByStatus(String status) {
         return auctionDAO.findByStatus(status);
