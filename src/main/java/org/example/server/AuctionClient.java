@@ -289,6 +289,17 @@ public class AuctionClient {
     public void register(String username, String password, String role) {
         sendCommand("REGISTER|" + username + "|" + password + "|" + role);
     }
+    public void disconnect() {
+        currentUsername = null;
+        currentRole     = null;
+        activeBidController = null;
+        newAuctionListener  = null;
+        try {
+            if (socket != null && !socket.isClosed()) socket.close();
+        } catch (IOException ignored) {}
+        socket = null; in = null; out = null;
+        instance = null; // reset singleton để login lại tạo connection mới
+    }
 
     public void placeBid(int auctionId, double amount) {
         sendCommand("BID|" + auctionId + "|" + amount);

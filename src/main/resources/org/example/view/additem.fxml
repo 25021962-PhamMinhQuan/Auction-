@@ -31,7 +31,7 @@
 
                <!-- ═══ LEFT: Form thêm item mới ═══ -->
                <VBox prefWidth="420" spacing="14">
-                  <Label text="Hình ảnh sản phẩm" />
+                  <Label styleClass="datetime-label" text="Hình ảnh sản phẩm" />
                   <HBox alignment="CENTER_LEFT" spacing="8">
                      <Button mnemonicParsing="false" onAction="#handleChooseImage" styleClass="button-login" text="📷 Chọn ảnh" />
                      <Label fx:id="imagePathLabel" style="-fx-text-fill: #6c757d;" text="Chưa chọn ảnh" />
@@ -40,16 +40,16 @@
                   </ImageView>
                   <Label styleClass="section-title" text="Thêm Item Mới" />
 
-                  <Label text="Loại item" />
+                  <Label styleClass="datetime-label" text="Loại item" />
                   <ComboBox fx:id="typeCombo" maxWidth="Infinity" styleClass="time-combo" />
 
-                  <Label text="Tên item" />
+                  <Label styleClass="datetime-label" text="Tên item" />
                   <TextField fx:id="nameField" promptText="VD: Tranh sơn dầu thế kỷ 18" styleClass="input_field" />
 
-                  <Label text="Mô tả" />
+                  <Label styleClass="datetime-label" text="Mô tả" />
                   <TextField fx:id="descField" promptText="Nhập mô tả" styleClass="input_field" />
 
-                  <Label text="Giá khởi điểm (VND)" />
+                  <Label styleClass="datetime-label" text="Giá khởi điểm (VND)" />
                   <TextField fx:id="priceField" promptText="VD: 500000" styleClass="input_field" />
                   <Label styleClass="datetime-label" text="Thời gian bắt đầu" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">

@@ -304,7 +304,7 @@
 
                         <Button fx:id="settingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Settings" />
 
-                        <Button fx:id="logOutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Log out" />
+                        <Button fx:id="logOutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="nav-button" text="Log out" onAction="#handleLogout" />
 
                      </children>
 

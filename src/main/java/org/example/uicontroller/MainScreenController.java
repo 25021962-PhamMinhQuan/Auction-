@@ -346,4 +346,22 @@ public class MainScreenController {
             }
         }
     }
+    @FXML
+    private void handleLogout(ActionEvent e) {
+        AuctionClient.getInstance().disconnect();
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/org/example/view/login.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage =
+                    (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.centerOnScreen();
+            stage.show();
+        } catch (java.io.IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
