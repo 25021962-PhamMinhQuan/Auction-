@@ -52,6 +52,10 @@ public class AuctionService {
             for (Auction auction : runningAuctions) {
                 if (!schedulers.containsKey(auction.getId())) {
                     BiddingCoordinator coordinator = new BiddingCoordinator(auction);
+                    coordinator.setOnBidPersisted(bid -> {
+                        auctionDAO.update(auction, Auction.Status.RUNNING.name());
+                        bidDAO.save(bid, auction.getId());
+                    });
                     coordinators.put(auction.getId(), coordinator);
                     registerScheduler(auction);
                     logger.info("[RESTORE] Scheduler registered for RUNNING auction id={}", auction.getId());
@@ -72,6 +76,22 @@ public class AuctionService {
                     if (now.isBefore(auction.getItem().getStartTime())) return;
                     auction.start();
                     auctionDAO.updateStatus(auction, Auction.Status.RUNNING.name());
+                    // Tạo coordinator nếu chưa có (trường hợp restore từ DB sau restart)
+                    coordinators.computeIfAbsent(auction.getId(), id -> {
+                        BiddingCoordinator coord = new BiddingCoordinator(auction);
+                        coord.setOnBidPersisted(bid -> {
+                            auctionDAO.update(auction, Auction.Status.RUNNING.name());
+                            bidDAO.save(bid, auction.getId());
+                        });
+                        return coord;
+                    });
+                    // Broadcast cho tất cả client biết auction đã mở → UI tự reload
+                    org.example.server.AuctionServer.broadCast("NEW_AUCTION|"
+                            + auction.getId() + "|" + auction.getItem().getName()
+                            + "|" + auction.getCurrentPrice()
+                            + "|" + auction.getItem().getEndTime()
+                            + "|" + auction.getItem().getStartTime()
+                            + "|" + auction.getStatus().name());
                     return;
                 }
                 if (auction.getStatus() != Auction.Status.RUNNING) {
@@ -125,6 +145,13 @@ public class AuctionService {
                     // Đến giờ rồi → chuyển sang RUNNING
                     auction.start();
                     auctionDAO.updateStatus(auction, Auction.Status.RUNNING.name());
+                    // Broadcast cho tất cả client biết auction đã mở → UI tự reload
+                    org.example.server.AuctionServer.broadCast("NEW_AUCTION|"
+                            + auction.getId() + "|" + auction.getItem().getName()
+                            + "|" + auction.getCurrentPrice()
+                            + "|" + auction.getItem().getEndTime()
+                            + "|" + auction.getItem().getStartTime()
+                            + "|" + auction.getStatus().name());
                     return;
                 }
 
@@ -242,4 +269,3 @@ public class AuctionService {
         return coordinators.get(auctionId);
     }
 }
-

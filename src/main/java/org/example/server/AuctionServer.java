@@ -31,7 +31,7 @@ public class AuctionServer {
             new Thread(handler).start();
         }
     }
-    static void broadCast(String msg) {
+    public static void broadCast(String msg) {
         for (ClientHandler client : connectClient) {
             client.sendMessage(msg); // fix typo: sendMesage -> sendMessage
         }
