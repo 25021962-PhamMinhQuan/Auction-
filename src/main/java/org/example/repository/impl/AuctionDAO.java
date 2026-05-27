@@ -92,13 +92,32 @@ public class AuctionDAO implements AuctionRepository {
         return result;
     }
 
-    public List<Auction> findByName(String keyword) {
+    public List<Auction> findByType(String type) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type,  i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
-                "WHERE i.name LIKE ?";
+                "WHERE UPPER(i.type) = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, type.toUpperCase());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) result.add(parseAuction(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<Auction> findByName(String keyword) {
+        List<Auction> result = new ArrayList<>();
+        String sql =
+                "SELECT a.id, a.current_price, a.status, " +
+                        "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                        "i.start_time, i.end_time " +
+                        "FROM auction a JOIN item i ON a.item_id = i.id " +
+                        "WHERE i.name ILIKE ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");

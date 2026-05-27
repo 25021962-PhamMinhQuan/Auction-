@@ -301,6 +301,32 @@ public class MainScreenController {
     }
 
     @FXML
+    private void handleCategory(ActionEvent e) {
+        String type = ((Button) e.getSource()).getUserData().toString();
+        setMenuVisible(categoryMenu, false);
+        currentGridType = "CATEGORY";
+        setGridVisible(true);
+        gridPane.getChildren().clear();
+
+        AuctionClient.getInstance().requestAuctionsByCategory(type, items ->
+                Platform.runLater(() -> {
+                    gridPane.getChildren().clear();
+                    if (items.isEmpty()) {
+                        gridPane.getChildren().add(new Label("No auctions in category: " + type));
+                        return;
+                    }
+                    for (String[] item : items) {
+                        String status = item.length > 5 ? item[5] : "";
+                        ItemCardController.CardMode mode = "OPEN".equals(status)
+                                ? ItemCardController.CardMode.DETAIL
+                                : ItemCardController.CardMode.BID;
+                        gridPane.getChildren().add(buildCard(item, mode));
+                    }
+                })
+        );
+    }
+
+    @FXML
     private void handleSearch() {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) return;

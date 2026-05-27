@@ -92,13 +92,12 @@
                   <Button fx:id="categoryButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="Categories" />
 
                   <VBox fx:id="categoryMenu" managed="false" styleClass="dropdown-menu" translateY="40" visible="false">
-
-                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Art" />
-
-                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Electronics" />
-
-                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Other" />
-
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Art"         onAction="#handleCategory" userData="ART" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Electronics" onAction="#handleCategory" userData="ELECTRONICS" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Estate"      onAction="#handleCategory" userData="ESTATE" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Fashions"    onAction="#handleCategory" userData="FASHIONS" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Vehicles"    onAction="#handleCategory" userData="VEHICLES" />
+                     <Button mnemonicParsing="false" styleClass="dropdown-item" text="Others"      onAction="#handleCategory" userData="OTHERS" />
                   </VBox>
 
                </StackPane>

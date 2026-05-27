@@ -35,6 +35,7 @@ public class AuctionClient {
     private org.example.uicontroller.ItemBidingUIController activeBidController;
     private Runnable newAuctionListener;
     private Consumer<List<String>> suggestCallback;
+    private Consumer<List<String[]>> categoryCallback;
 
     // ──────────────── Singleton ────────────────
 
@@ -239,10 +240,16 @@ public class AuctionClient {
                 } else if ("SEARCH".equals(status)) {
                     cb = searchAuctionCallback;
                     searchAuctionCallback = null;
-                } else {
+                }
+                else if ("CATEGORY".equals(status)) {
+                    cb = categoryCallback;
+                    categoryCallback = null;
+                }
+                else  {
                     cb = runningAuctionCallback;
                     runningAuctionCallback = null;
                 }
+
                 if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
                 break;
             }
@@ -259,6 +266,11 @@ public class AuctionClient {
     }
 
     // ──────────────── Gửi lệnh ────────────────
+
+    public void requestAuctionsByCategory(String type, Consumer<List<String[]>> callback) {
+        this.categoryCallback = callback;
+        sendCommand("LIST_BY_CATEGORY|" + type);
+    }
 
     public void requestSearchAuctions(String keyword, Consumer<List<String[]>> callback) {
         this.searchAuctionCallback = callback;

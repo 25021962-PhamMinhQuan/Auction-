@@ -310,7 +310,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
                             + a.getItem().getName()        + "|"
                             + a.getCurrentPrice()          + "|"
                             + a.getItem().getEndTime()         + "|"
-                            + a.getStatus()                + "|"
+                            + a.getStatus().name()                + "|"
                             + a.getItem().getStartTime()       + "|"
                             + a.getItem().getDescription() + "|"
                             + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
@@ -328,6 +328,25 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     sb.append("|").append(suggestions.get(i).getItem().getName());
                 }
                 sendMessage(sb.toString());
+                break;
+            }
+
+            case "LIST_BY_CATEGORY": {
+                String type = parts.length > 1 ? parts[1] : "";
+                List<Auction> results = auctionService.searchByType(type);
+                sendMessage("AUCTION_LIST|" + results.size());
+                for (Auction a : results) {
+                    sendMessage("AUCTION_ITEM|"
+                            + a.getId()                    + "|"
+                            + a.getItem().getName()        + "|"
+                            + a.getCurrentPrice()          + "|"
+                            + a.getItem().getEndTime()     + "|"
+                            + a.getStatus().name()         + "|"
+                            + a.getItem().getStartTime()   + "|"
+                            + a.getItem().getDescription() + "|"
+                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
+                }
+                sendMessage("AUCTION_LIST_END|CATEGORY");
                 break;
             }
 

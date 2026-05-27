@@ -234,6 +234,10 @@ public class AuctionService {
         return coord.getAuction();
     }
 
+    public List<Auction> searchByType(String type) {
+        return auctionDAO.findByType(type);
+    }
+
     public BiddingCoordinator getCoordinator(int auctionId) {
         return coordinators.get(auctionId);
     }
