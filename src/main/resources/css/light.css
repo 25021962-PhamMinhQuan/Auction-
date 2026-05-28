@@ -1443,3 +1443,24 @@
     -fx-background-radius: 8;
     -fx-padding: 8 12 8 12;
 }
+
+/* ===== CHARTS (Light Theme) ===== */
+.chart-section {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 16 20 16 20;
+}
+.chart-plot-background { -fx-background-color: #f8fafc; -fx-background-radius: 8; }
+.axis-label            { -fx-text-fill: #64748b; -fx-font-size: 11px; }
+.axis                  { -fx-tick-label-fill: #64748b; }
+.chart-vertical-grid-lines   { -fx-stroke: #e2e8f0; -fx-stroke-dash-array: 4 4; }
+.chart-horizontal-grid-lines { -fx-stroke: #e2e8f0; -fx-stroke-dash-array: 4 4; }
+.chart-alternative-row-fill, .chart-alternative-column-fill { -fx-fill: transparent; }
+.default-color0.chart-series-line  { -fx-stroke: #d97706; -fx-stroke-width: 2.5px; }
+.default-color0.chart-line-symbol  { -fx-background-color: #d97706, #ffffff; -fx-background-radius: 5px; -fx-padding: 5px; }
+.default-color0.chart-bar          { -fx-bar-fill: #d97706; -fx-background-radius: 3 3 0 0; }
+.default-color0.chart-bar:hover    { -fx-bar-fill: #b45309; }
+.chart-legend                      { -fx-background-color: transparent; }
+.chart-legend-item                 { -fx-text-fill: #64748b; }

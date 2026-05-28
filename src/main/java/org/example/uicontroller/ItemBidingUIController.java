@@ -157,7 +157,7 @@ public class ItemBidingUIController {
         try {
             double amount = Double.parseDouble(raw);
             if (amount <= 0) throw new NumberFormatException();
-            AuctionClient.getInstance().placeBid(auctionId, (int) amount);
+            AuctionClient.getInstance().placeBid(auctionId, amount);
             bidInput.clear();
         } catch (NumberFormatException e) {
             showAlert("Invalid bid", "Bid must be a positive number.");
@@ -334,6 +334,8 @@ public class ItemBidingUIController {
                 entry.getStyleClass().add("history-entry");
                 historyBox.getChildren().add(entry);
             }
+            // Cập nhật chart theo dữ liệu mới nhất
+            updateCharts(rows);
         });
     }
 
@@ -352,17 +354,11 @@ public class ItemBidingUIController {
     }
     private void styleCharts() {
         if (priceLineChart != null) {
-            priceLineChart.setStyle(
-                    "-fx-background-color: #1f2933; -fx-background-radius: 12; " +
-                            "-fx-border-color: #374151; -fx-border-radius: 12; -fx-padding: 10;"
-            );
+            priceLineChart.getStyleClass().add("chart-section");
             if (lineYAxis != null) lineYAxis.setForceZeroInRange(false);
         }
         if (bidBarChart != null) {
-            bidBarChart.setStyle(
-                    "-fx-background-color: #1f2933; -fx-background-radius: 12; " +
-                            "-fx-border-color: #374151; -fx-border-radius: 12; -fx-padding: 10;"
-            );
+            bidBarChart.getStyleClass().add("chart-section");
         }
     }
 
@@ -380,13 +376,6 @@ public class ItemBidingUIController {
             }
             priceLineChart.getData().clear();
             priceLineChart.getData().add(series);
-            javafx.application.Platform.runLater(() -> {
-                if (series.getNode() != null)
-                    series.getNode().setStyle("-fx-stroke: #fbbf24; -fx-stroke-width: 2.5px;");
-                for (XYChart.Data<String, Number> d : series.getData())
-                    if (d.getNode() != null)
-                        d.getNode().setStyle("-fx-background-color: #fbbf24, #0f172a; -fx-background-radius: 5px;");
-            });
         }
 
         // --- Bar Chart: số bid theo giờ ---
@@ -419,15 +408,10 @@ public class ItemBidingUIController {
             }
             bidBarChart.getData().clear();
             bidBarChart.getData().add(series);
-            javafx.application.Platform.runLater(() -> {
-                for (XYChart.Data<String, Number> d : series.getData())
-                    if (d.getNode() != null)
-                        d.getNode().setStyle("-fx-bar-fill: #fbbf24;");
-            });
         }
     }
     public void showError(String message) {
-        // Hiện lỗi ngắn gọn trên label timeLeft rồi tự mất sau 3s
+        // Hiện lỗi ngắn gọn trên label timeLeft rồi tự mất sau
         String prev = timeLeft.getText();
         String prevStyle = timeLeft.getStyle();
         timeLeft.setText(message);
@@ -440,4 +424,3 @@ public class ItemBidingUIController {
         pause.play();
     }
 }
-
