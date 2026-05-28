@@ -10,6 +10,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 
 <StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemBidingUIController">
 
@@ -61,6 +65,31 @@
                 <VBox maxWidth="1000" spacing="10">
                     <Label styleClass="section-title" text="Description" />
                     <Label fx:id="description" styleClass="item-time" text="des" wrapText="true" />
+                </VBox>
+
+                <!-- ===== CHARTS SECTION ===== -->
+                <VBox maxWidth="1200" spacing="24">
+
+                    <!-- Line Chart: Biến động giá -->
+                    <VBox spacing="10" styleClass="chart-section">
+                        <Label styleClass="section-title" text="📈 Biến Động Giá Theo Thời Gian" />
+                        <LineChart fx:id="priceLineChart" prefHeight="280.0" animated="false" legendVisible="false"
+                                   style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis fx:id="lineXAxis" label="Thời gian" /></xAxis>
+                            <yAxis><NumberAxis fx:id="lineYAxis" label="Giá (VND)" /></yAxis>
+                        </LineChart>
+                    </VBox>
+
+                    <!-- Bar Chart: Số lượt bid theo giờ -->
+                    <VBox spacing="10" styleClass="chart-section">
+                        <Label styleClass="section-title" text="🕐 Lượt Bid Theo Giờ Trong Ngày" />
+                        <BarChart fx:id="bidBarChart" prefHeight="260.0" animated="false" legendVisible="false"
+                                  style="-fx-background-color: transparent;">
+                            <xAxis><CategoryAxis label="Giờ" /></xAxis>
+                            <yAxis><NumberAxis label="Số lượt bid" /></yAxis>
+                        </BarChart>
+                    </VBox>
+
                 </VBox>
 
             </VBox>

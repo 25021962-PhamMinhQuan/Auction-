@@ -22,6 +22,14 @@ import org.example.server.AuctionClient;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.server.AuctionClient;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -57,6 +65,10 @@ public class ItemBidingUIController {
     private VBox bidSection;
     @FXML
     private ImageView itemImage;
+    @FXML private LineChart<String, Number> priceLineChart;
+    @FXML private CategoryAxis lineXAxis;
+    @FXML private NumberAxis lineYAxis;
+    @FXML private BarChart<String, Number> bidBarChart;
     private Timeline countdownTimer;
     private LocalDateTime endTime;
     private LocalDateTime startTime;
@@ -89,6 +101,7 @@ public class ItemBidingUIController {
             } catch (Exception ignored) {
             }
         }
+        styleCharts();
         AuctionClient.getInstance().setActiveBidController(this);
         loadImage(imageUrl);
         startCountdown();
@@ -318,6 +331,7 @@ public class ItemBidingUIController {
                 entry.getStyleClass().add("history-entry");
                 historyBox.getChildren().add(entry);
             }
+            updateCharts(rows);
         });
     }
 
@@ -332,6 +346,82 @@ public class ItemBidingUIController {
             itemImage.setImage(image);
         } catch (Exception e) {
             itemImage.setImage(null);
+        }
+    }
+    private void styleCharts() {
+        if (priceLineChart != null) {
+            priceLineChart.setStyle(
+                    "-fx-background-color: #1f2933; -fx-background-radius: 12; " +
+                            "-fx-border-color: #374151; -fx-border-radius: 12; -fx-padding: 10;"
+            );
+            if (lineYAxis != null) lineYAxis.setForceZeroInRange(false);
+        }
+        if (bidBarChart != null) {
+            bidBarChart.setStyle(
+                    "-fx-background-color: #1f2933; -fx-background-radius: 12; " +
+                            "-fx-border-color: #374151; -fx-border-radius: 12; -fx-padding: 10;"
+            );
+        }
+    }
+
+    private void updateCharts(List<String[]> rows) {
+        // --- Line Chart: giá theo thời gian ---
+        if (priceLineChart != null) {
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            for (int i = rows.size() - 1; i >= 0; i--) {  // rows DESC → duyệt ngược
+                String[] row = rows.get(i);
+                try {
+                    String t = row[2] != null && row[2].length() >= 16
+                            ? row[2].substring(11, 16) : (row[2] != null ? row[2] : "");
+                    series.getData().add(new XYChart.Data<>(t, Double.parseDouble(row[1])));
+                } catch (Exception ignored) {}
+            }
+            priceLineChart.getData().clear();
+            priceLineChart.getData().add(series);
+            javafx.application.Platform.runLater(() -> {
+                if (series.getNode() != null)
+                    series.getNode().setStyle("-fx-stroke: #fbbf24; -fx-stroke-width: 2.5px;");
+                for (XYChart.Data<String, Number> d : series.getData())
+                    if (d.getNode() != null)
+                        d.getNode().setStyle("-fx-background-color: #fbbf24, #0f172a; -fx-background-radius: 5px;");
+            });
+        }
+
+        // --- Bar Chart: số bid theo giờ ---
+        if (bidBarChart != null) {
+            Map<String, Integer> hourCount = new TreeMap<>();
+            for (int h = 0; h < 24; h++) hourCount.put(String.format("%02dh", h), 0);
+            for (String[] row : rows) {
+                try {
+                    if (row[2] != null && row[2].length() >= 13) {
+                        String key = String.format("%02dh", Integer.parseInt(row[2].substring(11, 13)));
+                        hourCount.put(key, hourCount.getOrDefault(key, 0) + 1);
+                    }
+                } catch (Exception ignored) {}
+            }
+            // Tìm khoảng giờ có bid để trim trục X
+            int first = -1, last = -1;
+            for (Map.Entry<String, Integer> e : hourCount.entrySet()) {
+                if (e.getValue() > 0) {
+                    int h = Integer.parseInt(e.getKey().replace("h", ""));
+                    if (first == -1) first = h;
+                    last = h;
+                }
+            }
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            int from = first == -1 ? 0 : Math.max(0, first - 1);
+            int to   = last  == -1 ? 23 : Math.min(23, last + 1);
+            for (int h = from; h <= to; h++) {
+                String key = String.format("%02dh", h);
+                series.getData().add(new XYChart.Data<>(key, hourCount.getOrDefault(key, 0)));
+            }
+            bidBarChart.getData().clear();
+            bidBarChart.getData().add(series);
+            javafx.application.Platform.runLater(() -> {
+                for (XYChart.Data<String, Number> d : series.getData())
+                    if (d.getNode() != null)
+                        d.getNode().setStyle("-fx-bar-fill: #fbbf24;");
+            });
         }
     }
 }
