@@ -52,7 +52,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          key: ${{ secrets.VPS_SSH_PASSWORD }}
           script: |
             # Stop server cũ nếu đang chạy
             if [ -f /app/auction/server.pid ]; then
