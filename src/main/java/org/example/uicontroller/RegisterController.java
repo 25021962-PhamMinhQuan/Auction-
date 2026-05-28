@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import org.example.server.AuctionClient;
+import org.example.util.ThemeManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -77,7 +78,9 @@ public class RegisterController implements Initializable {
     public void gotoLogin() throws IOException {
         Parent root  = FXMLLoader.load(getClass().getResource("/org/example/view/login.fxml"));
         Stage  stage = (Stage) spane.getScene().getWindow();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 

@@ -15,9 +15,9 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 
-<StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemBidingUIController">
+<StackPane  xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemBidingUIController">
 
-    <ScrollPane fitToWidth="true">
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
         <content>
             <VBox alignment="TOP_CENTER" spacing="30">
                 <padding><Insets bottom="30" left="20" right="20" top="30" /></padding>

@@ -18,7 +18,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
-<StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
 
    <children>
 
@@ -60,7 +60,7 @@
       </AnchorPane>
 
       <!-- Main Layout -->
-      <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="root" stylesheets="@../../../css/style.css">
+      <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="root">
 
          <!-- TOP NAVBAR -->
          <top>
@@ -171,11 +171,11 @@
          <!-- CENTER -->
          <center>
 
-            <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+            <ScrollPane fitToWidth="true" styleClass="scroll-pane" BorderPane.alignment="CENTER">
 
                <content>
 
-                  <VBox>
+                  <VBox styleClass="main-content-wrapper">
 
                      <!-- Back Button -->
                      <Button fx:id="backButton" managed="false" mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" visible="false">
@@ -187,7 +187,7 @@
                      </Button>
 
                      <!-- Grid -->
-                     <ScrollPane fx:id="gridScroll" fitToWidth="true" managed="false" visible="false">
+                     <ScrollPane fx:id="gridScroll" styleClass="scroll-pane" fitToWidth="true" managed="false" visible="false">
 
                         <content>
 
@@ -198,7 +198,7 @@
                      </ScrollPane>
 
                      <!-- Main Content -->
-                     <VBox fx:id="mainContent" alignment="TOP_CENTER" spacing="20">
+                     <VBox fx:id="mainContent" styleClass="main-content-wrapper" alignment="TOP_CENTER" spacing="20">
 
                         <padding>
                            <Insets top="40" />
@@ -207,10 +207,10 @@
                         <!-- Upcoming -->
                         <Label styleClass="section-title" text="Upcoming Auction" />
 
-                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="upcomingHbox" spacing="20" />
+                              <HBox fx:id="upcomingHbox" styleClass="main-content-wrapper" spacing="20" />
                            </content>
 
                         </ScrollPane>
@@ -218,12 +218,12 @@
                         <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
 
                         <!-- Ongoing -->
-                        <Label styleClass="section-title" text="Ongoing Auction" />
+                        <Label styleClass="section-title"  text="Ongoing Auction" />
 
-                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="ongoingHbox" spacing="20" />
+                              <HBox fx:id="ongoingHbox" styleClass="main-content-wrapper" spacing="20" />
                            </content>
 
                         </ScrollPane>
