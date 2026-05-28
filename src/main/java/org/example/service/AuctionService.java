@@ -275,6 +275,10 @@ public class AuctionService {
         return coord.getAuction();
     }
 
+    public List<String[]> getBidHistory(int auctionId) {
+        return bidDAO.getBidHistory(auctionId);
+    }
+
     public List<Auction> searchByType(String type) {
         return auctionDAO.findByType(type);
     }

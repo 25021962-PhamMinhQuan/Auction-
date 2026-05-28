@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AuctionClient {
-    private static final String HOST = "172.236.140.98";
+    private static final String HOST = "localhost";
     private static final int    PORT = 2501;
 
     private Socket         socket;
@@ -36,6 +36,8 @@ public class AuctionClient {
     private org.example.uicontroller.ItemBidingUIController activeBidController;
     private Runnable newAuctionListener;
     private Consumer<List<String>> suggestCallback;
+    private Consumer<List<String[]>> bidHistoryCallback;
+    private final List<String[]> pendingHistory = new ArrayList<>();
     private Consumer<List<String[]>> categoryCallback;
     private final List<String[]> pendingOpen    = new ArrayList<>();
     private final List<String[]> pendingRunning = new ArrayList<>();
@@ -288,6 +290,37 @@ public class AuctionClient {
                 break;
             }
 
+            case "AUTOBID_OK": {
+                Platform.runLater(() -> {
+                    if (activeBidController != null)
+                        activeBidController.showAutoBidSuccess();
+                });
+                break;
+            }
+
+            case "BID_HISTORY_START": {
+                synchronized (pendingHistory) { pendingHistory.clear(); }
+                break;
+            }
+            case "BID_HISTORY_ITEM": {
+                if (parts.length < 4) return;
+                synchronized (pendingHistory) {
+                    pendingHistory.add(new String[]{parts[1], parts[2], parts[3]});
+                }
+                break;
+            }
+            case "BID_HISTORY_END": {
+                List<String[]> snapshot;
+                synchronized (pendingHistory) {
+                    snapshot = new ArrayList<>(pendingHistory);
+                    pendingHistory.clear();
+                }
+                Consumer<List<String[]>> cb = bidHistoryCallback;
+                bidHistoryCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                break;
+            }
+
             case "SUGGEST_RESULT": {
                 List<String> names = new ArrayList<>();
                 for (int i = 1; i < parts.length; i++) names.add(parts[i]);
@@ -300,6 +333,11 @@ public class AuctionClient {
     }
 
     // ──────────────── Gửi lệnh ────────────────
+
+    public void requestBidHistory(int auctionId, Consumer<List<String[]>> callback) {
+        this.bidHistoryCallback = callback;
+        sendCommand("GET_BID_HISTORY|" + auctionId);
+    }
 
     public void requestAuctionsByCategory(String type, Consumer<List<String[]>> callback) {
         this.categoryCallback = callback;
@@ -379,10 +417,10 @@ public class AuctionClient {
         this.myItemsCallback = callback;
         sendCommand("MY_ITEMS");
     }
-        /** Listener được gọi khi server broadcast NEW_AUCTION */
-        public void setNewAuctionListener(Runnable listener) {
-            this.newAuctionListener = listener;
-        }
+    /** Listener được gọi khi server broadcast NEW_AUCTION */
+    public void setNewAuctionListener(Runnable listener) {
+        this.newAuctionListener = listener;
+    }
 
     public void setLoginCallback(BiConsumer<Boolean, String> callback) {
         this.loginCallback = callback;

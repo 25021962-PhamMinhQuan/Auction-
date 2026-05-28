@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.example.server.AuctionClient;
 import javafx.stage.Stage;
@@ -48,6 +49,8 @@ public class ItemBidingUIController {
     private VBox historyBox;
     @FXML
     private VBox historyPopup;
+    @FXML
+    private Region historyBackdrop;
     @FXML
     private Label description;
     @FXML
@@ -89,40 +92,36 @@ public class ItemBidingUIController {
         AuctionClient.getInstance().setActiveBidController(this);
         loadImage(imageUrl);
         startCountdown();
+        loadBidHistory();
     }
     public void setData(int id, String name, double price, String imageUrl) {
         setAuctionData(id, name, price,null, null, "", imageUrl);
     }
-    
-/**
-            * Chế độ read-only (upcoming — chỉ xem, không bid).
-            * Ẩn toàn bộ form bid và auto-bid.
+
+    /**
+     * Chế độ read-only (upcoming — chỉ xem, không bid).
+     * Ẩn toàn bộ form bid và auto-bid.
      */
-public void setReadOnly(boolean readOnly) {
-    this.readOnly = readOnly;
-    if (bidSection != null) {
-        bidSection.setVisible(!readOnly);
-        bidSection.setManaged(!readOnly);
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        if (bidSection != null) {
+            bidSection.setVisible(!readOnly);
+            bidSection.setManaged(!readOnly);
+        }
+        if (readOnly && startTime != null) {
+            // đếm ngược đến lúc bắt đầu thay vì kết thúc
+            this.endTime = startTime; // countdown đến startTime
+            startCountdown();
+        }
     }
-    if (readOnly && startTime != null) {
-        // đếm ngược đến lúc bắt đầu thay vì kết thúc
-        this.endTime = startTime; // countdown đến startTime
-        startCountdown();
-    }
-}
     public void updatePrice(double price, String bidder) {
         this.latestPrice = price;
         currentPrice.setText(formatVND(price));
 
         if (highestBidder != null) highestBidder.setText("Highest: " + bidder);
 
-        // Thêm entry vào history
-        Label entry = new Label(
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-                        + "  " + bidder
-                        + "  →  " + formatVND(price));
-        entry.getStyleClass().add("history-entry");
-        historyBox.getChildren().add(0, entry);
+        // Reload lịch sử từ DB để tránh duplicate với realtime entry
+        loadBidHistory();
 
         // Pulse animation trên giá
         pulseLabel(currentPrice);
@@ -193,6 +192,10 @@ public void setReadOnly(boolean readOnly) {
     private void setHistoryVisible(boolean visible) {
         historyPopup.setVisible(visible);
         historyPopup.setManaged(visible);
+        if (historyBackdrop != null) {
+            historyBackdrop.setVisible(visible);
+            historyBackdrop.setManaged(visible);
+        }
     }
 
 
@@ -205,6 +208,9 @@ public void setReadOnly(boolean readOnly) {
     }
     @FXML
     private void handleBack(ActionEvent e) throws IOException {
+        stopCountdown();
+        AuctionClient.getInstance().clearActiveBidController();
+
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/org/example/view/mainscreen.fxml"));
         Parent root = loader.load();
@@ -219,8 +225,6 @@ public void setReadOnly(boolean readOnly) {
         }
         stage.setScene(new Scene(root));
         stage.show();
-
-
     }
     private void startCountdown() {
         stopCountdown();
@@ -297,6 +301,26 @@ public void setReadOnly(boolean readOnly) {
         pause.setOnFinished(e -> label.setStyle(""));
         pause.play();
     }
+    public void showAutoBidSuccess() {
+        showStatusBrief("✓ AutoBid đã được đăng ký!");
+        maxBidInput.clear();
+        incrementInput.clear();
+    }
+
+    private void loadBidHistory() {
+        AuctionClient.getInstance().requestBidHistory(auctionId, rows -> {
+            historyBox.getChildren().clear();
+            for (String[] row : rows) {
+                String time = row[2] != null && row[2].length() >= 19
+                        ? row[2].substring(11, 19)
+                        : (row[2] != null ? row[2] : "");
+                Label entry = new Label(time + "  " + row[0] + "  →  " + formatVND(Double.parseDouble(row[1])));
+                entry.getStyleClass().add("history-entry");
+                historyBox.getChildren().add(entry);
+            }
+        });
+    }
+
     private void loadImage(String imageUrl) {
         if (itemImage == null) return;
         if (imageUrl == null || imageUrl.isBlank()) {

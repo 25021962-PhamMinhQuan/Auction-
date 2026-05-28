@@ -52,6 +52,11 @@ public class BiddingCoordinator {
         }
     }
 
+    /** Gọi từ bên ngoài để trigger autobid ngay sau khi đăng ký */
+    public synchronized void triggerAutoBid() {
+        processAutoBids();
+    }
+
     public synchronized void registerAutoBid(AutoBid autoBid) {
         autoBidManager.addAutoBid(autoBid);
     }

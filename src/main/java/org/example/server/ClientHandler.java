@@ -76,316 +76,344 @@ public class ClientHandler implements Runnable, AuctionObserver {
         String[] parts = rawline.split("\\|");
         String command = parts[0];
         try {
-        switch (command) {
+            switch (command) {
 
-            case "LOGIN": {
-                // "LOGIN|username|password"
-                if (parts.length < 3) { sendMessage("ERROR|Thiếu thông tin đăng nhập"); return; }
-                String username = parts[1];
-                String password = parts[2];
+                case "LOGIN": {
+                    // "LOGIN|username|password"
+                    if (parts.length < 3) { sendMessage("ERROR|Thiếu thông tin đăng nhập"); return; }
+                    String username = parts[1];
+                    String password = parts[2];
 
-                UserService userService = ServiceFactory.getInstance().getUserService();
-                User user = userService.findUser(username);
+                    UserService userService = ServiceFactory.getInstance().getUserService();
+                    User user = userService.findUser(username);
 
-                if (user == null) {
-                    sendMessage("ERROR|Không tìm thấy tài khoản");
-                } else if (!BCrypt.checkpw(password, user.getPassword())) {
-                    sendMessage("ERROR|Sai mật khẩu");
-                } else if (!AuctionServer.loggedInUsers.add(user.getUsername())) {
-                    sendMessage("ERROR|Tài khoản đã đăng nhập ở nơi khác");
-                } else {
-                    currentUser = user;
-                    sendMessage("OK|" + user.getRole() + "|" + user.getUsername());
+                    if (user == null) {
+                        sendMessage("ERROR|Không tìm thấy tài khoản");
+                    } else if (!BCrypt.checkpw(password, user.getPassword())) {
+                        sendMessage("ERROR|Sai mật khẩu");
+                    } else if (!AuctionServer.loggedInUsers.add(user.getUsername())) {
+                        sendMessage("ERROR|Tài khoản đã đăng nhập ở nơi khác");
+                    } else {
+                        currentUser = user;
+                        sendMessage("OK|" + user.getRole() + "|" + user.getUsername());
+                    }
+                    break;
                 }
-                break;
+
+                case "REGISTER": {
+                    // "REGISTER|username|password|role"  (role: BIDDER hoặc SELLER)
+                    if (parts.length < 4) { sendMessage("ERROR|Thiếu thông tin đăng ký"); return; }
+                    String username = parts[1];
+                    String password = parts[2];
+                    String role     = parts[3];
+
+                    User newUser;
+                    if ("SELLER".equalsIgnoreCase(role)) {
+                        newUser = new Seller(username, password);
+                    } else {
+                        newUser = new Bidder(username, password);
+                    }
+
+                    UserService userService = ServiceFactory.getInstance().getUserService();
+                    String result = userService.register(newUser);
+
+                    if ("Register success".equals(result)) {
+                        sendMessage("REGISTER_OK");
+                    } else {
+                        // tra ve loi cu the tu UserService (username ton tai, password yeu, v.v.)
+                        sendMessage("REGISTER_ERROR|" + result);
+                    }
+                    break;
+                }
+
+                case "BID": {
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (parts.length < 3)    { sendMessage("ERROR|Thiếu thông tin bid"); return; }
+                    try {
+                        int    auctionId = Integer.parseInt(parts[1]);
+                        double amount    = Double.parseDouble(parts[2]);
+
+                        BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
+                        if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
+
+                        getAuctionService().placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
+                        //broadcast cho tất cả mn
+                        Auction a = coordinator.getAuction();
+                        AuctionServer.broadCast("UPDATE|" + auctionId
+                                + "|" + a.getCurrentPrice()
+                                + "|" + currentUser.getUsername());
+                    } catch (Exception e) {
+                        sendMessage("ERROR|" + e.getMessage());
+                    }
+                    break;
+                }
+
+                case "AUTOBID": {
+                    // "AUTOBID|auctionId|maxbid|increment"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (parts.length < 4)    { sendMessage("ERROR|Thiếu thông tin autobid"); return; }
+                    try {
+                        int    auctionId = Integer.parseInt(parts[1]);
+                        double maxBid    = Double.parseDouble(parts[2]);
+                        double increment = Double.parseDouble(parts[3]);
+
+                        BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
+                        if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
+
+                        if (!(currentUser instanceof Bidder)) {
+                            sendMessage("ERROR|Chỉ Bidder mới được dùng AutoBid");
+                            return;
+                        }
+
+                        AutoBid autoBid = new AutoBid((Bidder) currentUser, maxBid, increment);
+                        getAuctionService().registerAutoBid(coordinator.getAuction(), autoBid);
+                        coordinator.getNotifier().addObserver(this);
+
+                        // Trigger autobid ngay nếu giá hiện tại thấp hơn maxBid
+                        Auction a = coordinator.getAuction();
+                        if (a.getCurrentPrice() < maxBid) {
+                            coordinator.triggerAutoBid();
+                            AuctionServer.broadCast("UPDATE|" + auctionId
+                                    + "|" + a.getCurrentPrice()
+                                    + "|" + a.getHighestBidder().getUsername());
+                        }
+
+                        sendMessage("AUTOBID_OK|AutoBid đã được đăng ký");
+                    } catch (Exception e) {
+                        sendMessage("ERROR|" + e.getMessage());
+                    }
+                    break;
+                }
+
+                case "STATUS": {
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu auction ID"); return; }
+                    int     auctionId = Integer.parseInt(parts[1]);
+                    Auction auction   = findbyId(auctionId);
+                    if (auction != null) {
+                        sendMessage("STATUS|" + auction.getStatus() + "|" + auction.getCurrentPrice());
+                    } else {
+                        sendMessage("ERROR|Auction not found");
+                    }
+                    break;
+                }
+                case "ADD_ITEM": {
+                    // "ADD_ITEM|type|name|description|startPrice|startTime|endTime"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
+                        sendMessage("ERROR|Chỉ Seller mới được thêm item");
+                        return;
+                    }
+                    if (parts.length < 7) { sendMessage("ERROR|Thiếu thông tin item"); return; }
+
+                    String type        = parts[1];
+                    String name        = parts[2];
+                    String description = parts[3];
+                    double startPrice  = Double.parseDouble(parts[4]);
+                    java.time.LocalDateTime startTime = java.time.LocalDateTime.parse(parts[5]);
+                    java.time.LocalDateTime endTime   = java.time.LocalDateTime.parse(parts[6]);
+                    String imageUrl    = parts.length > 7 ? parts[7] : null;
+
+                    org.example.service.ItemService itemService =
+                            ServiceFactory.getInstance().getItemService();
+                    org.example.domain.item.Item item = itemService.CreateItem(
+                            type, name, description, startPrice, startTime, endTime, imageUrl,
+                            (org.example.domain.user.Seller) currentUser);
+                    org.example.domain.auction.Auction auction =
+                            new org.example.domain.auction.Auction(item);
+                    getAuctionService().StartAuction(auction);
+                    for (ClientHandler client : AuctionServer.connectClient) {
+                        getAuctionService().addObserverToAuction(auction, client);
+                    }
+                    sendMessage("ITEM_ADDED|" + item.getId() + "|" + item.getName());
+                    AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
+                            + "|" + item.getName()
+                            + "|" + item.getCurrentPrice()
+                            + "|" + item.getEndTime()
+                            + "|" + item.getStartTime()
+                            + "|" + auction.getStatus().name());
+                    break;
+                }
+                case "START_AUCTION": {
+                    // "START_AUCTION|itemId"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
+                        sendMessage("ERROR|Chỉ Seller mới được tạo phiên đấu giá");
+                        return;
+                    }
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu itemId"); return; }
+
+                    String itemId = parts[1];
+                    org.example.service.ItemService itemService =
+                            ServiceFactory.getInstance().getItemService();
+                    org.example.domain.item.Item item = itemService.getItemById(itemId);
+                    if (item == null) { sendMessage("ERROR|Không tìm thấy item"); return; }
+                    if (item.getStartTime() == null || item.getEndTime() == null) {
+                        sendMessage("ERROR|Item chưa có lịch đấu giá");
+                        return;
+                    }
+                    if (item.getEndTime().isBefore(AuctionService.now())) {
+                        sendMessage("ERROR|Thời gian kết thúc đã qua");
+                        return;
+                    }
+
+                    org.example.domain.auction.Auction auction =
+                            new org.example.domain.auction.Auction(item);
+                    getAuctionService().StartAuction(auction);
+
+                    // Thêm tất cả client đang kết nối làm observer để nhận UPDATE
+                    for (ClientHandler client : AuctionServer.connectClient) {
+                        getAuctionService().addObserverToAuction(auction, client);
+                    }
+
+                    sendMessage("AUCTION_STARTED|" + auction.getId());
+                    // Broadcast để tất cả client biết có phiên mới
+                    AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
+                            + "|" + item.getName()
+                            + "|" + item.getCurrentPrice()
+                            + "|" + item.getEndTime()
+                            + "|" + item.getStartTime()
+                            + "|" + auction.getStatus().name());
+                    break;
+                }
+                case "DELETE_ITEM": {
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.SELLER.name())
+                            && !currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                        sendMessage("DELETE_ERROR|Không có quyền xóa item"); return;
+                    }
+                    if (parts.length < 2) { sendMessage("DELETE_ERROR|Thiếu itemId"); return; }
+
+                    String deleteId = parts[1];
+                    ItemService deleteService = ServiceFactory.getInstance().getItemService();
+                    Item toDelete = deleteService.getItemById(deleteId);
+                    if (toDelete == null) { sendMessage("DELETE_ERROR|Không tìm thấy item"); return; }
+
+                    try {
+                        deleteService.deleteItem(deleteId, currentUser);
+                        sendMessage("ITEM_DELETED|" + deleteId);
+                    } catch (Exception ex) {
+                        sendMessage("DELETE_ERROR|" + ex.getMessage());
+                    }
+                    break;
+                }
+                case "MY_ITEMS": {
+                    // "MY_ITEMS" — lấy danh sách item của seller hiện tại
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
+                        sendMessage("ERROR|Chỉ Seller mới có item"); return;
+                    }
+                    org.example.service.ItemService itemService =
+                            ServiceFactory.getInstance().getItemService();
+                    java.util.List<org.example.domain.item.Item> myItems =
+                            itemService.getItemsBySeller((org.example.domain.user.Seller) currentUser);
+                    sendMessage("MY_ITEMS_LIST|" + myItems.size());
+                    for (org.example.domain.item.Item it : myItems) {
+                        sendMessage("MY_ITEM|" + it.getId()
+                                + "|" + it.getName()
+                                + "|" + it.getStartPrice()
+                                + "|" + it.getType()
+                                + "|" + (it.getStartTime() != null ? it.getStartTime() : "")
+                                + "|" + (it.getEndTime()   != null ? it.getEndTime()   : ""));
+                    }
+                    sendMessage("MY_ITEMS_END");
+                    break;
+                }
+
+                case "SEARCH_AUCTIONS": {
+                    // "SEARCH_AUCTIONS|keyword"
+                    String keyword = parts[1];
+                    List<Auction> results = getAuctionService().searchByName(keyword);
+                    sendMessage("AUCTION_LIST|" + results.size());
+                    for (Auction a : results) {
+                        sendMessage("AUCTION_ITEM|"
+                                + a.getId()          + "|"
+                                + a.getItem().getName()        + "|"
+                                + a.getCurrentPrice()          + "|"
+                                + a.getItem().getEndTime()         + "|"
+                                + a.getStatus().name()                + "|"
+                                + a.getItem().getStartTime()       + "|"
+                                + a.getItem().getDescription() + "|"
+                                + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
+                    }
+                    sendMessage("AUCTION_LIST_END|SEARCH");
+                    break;
+                }
+
+                case "SUGGEST_AUCTIONS": {
+                    String keyword = parts.length > 1 ? parts[1] : "";
+                    List<Auction> suggestions = getAuctionService().searchByName(keyword);
+                    StringBuilder sb = new StringBuilder("SUGGEST_RESULT");
+                    int max = Math.min(suggestions.size(), 8);
+                    for (int i = 0; i < max; i++) {
+                        sb.append("|").append(suggestions.get(i).getItem().getName());
+                    }
+                    sendMessage(sb.toString());
+                    break;
+                }
+
+                case "LIST_BY_CATEGORY": {
+                    String type = parts.length > 1 ? parts[1] : "";
+                    List<Auction> results = getAuctionService().searchByType(type);
+                    sendMessage("AUCTION_LIST|" + results.size());
+                    for (Auction a : results) {
+                        sendMessage("AUCTION_ITEM|"
+                                + a.getId()                    + "|"
+                                + a.getItem().getName()        + "|"
+                                + a.getCurrentPrice()          + "|"
+                                + a.getItem().getEndTime()     + "|"
+                                + a.getStatus().name()         + "|"
+                                + a.getItem().getStartTime()   + "|"
+                                + a.getItem().getDescription() + "|"
+                                + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
+                    }
+                    sendMessage("AUCTION_LIST_END|CATEGORY");
+                    break;
+                }
+
+                case "LIST_AUCTIONS": {
+                    // "LIST_AUCTIONS|status"  (OPEN = upcoming, RUNNING = ongoing)
+                    String status = parts.length > 1 ? parts[1] : "RUNNING";
+                    List<Auction> auctions = getAuctionService().getAuctionsByStatus(status);
+                    sendMessage("AUCTION_LIST|" + auctions.size());
+                    for (Auction a : auctions) {
+                        // "AUCTION_ITEM|id|name|currentPrice|endTime|status"
+                        sendMessage("AUCTION_ITEM|"
+                                + a.getId() + "|"
+                                + a.getItem().getName() + "|"
+                                + a.getCurrentPrice() + "|"
+                                + a.getItem().getEndTime() + "|"
+                                + a.getStatus().name() + "|"
+                                + a.getItem().getStartTime() + "|"
+                                + a.getItem().getDescription() + "|"
+                                + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : "")
+                        );
+                    }
+                    sendMessage("AUCTION_LIST_END|" + status);  // ← gửi kèm status
+                    break;
+                }
+
+                case "GET_BID_HISTORY": {
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu auctionId"); return; }
+                    int auctionId = Integer.parseInt(parts[1]);
+                    List<String[]> history = getAuctionService().getBidHistory(auctionId);
+                    sendMessage("BID_HISTORY_START|" + auctionId + "|" + history.size());
+                    for (String[] row : history) {
+                        // row = [username, amount, time]
+                        sendMessage("BID_HISTORY_ITEM|" + row[0] + "|" + row[1] + "|" + row[2]);
+                    }
+                    sendMessage("BID_HISTORY_END|" + auctionId);
+                    break;
+                }
+
+                default:
+                    sendMessage("ERROR|Unknown command: " + command);
             }
-
-            case "REGISTER": {
-                // "REGISTER|username|password|role"  (role: BIDDER hoặc SELLER)
-                if (parts.length < 4) { sendMessage("ERROR|Thiếu thông tin đăng ký"); return; }
-                String username = parts[1];
-                String password = parts[2];
-                String role     = parts[3];
-
-                User newUser;
-                if ("SELLER".equalsIgnoreCase(role)) {
-                    newUser = new Seller(username, password);
-                } else {
-                    newUser = new Bidder(username, password);
-                }
-
-                UserService userService = ServiceFactory.getInstance().getUserService();
-                String result = userService.register(newUser);
-
-                if ("Register success".equals(result)) {
-                    sendMessage("REGISTER_OK");
-                } else {
-                    // tra ve loi cu the tu UserService (username ton tai, password yeu, v.v.)
-                    sendMessage("REGISTER_ERROR|" + result);
-                }
-                break;
-            }
-
-            case "BID": {
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (parts.length < 3)    { sendMessage("ERROR|Thiếu thông tin bid"); return; }
-                try {
-                    int    auctionId = Integer.parseInt(parts[1]);
-                    double amount    = Double.parseDouble(parts[2]);
-
-                    BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
-                    if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
-
-                    getAuctionService().placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
-                    //broadcast cho tất cả mn
-                    Auction a = coordinator.getAuction();
-                    AuctionServer.broadCast("UPDATE|" + auctionId
-                            + "|" + a.getCurrentPrice()
-                            + "|" + currentUser.getUsername());
-                } catch (Exception e) {
-                    sendMessage("ERROR|" + e.getMessage());
-                }
-                break;
-            }
-
-            case "AUTOBID": {
-                // "AUTOBID|auctionId|maxbid|increment"
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (parts.length < 4)    { sendMessage("ERROR|Thiếu thông tin autobid"); return; }
-                try {
-                    int    auctionId = Integer.parseInt(parts[1]);
-                    double maxBid    = Double.parseDouble(parts[2]);
-                    double increment = Double.parseDouble(parts[3]);
-
-                    BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
-                    if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
-
-                    AutoBid autoBid = new AutoBid((Bidder) currentUser, maxBid, increment);
-                    getAuctionService().registerAutoBid(coordinator.getAuction(), autoBid);
-                    coordinator.getNotifier().addObserver(this);
-                    sendMessage("SUCCESS|AutoBid registered");
-                } catch (Exception e) {
-                    sendMessage("ERROR|" + e.getMessage());
-                }
-                break;
-            }
-
-            case "STATUS": {
-                if (parts.length < 2) { sendMessage("ERROR|Thiếu auction ID"); return; }
-                int     auctionId = Integer.parseInt(parts[1]);
-                Auction auction   = findbyId(auctionId);
-                if (auction != null) {
-                    sendMessage("STATUS|" + auction.getStatus() + "|" + auction.getCurrentPrice());
-                } else {
-                    sendMessage("ERROR|Auction not found");
-                }
-                break;
-            }
-            case "ADD_ITEM": {
-                // "ADD_ITEM|type|name|description|startPrice|startTime|endTime"
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
-                    sendMessage("ERROR|Chỉ Seller mới được thêm item");
-                    return;
-                }
-                if (parts.length < 7) { sendMessage("ERROR|Thiếu thông tin item"); return; }
-
-                String type        = parts[1];
-                String name        = parts[2];
-                String description = parts[3];
-                double startPrice  = Double.parseDouble(parts[4]);
-                java.time.LocalDateTime startTime = java.time.LocalDateTime.parse(parts[5]);
-                java.time.LocalDateTime endTime   = java.time.LocalDateTime.parse(parts[6]);
-                String imageUrl    = parts.length > 7 ? parts[7] : null;
-
-                org.example.service.ItemService itemService =
-                        ServiceFactory.getInstance().getItemService();
-                org.example.domain.item.Item item = itemService.CreateItem(
-                        type, name, description, startPrice, startTime, endTime, imageUrl,
-                        (org.example.domain.user.Seller) currentUser);
-                org.example.domain.auction.Auction auction =
-                        new org.example.domain.auction.Auction(item);
-                getAuctionService().StartAuction(auction);
-                for (ClientHandler client : AuctionServer.connectClient) {
-                    getAuctionService().addObserverToAuction(auction, client);
-                }
-                sendMessage("ITEM_ADDED|" + item.getId() + "|" + item.getName());
-                AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
-                        + "|" + item.getName()
-                        + "|" + item.getCurrentPrice()
-                        + "|" + item.getEndTime()
-                        + "|" + item.getStartTime()
-                        + "|" + auction.getStatus().name());
-                break;
-            }
-            case "START_AUCTION": {
-                // "START_AUCTION|itemId"
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
-                    sendMessage("ERROR|Chỉ Seller mới được tạo phiên đấu giá");
-                    return;
-                }
-                if (parts.length < 2) { sendMessage("ERROR|Thiếu itemId"); return; }
-
-                String itemId = parts[1];
-                org.example.service.ItemService itemService =
-                        ServiceFactory.getInstance().getItemService();
-                org.example.domain.item.Item item = itemService.getItemById(itemId);
-                if (item == null) { sendMessage("ERROR|Không tìm thấy item"); return; }
-                if (item.getStartTime() == null || item.getEndTime() == null) {
-                    sendMessage("ERROR|Item chưa có lịch đấu giá");
-                    return;
-                }
-                if (item.getEndTime().isBefore(AuctionService.now())) {
-                    sendMessage("ERROR|Thời gian kết thúc đã qua");
-                    return;
-                }
-
-                org.example.domain.auction.Auction auction =
-                        new org.example.domain.auction.Auction(item);
-                getAuctionService().StartAuction(auction);
-
-                // Thêm tất cả client đang kết nối làm observer để nhận UPDATE
-                for (ClientHandler client : AuctionServer.connectClient) {
-                    getAuctionService().addObserverToAuction(auction, client);
-                }
-
-                sendMessage("AUCTION_STARTED|" + auction.getId());
-                // Broadcast để tất cả client biết có phiên mới
-                AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
-                        + "|" + item.getName()
-                        + "|" + item.getCurrentPrice()
-                        + "|" + item.getEndTime()
-                        + "|" + item.getStartTime()
-                        + "|" + auction.getStatus().name());
-                break;
-            }
-            case "DELETE_ITEM": {
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (!currentUser.getRole().equals(User.UserRole.SELLER.name())
-                        && !currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
-                    sendMessage("DELETE_ERROR|Không có quyền xóa item"); return;
-                }
-                if (parts.length < 2) { sendMessage("DELETE_ERROR|Thiếu itemId"); return; }
-
-                String deleteId = parts[1];
-                ItemService deleteService = ServiceFactory.getInstance().getItemService();
-                Item toDelete = deleteService.getItemById(deleteId);
-                if (toDelete == null) { sendMessage("DELETE_ERROR|Không tìm thấy item"); return; }
-
-                try {
-                    deleteService.deleteItem(deleteId, currentUser);
-                    sendMessage("ITEM_DELETED|" + deleteId);
-                } catch (Exception ex) {
-                    sendMessage("DELETE_ERROR|" + ex.getMessage());
-                }
-                break;
-            }
-            case "MY_ITEMS": {
-                // "MY_ITEMS" — lấy danh sách item của seller hiện tại
-                if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
-                if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
-                    sendMessage("ERROR|Chỉ Seller mới có item"); return;
-                }
-                org.example.service.ItemService itemService =
-                        ServiceFactory.getInstance().getItemService();
-                java.util.List<org.example.domain.item.Item> myItems =
-                        itemService.getItemsBySeller((org.example.domain.user.Seller) currentUser);
-                sendMessage("MY_ITEMS_LIST|" + myItems.size());
-                for (org.example.domain.item.Item it : myItems) {
-                    sendMessage("MY_ITEM|" + it.getId()
-                            + "|" + it.getName()
-                            + "|" + it.getStartPrice()
-                            + "|" + it.getType()
-                            + "|" + (it.getStartTime() != null ? it.getStartTime() : "")
-                            + "|" + (it.getEndTime()   != null ? it.getEndTime()   : ""));
-                }
-                sendMessage("MY_ITEMS_END");
-                break;
-            }
-
-            case "SEARCH_AUCTIONS": {
-                // "SEARCH_AUCTIONS|keyword"
-                String keyword = parts[1];
-                List<Auction> results = getAuctionService().searchByName(keyword);
-                sendMessage("AUCTION_LIST|" + results.size());
-                for (Auction a : results) {
-                    sendMessage("AUCTION_ITEM|"
-                            + a.getId()          + "|"
-                            + a.getItem().getName()        + "|"
-                            + a.getCurrentPrice()          + "|"
-                            + a.getItem().getEndTime()         + "|"
-                            + a.getStatus().name()                + "|"
-                            + a.getItem().getStartTime()       + "|"
-                            + a.getItem().getDescription() + "|"
-                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
-                }
-                sendMessage("AUCTION_LIST_END|SEARCH");
-                break;
-            }
-
-            case "SUGGEST_AUCTIONS": {
-                String keyword = parts.length > 1 ? parts[1] : "";
-                List<Auction> suggestions = getAuctionService().searchByName(keyword);
-                StringBuilder sb = new StringBuilder("SUGGEST_RESULT");
-                int max = Math.min(suggestions.size(), 8);
-                for (int i = 0; i < max; i++) {
-                    sb.append("|").append(suggestions.get(i).getItem().getName());
-                }
-                sendMessage(sb.toString());
-                break;
-            }
-
-            case "LIST_BY_CATEGORY": {
-                String type = parts.length > 1 ? parts[1] : "";
-                List<Auction> results = getAuctionService().searchByType(type);
-                sendMessage("AUCTION_LIST|" + results.size());
-                for (Auction a : results) {
-                    sendMessage("AUCTION_ITEM|"
-                            + a.getId()                    + "|"
-                            + a.getItem().getName()        + "|"
-                            + a.getCurrentPrice()          + "|"
-                            + a.getItem().getEndTime()     + "|"
-                            + a.getStatus().name()         + "|"
-                            + a.getItem().getStartTime()   + "|"
-                            + a.getItem().getDescription() + "|"
-                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : ""));
-                }
-                sendMessage("AUCTION_LIST_END|CATEGORY");
-                break;
-            }
-
-            case "LIST_AUCTIONS": {
-                // "LIST_AUCTIONS|status"  (OPEN = upcoming, RUNNING = ongoing)
-                String status = parts.length > 1 ? parts[1] : "RUNNING";
-                List<Auction> auctions = getAuctionService().getAuctionsByStatus(status);
-                sendMessage("AUCTION_LIST|" + auctions.size());
-                for (Auction a : auctions) {
-                    // "AUCTION_ITEM|id|name|currentPrice|endTime|status"
-                    sendMessage("AUCTION_ITEM|"
-                            + a.getId() + "|"
-                            + a.getItem().getName() + "|"
-                            + a.getCurrentPrice() + "|"
-                            + a.getItem().getEndTime() + "|"
-                            + a.getStatus().name() + "|"
-                            + a.getItem().getStartTime() + "|"
-                            + a.getItem().getDescription() + "|"
-                            + (a.getItem().getImageUrl() != null ? a.getItem().getImageUrl() : "")
-                    );
-                }
-                sendMessage("AUCTION_LIST_END|" + status);  // ← gửi kèm status
-                break;
-            }
-
-            default:
-                sendMessage("ERROR|Unknown command: " + command);
+        } catch (Exception e) {
+            System.err.println("[SERVER ERROR] Exception handling command '" + command + "': " + e.getMessage());
+            e.printStackTrace();
+            sendMessage("ERROR|" + e.getMessage());
         }
-    } catch (Exception e) {
-        System.err.println("[SERVER ERROR] Exception handling command '" + command + "': " + e.getMessage());
-        e.printStackTrace();
-        sendMessage("ERROR|" + e.getMessage());
     }
-}
 
 
 
