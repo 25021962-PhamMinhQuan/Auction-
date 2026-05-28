@@ -7,13 +7,14 @@ import org.example.uicontroller.MainScreenController;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AuctionClient {
-    private static final String HOST = "172.236.140.98";
+    private static final String HOST = "localhost";
     private static final int    PORT = 2501;
 
     private Socket         socket;
@@ -141,7 +142,20 @@ public class AuctionClient {
                     loginCallback = null;
                     cb.accept(false, msg);
                 } else {
-                    Platform.runLater(() -> System.err.println("Server error: " + msg));
+                    Platform.runLater(() -> {
+                        // Ưu tiên hiện trên màn hình bid nếu đang mở
+                        if (activeBidController != null) {
+                            activeBidController.showError(msg);
+                        } else {
+                            // Fallback: Alert thông thường
+                            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                                    javafx.scene.control.Alert.AlertType.WARNING);
+                            alert.setTitle("Lỗi");
+                            alert.setHeaderText(null);
+                            alert.setContentText(msg);
+                            alert.showAndWait();
+                        }
+                    });
                 }
                 break;
             }
@@ -150,10 +164,15 @@ public class AuctionClient {
                 int auctionId = Integer.parseInt(parts[1]);
                 double newPrice = Double.parseDouble(parts[2]);
                 String bidder = parts[3];
+                final String newEndTime = parts.length > 4 ? parts[4] : null;
                 Platform.runLater(() -> {
-                    //cập nhật màn hình bid
-                    if (activeBidController != null)
+                    // Cập nhật màn hình bid
+                    if (activeBidController != null) {
                         activeBidController.updatePrice(newPrice, bidder);
+                        if (newEndTime != null)
+                            activeBidController.updateEndTime(LocalDateTime.parse(newEndTime)); // anti-snipe
+                    }
+                    // Fix: MainScreenController phải nằm ngoài if ở trên
                     MainScreenController ctrl = MainScreenController.getInstance();
                     if (ctrl != null) ctrl.updateAuctionPrice(auctionId, newPrice, bidder);
                 });

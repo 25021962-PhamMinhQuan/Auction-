@@ -334,7 +334,6 @@ public class ItemBidingUIController {
                 entry.getStyleClass().add("history-entry");
                 historyBox.getChildren().add(entry);
             }
-            updateCharts(rows);
         });
     }
 
@@ -426,6 +425,19 @@ public class ItemBidingUIController {
                         d.getNode().setStyle("-fx-bar-fill: #fbbf24;");
             });
         }
+    }
+    public void showError(String message) {
+        // Hiện lỗi ngắn gọn trên label timeLeft rồi tự mất sau 3s
+        String prev = timeLeft.getText();
+        String prevStyle = timeLeft.getStyle();
+        timeLeft.setText(message);
+        timeLeft.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+        PauseTransition pause = new PauseTransition(Duration.seconds(5));
+        pause.setOnFinished(e -> {
+            timeLeft.setText(prev);
+            timeLeft.setStyle(prevStyle);
+        });
+        pause.play();
     }
 }
 
