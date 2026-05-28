@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.example.domain.user.User;
 import org.example.server.AuctionClient;
@@ -32,11 +33,23 @@ public class MainScreenController {
     @FXML private VBox       categoryMenu;
     @FXML private StackPane  auctionBox;
     @FXML private VBox       auctionMenu;
+    @FXML private Button      categoryButton;
+    @FXML private Button      auctionButton;
     @FXML private Label      usernameLabel; // có trong FXML navbar
     @FXML private AnchorPane overlayDashboard;
     @FXML private Button     addItemBtn;
     @FXML private TextField searchField;
     @FXML private VBox suggestionBox;
+    @FXML private Button settingsBtn;
+    @FXML private VBox   settingsSubPanel;
+    @FXML private Button langEnBtn;
+    @FXML private Button langViBtn;
+    @FXML private Button themeLightBtn;
+    @FXML private Button themeDarkBtn;
+    private boolean settingsExpanded = false;
+    private String  currentLang      = "EN";
+    private String  currentTheme     = "DARK";
+    private VBox openMenu = null;
 
 
 
@@ -56,9 +69,12 @@ public class MainScreenController {
     @FXML
     public void initialize() {
         instance = this;
-        wireHoverMenus();
         wireAutocomplete();
         loadUpcoming();
+        updateLangButtons();
+        updateThemeButtons();
+        wireDropdownClicks();
+        wireGlobalClickToCloseDropdowns();
         loadOngoing();
     }
 
@@ -172,7 +188,79 @@ public class MainScreenController {
         stage.setScene(new javafx.scene.Scene(root));
         stage.show();
     }
+    private void wireDropdownClicks() {
+        categoryButton.setOnAction(e -> toggleMenu(categoryMenu));
+        auctionButton .setOnAction(e -> toggleMenu(auctionMenu));
+    }
 
+    private void toggleMenu(VBox menu) {
+        if (openMenu == menu) {
+            // Đang mở → đóng
+            closeAllMenus();
+        } else {
+            // Đóng menu cũ, mở menu mới
+            closeAllMenus();
+            menu.setVisible(true);
+            menu.setManaged(true);
+            openMenu = menu;
+            // Highlight nút trigger tương ứng
+            setTriggerActive(menu, true);
+        }
+    }
+
+    private void closeAllMenus() {
+        if (openMenu != null) {
+            openMenu.setVisible(false);
+            openMenu.setManaged(false);
+            setTriggerActive(openMenu, false);
+            openMenu = null;
+        }
+    }
+
+    /** Highlight/bỏ highlight nút trigger khi menu mở/đóng */
+    private void setTriggerActive(VBox menu, boolean active) {
+        Button trigger = (menu == categoryMenu) ? categoryButton : auctionButton;
+        if (active) {
+            if (!trigger.getStyleClass().contains("nav-link-active"))
+                trigger.getStyleClass().add("nav-link-active");
+        } else {
+            trigger.getStyleClass().remove("nav-link-active");
+        }
+    }
+
+    /**
+     * Click bất kỳ đâu trên Scene (filter = capture phase)
+     * → đóng dropdown nếu click KHÔNG nằm trong menu và KHÔNG phải trigger.
+     * Dùng addEventFilter ở root scene để bắt mọi click trước khi node con xử lý.
+     */
+    private void wireGlobalClickToCloseDropdowns() {
+        // Scene chưa có khi initialize() chạy → đợi scene gắn vào
+        categoryBox.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+                    if (openMenu == null) return;
+                    Node target = (Node) e.getTarget();
+                    // Nếu click vào bên trong menu hoặc vào trigger button → không đóng
+                    if (isInsideNode(target, openMenu)
+                            || isInsideNode(target, categoryBox)
+                            || isInsideNode(target, auctionBox)) {
+                        return;
+                    }
+                    closeAllMenus();
+                });
+            }
+        });
+    }
+
+    /** Kiểm tra xem node có nằm trong (hoặc chính là) ancestor không */
+    private boolean isInsideNode(Node node, Node ancestor) {
+        Node current = node;
+        while (current != null) {
+            if (current == ancestor) return true;
+            current = current.getParent();
+        }
+        return false;
+    }
 
         private void setGridVisible(boolean show) {
             mainContent.setVisible(!show);
@@ -183,16 +271,72 @@ public class MainScreenController {
         backButton.setManaged(show);
     }
 
-    private void wireHoverMenus() {
-        categoryBox.setOnMouseEntered(e  -> setMenuVisible(categoryMenu, true));
-        categoryBox.setOnMouseExited(e   -> setMenuVisible(categoryMenu, false));
-        categoryMenu.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
-        categoryMenu.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
+    @FXML
+    private void handleToggleSettings() {
+        settingsExpanded = !settingsExpanded;
+        settingsSubPanel.setVisible(settingsExpanded);
+        settingsSubPanel.setManaged(settingsExpanded);
 
-        auctionBox.setOnMouseEntered(e   -> setMenuVisible(auctionMenu, true));
-        auctionBox.setOnMouseExited(e    -> setMenuVisible(auctionMenu, false));
-        auctionMenu.setOnMouseEntered(e  -> setMenuVisible(auctionMenu, true));
-        auctionMenu.setOnMouseExited(e   -> setMenuVisible(auctionMenu, false));
+        if (settingsExpanded) {
+            settingsBtn.getStyleClass().removeAll("panel-nav-btn");
+            if (!settingsBtn.getStyleClass().contains("panel-nav-btn-expanded"))
+                settingsBtn.getStyleClass().add("panel-nav-btn-expanded");
+            settingsBtn.setText("⚙   Settings  ▴");
+        } else {
+            settingsBtn.getStyleClass().removeAll("panel-nav-btn-expanded");
+            if (!settingsBtn.getStyleClass().contains("panel-nav-btn"))
+                settingsBtn.getStyleClass().add("panel-nav-btn");
+            settingsBtn.setText("⚙   Settings  ▾");
+        }
+    }
+    @FXML
+    private void handleLangEn() {
+        currentLang = "EN";
+        updateLangButtons();
+        // TODO: apply locale change
+    }
+
+    @FXML
+    private void handleLangVi() {
+        currentLang = "VI";
+        updateLangButtons();
+        // TODO: apply locale change
+    }
+
+    private void updateLangButtons() {
+        if (langEnBtn == null || langViBtn == null) return;
+        setToggleActive(langEnBtn,  "toggle-btn-left",  "EN".equals(currentLang));
+        setToggleActive(langViBtn,  "toggle-btn-right", "VI".equals(currentLang));
+    }
+
+    // ─── Theme toggles ──────────────────────────────────────────────────────
+    @FXML
+    private void handleThemeLight() {
+        currentTheme = "LIGHT";
+        updateThemeButtons();
+        // TODO: swap stylesheet for light theme
+    }
+
+    @FXML
+    private void handleThemeDark() {
+        currentTheme = "DARK";
+        updateThemeButtons();
+    }
+
+    private void updateThemeButtons() {
+        if (themeLightBtn == null || themeDarkBtn == null) return;
+        setToggleActive(themeLightBtn, "toggle-btn-left",  "LIGHT".equals(currentTheme));
+        setToggleActive(themeDarkBtn,  "toggle-btn-right", "DARK".equals(currentTheme));
+    }
+
+    /** Swap active/inactive style on a toggle button while keeping its base side-class */
+    private void setToggleActive(Button btn, String baseClass, boolean active) {
+        btn.getStyleClass().removeAll("toggle-btn-active");
+        // ensure base class is present
+        if (!btn.getStyleClass().contains(baseClass))
+            btn.getStyleClass().add(baseClass);
+        if (active)
+            btn.getStyleClass().add("toggle-btn-active");
     }
 
     private void setMenuVisible(VBox menu, boolean visible) {
@@ -225,6 +369,7 @@ public class MainScreenController {
     public void handleCloseDashboard(){
         overlayDashboard.setVisible(false);
         overlayDashboard.setManaged(false);
+        if (settingsExpanded) handleToggleSettings();
     }
     public void onNewAuction() {
         loadUpcoming();

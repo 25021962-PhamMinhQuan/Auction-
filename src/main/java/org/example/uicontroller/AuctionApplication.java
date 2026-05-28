@@ -11,20 +11,19 @@ import java.io.IOException;
 public class AuctionApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/mainscreen.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Image icon = new Image("/icon.png");
         stage.getIcons().add(icon);
         stage.setTitle("Auction App");
 
-        // ✅ Set kích thước window
         stage.setWidth(1200);
         stage.setHeight(700);
         stage.setMinWidth(1000);
         stage.setMinHeight(600);
 
         stage.setScene(scene);
-        stage.centerOnScreen();  // ✅ Center window trên màn hình
+        stage.centerOnScreen();
         stage.show();
     }
 }

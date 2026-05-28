@@ -6,9 +6,7 @@
     -fx-background-size: cover;
     -fx-background-position: center;
 }
-.login_bg {
-    -fx-background-image: url("/background.jpg");
-}
+
 @font-face {
     font-family: 'Inter';
     src: url('fonts/Inter_18pt-Regular.ttf');
@@ -17,6 +15,10 @@
     font-family: 'Inter';
     src: url('fonts/Inter_18pt-Bold.ttf');
     font-weight: bold;
+}
+/* login */
+.login_bg {
+    -fx-background-image: url("/background.jpg");
 }
 .button-login {
     -fx-background-color: #fbbf24;
@@ -40,7 +42,6 @@
     -fx-border-color: #fbbf24;
     -fx-border-width: 1.5;
 }
-/* login & register screen */
 .login_card {
     -fx-background-color: linear-gradient(to bottom right, #111827, #0b1220);
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0.3, 0, 10);
@@ -57,42 +58,149 @@
     -fx-font-size: 13px;
     -fx-text-fill: #9ca3af;
 }
+/* nav bar */
 .icon-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 4;
     -fx-cursor: hand;
 }
-/* ===== NAVBAR ===== */
-.navbar {
-    -fx-background-color: rgba(17, 24, 39, 0.9);
-    -fx-border-color: #374151;
-    -fx-border-width: 0 0 1 0;
+.navbar-wrapper {
+    -fx-background-color: #0d1117;
 }
 
-.nav-button {
+.navbar {
+    -fx-background-color: #0d1117;
+    -fx-min-height: 60;
+    -fx-pref-height: 60;
+}
+
+.navbar-accent-line {
+    -fx-background-color: linear-gradient(to right, #fbbf24, #f59e0b, transparent);
+    -fx-pref-height: 2;
+    -fx-min-height: 2;
+}
+
+/* Logo button */
+.nav-logo-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 4 8 4 0;
+    -fx-cursor: hand;
+}
+.nav-logo-btn:hover {
+    -fx-background-color: transparent;
+    -fx-opacity: 0.85;
+}
+
+.nav-link {
     -fx-background-color: transparent;
     -fx-text-fill: #9ca3af;
-    -fx-padding: 0 20 0 20;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-padding: 0 14 0 14;
     -fx-cursor: hand;
-
+    -fx-min-height: 60;
     -fx-background-radius: 0;
-    -fx-transition: all 0.2s;
+}
+.nav-link:hover {
+    -fx-text-fill: #fbbf24;
+    -fx-background-color: rgba(251,191,36,0.07);
+}
+.nav-link-active {
+    -fx-text-fill: #fbbf24;
+    -fx-background-color: rgba(251,191,36,0.12);
+    -fx-border-color: transparent transparent #fbbf24 transparent;
+    -fx-border-width: 0 0 2 0;
 }
 
-.nav-button:hover {
+/* search bar */
+.search-container {
+    -fx-padding: 0;
+}
+.search-box {
+    -fx-background-color: #1c2333;
+    -fx-background-radius: 20;
+    -fx-border-color: #2d3748;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 7 14 7 14;
+    -fx-min-width: 240;
+}
+.search-box:hover {
+    -fx-border-color: #4b5563;
+}
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #e5e7eb;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-padding: 0 0 0 6;
+}
+.search-field:focused {
+    -fx-border-color: transparent;
+}
+.search-icon {
+    -fx-opacity: 0.5;
+}
+
+/* add item button */
+.btn-add-item {
     -fx-background-color: #fbbf24;
     -fx-text-fill: #111827;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI";
+    -fx-background-radius: 20;
+    -fx-padding: 8 18 8 18;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+.btn-add-item:hover {
+    -fx-background-color: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(251,191,36,0.4), 10, 0.3, 0, 2);
 }
 
-/* ===== SECTION TITLE ===== */
+/* User Avatar Button in Navbar */
+.nav-avatar-btn {
+    -fx-background-color: #1c2333;
+    -fx-border-color: #2d3748;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 6 14 6 10;
+    -fx-cursor: hand;
+}
+.nav-avatar-btn:hover {
+    -fx-background-color: #252f44;
+    -fx-border-color: #fbbf24;
+}
+.avatar-circle {
+    -fx-background-color: #374151;
+    -fx-background-radius: 50%;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-width: 28;
+    -fx-pref-height: 28;
+}
+.nav-username {
+    -fx-text-fill: #d1d5db;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+
+/* phần content chính */
 .section-title {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #e5e7eb;
 }
 
-/* ===== ITEM CARD ===== */
+/* itemcard.fxml */
 .item-card {
     -fx-background-color: #1f2933;
     -fx-background-radius: 12;
@@ -109,7 +217,6 @@
     -fx-translate-y: -4;
 }
 
-/* item card */
 .item-name {
     -fx-text-fill: #e5e7eb;
     -fx-font-weight: bold;
@@ -124,7 +231,6 @@
     -fx-text-fill: #9ca3af;
     -fx-font-size: 12px;
 }
-/* ===== GRID ===== */
 .grid-pane {
     -fx-padding: 20;
 }
@@ -195,23 +301,117 @@
 }
 
 .dropdown-menu {
-    -fx-background-color: #1f2933;
-    -fx-background-radius: 8;
-    -fx-border-color: #374151;
-    -fx-border-radius: 8;
-    -fx-padding: 5;
+    -fx-background-color: #1a2235;
+    -fx-background-radius: 10;
+    -fx-border-color: #2d3748;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 20, 0.2, 0, 6);
+}
+.dropdown-menu-float {
+    -fx-background-color: #1a2235;
+    -fx-background-radius: 10;
+    -fx-border-color: #2d3748;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 24, 0.25, 0, 8);
 }
 
 .dropdown-item {
     -fx-background-color: transparent;
-    -fx-text-fill: #e5e7eb;
+    -fx-text-fill: #d1d5db;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 8 12;
-    -fx-pref-width: 120;
+    -fx-padding: 9 14 9 14;
+    -fx-pref-width: 150;
+    -fx-background-radius: 7;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
 }
 
+
 .dropdown-item:hover {
-    -fx-background-color: #374151;
+    -fx-background-color: #2d3748;
+    -fx-text-fill: #fbbf24;
+}
+.settings-sub-panel {
+    -fx-background-color: #111827;
+    -fx-background-radius: 10;
+    -fx-border-color: #1f2937;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.settings-row {
+    -fx-background-color: transparent;
+}
+
+.settings-row-label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+}
+
+.settings-row-divider {
+    -fx-background-color: #1f2937;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+}
+
+/* Toggle button group */
+.toggle-group-box {
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 8;
+    -fx-border-color: #374151;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.toggle-btn-left {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 14 5 14;
+    -fx-background-radius: 7 0 0 7;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-min-width: 44;
+}
+
+.toggle-btn-right {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 14 5 14;
+    -fx-background-radius: 0 7 7 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-min-width: 44;
+}
+
+.toggle-btn-left:hover,
+.toggle-btn-right:hover {
+    -fx-text-fill: #d1d5db;
+    -fx-background-color: rgba(255,255,255,0.05);
+}
+
+.toggle-btn-active {
+    -fx-background-color: #fbbf24;
+    -fx-text-fill: #111827;
+    -fx-font-weight: bold;
+}
+
+.toggle-btn-active:hover {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: #111827;
 }
 .radio-button {
     -fx-text-fill: #e5e7eb;
@@ -266,10 +466,196 @@
             0
     );
 }
-/* ════════════════════════════════════════════
-   ADMIN PANEL — style bổ sung cho adminscreen.fxml
-   Nhập vào sau style.css chính
-   ════════════════════════════════════════════ */
+/* side panel ở màn hình chính */
+.overlay-backdrop {
+    -fx-background-color: rgba(0,0,0,0.5);
+}
+
+.dashboard-panel {
+    -fx-background-color: #0d1117;
+    -fx-pref-width: 300;
+    -fx-min-width: 300;
+    -fx-max-width: 300;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 0 0 0 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 40, 0.3, -8, 0);
+}
+
+/* Panel Header */
+.panel-header {
+    -fx-background-color: #111827;
+    -fx-padding: 16 20 16 20;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 0 0 1 0;
+    -fx-min-height: 60;
+}
+.panel-header-title {
+    -fx-text-fill: #f9fafb;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.panel-close-btn {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 13px;
+    -fx-background-radius: 50%;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-pref-width: 30;
+    -fx-pref-height: 30;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+.panel-close-btn:hover {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+}
+
+/* Profile Card */
+.panel-profile-card {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12;
+    -fx-border-color: #1f2937;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+/* Avatar */
+.panel-avatar-wrap {
+    -fx-background-color: linear-gradient(to bottom right, #374151, #1f2937);
+
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 2;
+
+    -fx-min-width: 72;
+    -fx-min-height: 72;
+    -fx-pref-width: 72;
+    -fx-pref-height: 72;
+
+    -fx-max-width: 72;
+    -fx-max-height: 72;
+}
+.panel-avatar-icon {
+    -fx-font-size: 30px;
+}
+
+/* User Info */
+.panel-username {
+    -fx-text-fill: #f9fafb;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+.panel-role-badge {
+    -fx-text-fill: #9ca3af;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 10;
+    -fx-padding: 3 10 3 10;
+    -fx-border-color: #374151;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+/* Edit Profile Button */
+.btn-panel-primary {
+    -fx-background-color: #fbbf24;
+    -fx-text-fill: #111827;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 16 10 16;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+.btn-panel-primary:hover {
+    -fx-background-color: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(251,191,36,0.3), 8, 0.2, 0, 2);
+}
+
+/* Section Label */
+.panel-section-header {
+    -fx-padding: 20 20 4 20;
+}
+.panel-section-label {
+    -fx-text-fill: #4b5563;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* Nav buttons inside panel */
+.panel-nav-group {
+    -fx-spacing: 4;
+}
+.panel-nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d1d5db;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16 12 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+.panel-nav-btn:hover {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #f9fafb;
+}
+.panel-nav-btn-expanded {
+    -fx-background-color: rgba(251,191,36,0.08);
+    -fx-text-fill: #fbbf24;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16 12 16;
+    -fx-background-radius: 8 8 0 0;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(251,191,36,0.2);
+    -fx-border-width: 1 1 0 1;
+    -fx-border-radius: 8 8 0 0;
+}
+
+/* Separator */
+.panel-separator {
+    -fx-background-color: #1f2937;
+}
+
+/* Logout Button */
+.panel-logout-btn {
+    -fx-background-color: rgba(239,68,68,0.08);
+    -fx-text-fill: #f87171;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16 12 16;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(239,68,68,0.2);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.panel-logout-btn:hover {
+    -fx-background-color: rgba(239,68,68,0.15);
+    -fx-text-fill: #fca5a5;
+    -fx-border-color: rgba(239,68,68,0.4);
+}
+.side-panel {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #1f2937;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+}
+/*  adminscreen.fxml */
 
 /* ── Admin Badge (topbar) ── */
 .admin-badge {
