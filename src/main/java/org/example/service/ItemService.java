@@ -47,5 +47,11 @@ public class ItemService {
     public Item getItemById(String id) {
         return ItemRepositoryImpl.findById(id);
     }
+    public List<Item> findAllItems() {
+        return ItemRepositoryImpl.findAll();
+    }
 
+    public long countAllItems() {
+        return ItemRepositoryImpl.findAll().size();
+    }
 }

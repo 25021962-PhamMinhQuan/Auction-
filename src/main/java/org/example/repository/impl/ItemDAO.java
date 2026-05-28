@@ -122,7 +122,22 @@ public class ItemDAO implements ItemRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    @Override
+    public List<Item> findAll() {
+        String sql = "SELECT * FROM item ORDER BY start_time DESC";
+        List<Item> items = new ArrayList<>();
 
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                items.add(buildItem(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
+        return items;
     }
 }

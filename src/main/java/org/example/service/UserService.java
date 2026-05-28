@@ -5,6 +5,8 @@ import org.example.domain.user.User;
 import org.example.repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.List;
+
 public class UserService {
     private final UserRepository UserRepositoryImpl;
 
@@ -87,6 +89,16 @@ public class UserService {
 
     public User findUser(String name){
         return UserRepositoryImpl.findByUsername(name);
+    }
+    public List<User> findAllUsers() {
+        return UserRepositoryImpl.findAll();
+    }
+    public void deleteUser(String userId) {
+        UserRepositoryImpl.delete(userId);
+    }
+
+    public long countAllUsers() {
+        return UserRepositoryImpl.findAll().size();
     }
 }
 

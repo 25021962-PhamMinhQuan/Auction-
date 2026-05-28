@@ -282,4 +282,31 @@ public class AuctionService {
     public BiddingCoordinator getCoordinator(int auctionId) {
         return coordinators.get(auctionId);
     }
+    public List<Auction> findAllAuctions() {
+        return auctionDAO.findAll();
+    }
+
+    public void stopAuction(int auctionId, User requester) {
+        Auction auction = findbyId(auctionId);
+        if (auction == null) {
+            throw new IllegalArgumentException("Auction not found");
+        }
+        cancelAuction(auction, requester);
+        cleanup(auctionId);
+    }
+
+    public void deleteAuction(int auctionId) {
+        cleanup(auctionId);
+        coordinators.remove(auctionId);
+        autoBidDao.deactivateByAuction(auctionId);
+        auctionDAO.delete(auctionId);
+    }
+
+    public long countRunningAuctions() {
+        return auctionDAO.findByStatus(Auction.Status.RUNNING.name()).size();
+    }
+
+    public long countOpenAuctions() {
+        return auctionDAO.findByStatus(Auction.Status.OPEN.name()).size();
+    }
 }

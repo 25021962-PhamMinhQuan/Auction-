@@ -11,4 +11,5 @@ public interface ItemRepository {
     void update(Item item);
     void updateStatus(Item item,String status);
     void delete(String id);
+    List<Item> findAll();
 }

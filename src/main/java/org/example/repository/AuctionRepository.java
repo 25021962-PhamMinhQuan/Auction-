@@ -16,4 +16,9 @@ public interface AuctionRepository {
     List<Auction> findByName(String keyword);
 
     public List<Auction> findByType(String type);
+    List<Auction> findAll();
+
+    Auction findById(int id);
+
+    void delete(int id);
 }
