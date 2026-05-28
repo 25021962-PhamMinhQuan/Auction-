@@ -45,17 +45,12 @@ jobs:
           name: auction-server
           path: ./target
 
-      - name: Decode SSH key
-        run: |
-          echo "${{ secrets.VPS_SSH_KEY_B64 }}" | base64 -d > /tmp/deploy_key
-          chmod 600 /tmp/deploy_key
-
       - name: Stop server cũ
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key_path: /tmp/deploy_key
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             if [ -f /app/auction/server.pid ]; then
               PID=$(cat /app/auction/server.pid)
@@ -71,7 +66,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key_path: /tmp/deploy_key
+          key: ${{ secrets.VPS_SSH_KEY }}
           source: "target/*.jar"
           target: "/app/auction/"
           strip_components: 1
@@ -81,7 +76,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key_path: /tmp/deploy_key
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /app/auction
             JAR=$(ls -t *.jar | grep -v bak | head -1)
