@@ -13,6 +13,8 @@ public interface AuctionRepository {
 
     List<Auction> findByStatus(String status);
 
+    void updateEndTime(Auction auction);
+
     List<Auction> findByName(String keyword);
 
     public List<Auction> findByType(String type);

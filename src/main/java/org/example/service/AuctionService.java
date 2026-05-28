@@ -59,6 +59,7 @@ public class AuctionService {
             for (Auction auction : runningAuctions) {
                 if (!schedulers.containsKey(auction.getId())) {
                     BiddingCoordinator coordinator = new BiddingCoordinator(auction);
+                    coordinator.setAuctionRepository(auctionDAO);
                     coordinator.setOnBidPersisted(bid -> {
                         auctionDAO.update(auction, Auction.Status.RUNNING.name());
                         bidDAO.save(bid, auction.getId());
@@ -86,6 +87,7 @@ public class AuctionService {
                     // Tạo coordinator nếu chưa có (trường hợp restore từ DB sau restart)
                     coordinators.computeIfAbsent(auction.getId(), id -> {
                         BiddingCoordinator coord = new BiddingCoordinator(auction);
+                        coord.setAuctionRepository(auctionDAO);
                         coord.setOnBidPersisted(bid -> {
                             auctionDAO.update(auction, Auction.Status.RUNNING.name());
                             bidDAO.save(bid, auction.getId());
@@ -129,6 +131,7 @@ public class AuctionService {
         }
 
         BiddingCoordinator coordinator = new BiddingCoordinator(auction);
+        coordinator.setAuctionRepository(auctionDAO);
         coordinator.setOnBidPersisted(bid -> {
             auctionDAO.update(auction, Auction.Status.RUNNING.name());
             bidDAO.save(bid, auction.getId());

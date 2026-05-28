@@ -93,6 +93,19 @@ public class AuctionDAO implements AuctionRepository {
         return result;
     }
 
+    @Override
+    public void updateEndTime(Auction auction) {
+        String sql = "UPDATE auction SET end_time = ? WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setObject(1, auction.getItem().getEndTime());
+            pstmt.setInt(2, auction.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<Auction> findByType(String type) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, " +
@@ -169,7 +182,6 @@ public class AuctionDAO implements AuctionRepository {
                 auction.markPaid();
             }
         }
-
             return auction;
         }
     }

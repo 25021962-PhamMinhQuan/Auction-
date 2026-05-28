@@ -4,6 +4,7 @@ import org.example.domain.item.Item;
 import org.example.domain.user.Bidder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -79,7 +80,7 @@ public class Auction {
     private LocalDateTime lastExtensionTime = null;
 
     public void AntiSniping() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         LocalDateTime thirtySecBeforeEnd = item.getEndTime().minusSeconds(30);
 
         // Chỉ extend nếu:

@@ -411,7 +411,7 @@ public class ItemBidingUIController {
         }
     }
     public void showError(String message) {
-        // Hiện lỗi ngắn gọn trên label timeLeft rồi tự mất sau 3s
+        // Hiện lỗi ngắn gọn trên label timeLeft rồi tự mất sau
         String prev = timeLeft.getText();
         String prevStyle = timeLeft.getStyle();
         timeLeft.setText(message);

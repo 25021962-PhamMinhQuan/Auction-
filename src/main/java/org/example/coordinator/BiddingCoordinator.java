@@ -6,8 +6,10 @@ import org.example.manager.AutoBidManager;
 import org.example.domain.user.Bidder;
 import org.example.observer.AuctionNotifier;
 import org.example.domain.auction.BidTransaction.BidType;
+import org.example.repository.AuctionRepository;
 import org.example.util.AutoBid;
 
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 public class BiddingCoordinator {
@@ -15,13 +17,16 @@ public class BiddingCoordinator {
     private AutoBidManager autoBidManager;
     private AuctionNotifier auctionNotifier;
     private Consumer<BidTransaction> onBidPerSisted;
+    private AuctionRepository auctionRepository;
 
     public BiddingCoordinator(Auction auction){
         this.auction = auction;
         this.autoBidManager = new AutoBidManager(auction);
         this.auctionNotifier = new AuctionNotifier(auction);
     }
-
+    public void setAuctionRepository(AuctionRepository auctionRepository) {
+        this.auctionRepository = auctionRepository;
+    }
     public void setOnBidPersisted(Consumer<BidTransaction> logic){
         this.onBidPerSisted = logic;
     }
@@ -31,13 +36,16 @@ public class BiddingCoordinator {
     }
 
     private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
+        LocalDateTime endTimeBefore = auction.getItem().getEndTime();
         auction.validateBid(bidder,amount, type );
         BidTransaction bid = auction.recordBid(bidder,amount,type);
-
         if(onBidPerSisted!=null){
             onBidPerSisted.accept(bid);
         }
-
+        if (auctionRepository != null &&
+                auction.getItem().getEndTime().isAfter(endTimeBefore)) {
+            auctionRepository.updateEndTime(auction);
+        }
         auctionNotifier.notifyObservers(bid);
 
         if(triggerAuto){
