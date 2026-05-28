@@ -46,6 +46,7 @@ public class MainScreenController {
     @FXML private Button langViBtn;
     @FXML private Button themeLightBtn;
     @FXML private Button themeDarkBtn;
+    @FXML private StackPane searchContainer;
     private boolean settingsExpanded = false;
     private String  currentLang      = "EN";
     private String  currentTheme     = "DARK";
@@ -425,6 +426,15 @@ public class MainScreenController {
         suggestionBox.setVisible(true);
         suggestionBox.setManaged(true);
         suggestionBox.toFront();
+        if (searchContainer != null && searchContainer.getScene() != null) {
+            javafx.geometry.Bounds bounds = searchContainer.localToScene(searchContainer.getBoundsInLocal());
+            AnchorPane.setTopAnchor(suggestionBox, bounds.getMaxY() + 2);
+            AnchorPane.setLeftAnchor(suggestionBox, bounds.getMinX());
+            AnchorPane.setRightAnchor(suggestionBox, null);  // xóa rightAnchor cố định
+        }
+
+        suggestionBox.setVisible(true);
+        suggestionBox.setManaged(true);
     }
 
     private void hideSuggestions() {

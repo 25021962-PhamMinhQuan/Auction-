@@ -67,12 +67,14 @@
 
             <VBox styleClass="navbar-wrapper">
 
+               <!-- Main navbar row -->
                <HBox alignment="CENTER_LEFT" spacing="4" styleClass="navbar" BorderPane.alignment="CENTER_LEFT">
 
                   <padding>
                      <Insets bottom="0" left="24" right="16" top="0" />
                   </padding>
 
+                  <!-- Logo -->
                   <Button mnemonicParsing="false" styleClass="nav-logo-btn">
                      <graphic>
                         <ImageView fitHeight="36" fitWidth="80" pickOnBounds="true" preserveRatio="true">
@@ -83,12 +85,16 @@
                      </graphic>
                   </Button>
 
+                  <!-- Divider -->
                   <Region prefWidth="16" />
 
+                  <!-- Nav Links -->
+                  <!-- Categories dropdown trigger -->
                   <StackPane fx:id="categoryBox">
                      <Button fx:id="categoryButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Categories ▾" />
                   </StackPane>
 
+                  <!-- Auctions dropdown trigger -->
                   <StackPane fx:id="auctionBox">
                      <Button fx:id="auctionButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Auctions ▾" />
                   </StackPane>
@@ -98,11 +104,13 @@
 
                   <Region HBox.hgrow="ALWAYS" />
 
+                  <!-- Right Side -->
                   <HBox alignment="CENTER" spacing="10">
                      <padding>
                         <Insets right="4" />
                      </padding>
 
+                     <!-- Add Item Button -->
                      <Button fx:id="addItemBtn"
                              managed="false"
                              mnemonicParsing="false"
@@ -111,7 +119,8 @@
                              text="+ Add Item"
                              visible="false"/>
 
-                     <StackPane styleClass="search-container">
+                     <!-- Search Bar -->
+                     <StackPane fx:id="searchContainer" styleClass="search-container">
                         <HBox alignment="CENTER_LEFT" spacing="0" styleClass="search-box">
                            <ImageView fitWidth="16" fitHeight="16" pickOnBounds="true" styleClass="search-icon">
                               <image>
@@ -127,14 +136,9 @@
                               <Insets left="8" />
                            </HBox.margin>
                         </HBox>
-                        <VBox fx:id="suggestionBox"
-                              managed="false"
-                              visible="false"
-                              styleClass="suggest-dropdown"
-                              translateY="38"
-                              StackPane.alignment="TOP_LEFT" />
                      </StackPane>
 
+                     <!-- User Avatar Button -->
                      <Button mnemonicParsing="false" onAction="#handleDashboard" styleClass="nav-avatar-btn">
                         <graphic>
                            <HBox alignment="CENTER" spacing="8">
@@ -154,12 +158,14 @@
 
                </HBox>
 
+               <!-- Accent bottom line -->
                <Region styleClass="navbar-accent-line" prefHeight="3" />
 
             </VBox>
 
          </top>
 
+         <!-- CENTER -->
          <center>
 
             <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
@@ -168,6 +174,7 @@
 
                   <VBox>
 
+                     <!-- Back Button -->
                      <Button fx:id="backButton" managed="false" mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" visible="false">
 
                         <VBox.margin>
@@ -176,6 +183,7 @@
 
                      </Button>
 
+                     <!-- Grid -->
                      <ScrollPane fx:id="gridScroll" fitToWidth="true" managed="false" visible="false">
 
                         <content>
@@ -186,12 +194,14 @@
 
                      </ScrollPane>
 
+                     <!-- Main Content -->
                      <VBox fx:id="mainContent" alignment="TOP_CENTER" spacing="20">
 
                         <padding>
                            <Insets top="40" />
                         </padding>
 
+                        <!-- Upcoming -->
                         <Label styleClass="section-title" text="Upcoming Auction" />
 
                         <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
@@ -204,6 +214,7 @@
 
                         <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
 
+                        <!-- Ongoing -->
                         <Label styleClass="section-title" text="Ongoing Auction" />
 
                         <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
@@ -228,6 +239,7 @@
 
       </BorderPane>
 
+      <!-- Side Panel / User Dashboard -->
       <AnchorPane fx:id="overlayDashboard" managed="false" prefHeight="490.0" prefWidth="804.0" visible="false" styleClass="overlay-backdrop">
 
          <children>
@@ -236,24 +248,29 @@
 
                <children>
 
+                  <!-- Panel Header with close button -->
                   <HBox alignment="CENTER_LEFT" styleClass="panel-header">
                      <Label styleClass="panel-header-title" text="My Account" HBox.hgrow="ALWAYS" />
                      <Region HBox.hgrow="ALWAYS" />
                      <Button mnemonicParsing="false" onAction="#handleCloseDashboard" styleClass="panel-close-btn" text="✕" />
                   </HBox>
 
+                  <!-- User Profile Card -->
                   <VBox alignment="CENTER" spacing="12" styleClass="panel-profile-card">
                      <padding>
                         <Insets top="24" bottom="24" left="20" right="20" />
                      </padding>
 
+                     <!-- Avatar -->
                      <StackPane alignment="CENTER" styleClass="panel-avatar-wrap">
                         <Label styleClass="panel-avatar-icon" text="👤" />
                      </StackPane>
 
+                     <!-- Name & Role -->
                      <Label styleClass="panel-username" text="Label" />
                      <Label styleClass="panel-role-badge" text="Username" />
 
+                     <!-- Edit Profile Button -->
                      <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-panel-primary" text="✏  Edit Profile">
                         <VBox.margin>
                            <Insets top="8" />
@@ -261,6 +278,7 @@
                      </Button>
                   </VBox>
 
+                  <!-- Section label -->
                   <HBox alignment="CENTER_LEFT" styleClass="panel-section-header">
                      <padding>
                         <Insets top="20" bottom="8" left="20" right="20" />
@@ -269,20 +287,24 @@
                      <Region HBox.hgrow="ALWAYS" />
                   </HBox>
 
+                  <!-- Navigation Buttons -->
                   <VBox spacing="2" styleClass="panel-nav-group">
                      <padding>
                         <Insets left="12" right="12" />
                      </padding>
 
+                     <!-- Settings accordion trigger -->
                      <Button fx:id="settingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
                              onAction="#handleToggleSettings"
                              styleClass="panel-nav-btn" text="⚙   Settings  ▾" />
 
+                     <!-- Settings sub-panel (toggled by controller) -->
                      <VBox fx:id="settingsSubPanel" managed="false" visible="false" styleClass="settings-sub-panel" spacing="0">
                         <padding>
                            <Insets top="4" bottom="4" left="4" right="4" />
                         </padding>
 
+                        <!-- Language Row -->
                         <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
                            <padding>
                               <Insets top="10" bottom="10" left="12" right="12" />
@@ -297,8 +319,10 @@
                            </HBox>
                         </HBox>
 
+                        <!-- Separator line -->
                         <Region styleClass="settings-row-divider" prefHeight="1" />
 
+                        <!-- Theme Row -->
                         <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
                            <padding>
                               <Insets top="10" bottom="10" left="12" right="12" />
@@ -317,14 +341,17 @@
 
                   </VBox>
 
+                  <!-- Spacer -->
                   <Region VBox.vgrow="ALWAYS" />
 
+                  <!-- Divider -->
                   <Separator styleClass="panel-separator">
                      <VBox.margin>
                         <Insets left="20" right="20" />
                      </VBox.margin>
                   </Separator>
 
+                  <!-- Logout at bottom -->
                   <VBox spacing="4" styleClass="panel-nav-group">
                      <padding>
                         <Insets top="12" left="12" right="12" bottom="24" />
@@ -340,8 +367,10 @@
 
       </AnchorPane>
 
+      <!-- FLOATING DROPDOWN OVERLAYS (rendered on top of everything) -->
       <AnchorPane mouseTransparent="false" managed="false" visible="true" pickOnBounds="false">
 
+         <!-- Categories floating menu -->
          <VBox fx:id="categoryMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
                AnchorPane.topAnchor="62" AnchorPane.leftAnchor="160">
             <Button mnemonicParsing="false" styleClass="dropdown-item" text="🎨  Art"         onAction="#handleCategory" userData="ART" />
@@ -352,11 +381,19 @@
             <Button mnemonicParsing="false" styleClass="dropdown-item" text="📦  Others"      onAction="#handleCategory" userData="OTHERS" />
          </VBox>
 
+         <!-- Auctions floating menu -->
          <VBox fx:id="auctionMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
                AnchorPane.topAnchor="62" AnchorPane.leftAnchor="290">
             <Button mnemonicParsing="false" styleClass="dropdown-item" text="⏰  Upcoming" />
             <Button mnemonicParsing="false" styleClass="dropdown-item" text="🔴  Ongoing" />
          </VBox>
+
+         <!-- Suggestion box — position updated dynamically by controller -->
+         <VBox fx:id="suggestionBox"
+               managed="false"
+               visible="false"
+               styleClass="suggest-dropdown"
+               AnchorPane.topAnchor="62" AnchorPane.rightAnchor="54" />
 
       </AnchorPane>
 
