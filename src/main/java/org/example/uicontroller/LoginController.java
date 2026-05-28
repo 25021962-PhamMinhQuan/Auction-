@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.example.server.AuctionClient;
+import org.example.util.ThemeManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -77,7 +78,9 @@ public class LoginController implements Initializable {
     public void gotoRegister(ActionEvent e) throws IOException {
         Parent root  = FXMLLoader.load(getClass().getResource("/org/example/view/register.fxml"));
         Stage  stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 
@@ -153,7 +156,9 @@ public class LoginController implements Initializable {
             stage.setHeight(700);
             stage.setMinWidth(1000);
             stage.setMinHeight(600);
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            ThemeManager.applyTheme(scene);
+            stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
         } catch (Exception  ex) {

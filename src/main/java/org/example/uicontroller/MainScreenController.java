@@ -19,6 +19,9 @@ import javafx.stage.Stage;
 import org.example.domain.user.User;
 import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
+import org.example.util.Theme;
+import org.example.util.ThemeManager;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -55,7 +58,7 @@ public class MainScreenController {
     @FXML private StackPane searchContainer;
     private boolean settingsExpanded = false;
     private String  currentLang      = "EN";
-    private String  currentTheme     = "DARK";
+    private Theme currentTheme     = ThemeManager.getCurrentTheme();
     private VBox openMenu = null;
     @FXML private ImageView navAvatarView;
     @FXML private StackPane navAvatarPane;
@@ -138,7 +141,9 @@ public class MainScreenController {
         ctrl.setCurrentUser(AuctionClient.getInstance().getCurrentUser()); // truyền user hiện tại
 
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 
@@ -212,7 +217,9 @@ public class MainScreenController {
         javafx.scene.Parent root = loader.load();
         javafx.stage.Stage stage =
                 (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
-        stage.setScene(new javafx.scene.Scene(root));
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
     private void wireDropdownClicks() {
@@ -339,27 +346,35 @@ public class MainScreenController {
     // ─── Theme toggles ──────────────────────────────────────────────────────
     @FXML
     private void handleThemeLight() {
-        currentTheme = "LIGHT";
+        currentTheme = Theme.LIGHT;
+
+        ThemeManager.setTheme(currentTheme);
+
+        Scene scene = themeLightBtn.getScene();
+
+        ThemeManager.applyTheme(scene);
+
         updateThemeButtons();
-        // TODO: swap stylesheet for light theme
     }
 
     @FXML
     private void handleThemeDark() {
-        currentTheme = "DARK";
+        currentTheme = Theme.DARK;
+        ThemeManager.setTheme(currentTheme);
+        Scene scene = themeDarkBtn.getScene();
+        ThemeManager.applyTheme(scene);
         updateThemeButtons();
     }
 
     private void updateThemeButtons() {
         if (themeLightBtn == null || themeDarkBtn == null) return;
-        setToggleActive(themeLightBtn, "toggle-btn-left",  "LIGHT".equals(currentTheme));
-        setToggleActive(themeDarkBtn,  "toggle-btn-right", "DARK".equals(currentTheme));
+        setToggleActive(themeLightBtn, "toggle-btn-left",  currentTheme.equals(Theme.LIGHT));
+        setToggleActive(themeDarkBtn,  "toggle-btn-right", currentTheme.equals(Theme.DARK));
     }
 
     /** Swap active/inactive style on a toggle button while keeping its base side-class */
     private void setToggleActive(Button btn, String baseClass, boolean active) {
         btn.getStyleClass().removeAll("toggle-btn-active");
-        // ensure base class is present
         if (!btn.getStyleClass().contains(baseClass))
             btn.getStyleClass().add(baseClass);
         if (active)
@@ -581,7 +596,9 @@ public class MainScreenController {
 
             javafx.stage.Stage stage =
                     (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
-            stage.setScene(new javafx.scene.Scene(root));
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            ThemeManager.applyTheme(scene);
+            stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
         } catch (java.io.IOException ex) {

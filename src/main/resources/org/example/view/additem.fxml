@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1100.0" styleClass="root" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AddItemController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0" styleClass="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AddItemController">
 
    <!-- NAVBAR giản lược -->
    <top>
@@ -24,7 +24,7 @@
    </top>
 
    <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fitToWidth="true" styleClass="scroll-pane" BorderPane.alignment="CENTER">
          <content>
             <HBox alignment="TOP_CENTER" spacing="40">
                <padding><Insets bottom="40" left="40" right="40" top="30" /></padding>
@@ -78,7 +78,7 @@
                <!-- ═══ RIGHT: Danh sách item của seller ═══ -->
                <VBox prefWidth="420" spacing="12" VBox.vgrow="ALWAYS">
                   <Label styleClass="section-title" text="Item Của Bạn" />
-                  <ScrollPane fitToWidth="true" prefHeight="500" VBox.vgrow="ALWAYS">
+                  <ScrollPane fitToWidth="true" styleClass="scroll-pane" prefHeight="500" VBox.vgrow="ALWAYS">
                      <content>
                         <VBox fx:id="myItemsBox" spacing="10">
                            <padding><Insets bottom="10" right="4" /></padding>

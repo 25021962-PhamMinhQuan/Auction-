@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.domain.item.Item;
+import org.example.util.ThemeManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -125,7 +126,9 @@ public class ItemCardController {
         ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description, imageUrl);
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
-        stage.setScene(new javafx.scene.Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 
@@ -139,7 +142,9 @@ public class ItemCardController {
         ctrl.setReadOnly(true);   // ẩn form bid, chỉ hiện thông tin
 
         Stage stage = (Stage) detailsbutton.getScene().getWindow();
-        stage.setScene(new javafx.scene.Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 

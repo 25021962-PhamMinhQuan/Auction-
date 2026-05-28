@@ -18,6 +18,7 @@ import org.example.server.AuctionClient;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.example.util.SupabaseStorage;
+import org.example.util.ThemeManager;
 
 import java.io.File;
 
@@ -304,7 +305,9 @@ public class AddItemController {
             controller.setCurrentUser(username, role);
         }
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
 

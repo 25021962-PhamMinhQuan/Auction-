@@ -22,6 +22,7 @@ import org.example.server.AuctionClient;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.server.AuctionClient;
+import org.example.util.ThemeManager;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -236,7 +237,9 @@ public class ItemBidingUIController {
         if (username != null && role != null) {
             ctrl.setCurrentUser(username, role);
         }
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.applyTheme(scene);
+        stage.setScene(scene);
         stage.show();
     }
     private void startCountdown() {

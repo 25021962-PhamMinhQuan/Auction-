@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="itemcard" prefHeight="415.0" prefWidth="220.0" spacing="10.0" styleClass="item-card" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemCardController">
+<VBox fx:id="itemcard" prefHeight="415.0" prefWidth="220.0" spacing="10.0" styleClass="item-card" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.ItemCardController">
    <HBox.margin>
       <Insets bottom="10" left="10" right="10" top="10" />
    </HBox.margin>

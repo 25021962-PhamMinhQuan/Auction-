@@ -7,7 +7,6 @@
 
 <BorderPane
         styleClass="root"
-        stylesheets="@../../../css/style.css"
         xmlns="http://javafx.com/javafx/21"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="org.example.uicontroller.ProfileController">
@@ -58,40 +57,32 @@
 
                   <!-- ── TIÊU ĐỀ TRANG ── -->
                   <VBox spacing="4">
-                     <Label text="Chỉnh sửa hồ sơ"
-                            style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#f9fafb;"/>
+                     <Label text="Chỉnh sửa hồ sơ" styleClass="profile-page-title"/>
                      <Label text="Quản lý thông tin cá nhân và bảo mật tài khoản"
                             styleClass="label-secondary"/>
                   </VBox>
 
                   <!-- ── CARD: AVATAR ── -->
-                  <VBox spacing="16"
-                        style="-fx-background-color:#111827; -fx-background-radius:14;
-                               -fx-border-color:#1f2937; -fx-border-radius:14;
-                               -fx-border-width:1; -fx-padding:24;">
+                  <VBox spacing="16" styleClass="profile-card">
                      <HBox alignment="CENTER_LEFT" spacing="24">
 
                         <!-- Avatar tròn -->
                         <StackPane fx:id="avatarWrapper"
                                    minWidth="90" minHeight="90"
                                    maxWidth="90" maxHeight="90"
-                                   style="-fx-background-color:linear-gradient(to bottom right,#374151,#1f2937);
-                                          -fx-background-radius:999;
-                                          -fx-border-color:#fbbf24;
-                                          -fx-border-radius:999;
-                                          -fx-border-width:2.5;">
+                                   styleClass="profile-avatar-wrap">
                            <ImageView fx:id="avatarImageView"
                                       fitWidth="86" fitHeight="86"
                                       preserveRatio="false"
                                       visible="false"/>
                            <Label fx:id="avatarPlaceholder" text="👤"
-                                  style="-fx-font-size:38px;"/>
+                                  styleClass="profile-avatar-icon"/>
                         </StackPane>
 
                         <!-- Thông tin bên cạnh avatar -->
                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                            <Label fx:id="displayUsernameLabel" text="Username"
-                                  style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#f9fafb;"/>
+                                  styleClass="profile-display-name"/>
                            <Label fx:id="displayRoleLabel" text="BIDDER"
                                   styleClass="panel-role-badge" maxWidth="80"/>
                            <HBox spacing="10" alignment="CENTER_LEFT">
@@ -109,107 +100,85 @@
                                       managed="false"/>
                            </HBox>
                            <Label text="PNG hoặc JPG. Kích thước tối đa 2MB."
-                                  style="-fx-font-size:11px; -fx-text-fill:#4b5563;"/>
+                                  styleClass="profile-hint-label"/>
                         </VBox>
                      </HBox>
                   </VBox>
 
                   <!-- ── CARD: THÔNG TIN CÁ NHÂN ── -->
-                  <VBox spacing="16"
-                        style="-fx-background-color:#111827; -fx-background-radius:14;
-                               -fx-border-color:#1f2937; -fx-border-radius:14;
-                               -fx-border-width:1; -fx-padding:24;">
-                     <Label text="Thông tin cá nhân"
-                            style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#e5e7eb;"/>
-                     <Region style="-fx-background-color:#1f2937; -fx-pref-height:1; -fx-min-height:1;"/>
+                  <VBox spacing="16" styleClass="profile-card">
+                     <Label text="Thông tin cá nhân" styleClass="profile-card-title"/>
+                     <Region styleClass="profile-divider"/>
 
                      <VBox spacing="6">
-                        <Label text="Họ và tên"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Họ và tên" styleClass="profile-field-label"/>
                         <TextField fx:id="fullNameField"
                                    promptText="Nhập họ và tên của bạn"
-                                   styleClass="input_field"
-                                   maxWidth="1.7976931348623157E308"
-                                   style="-fx-pref-height:40px;"/>
+                                   styleClass="input_field, profile-field-input"
+                                   maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Email"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Email" styleClass="profile-field-label"/>
                         <TextField fx:id="emailField"
                                    promptText="example@email.com"
-                                   styleClass="input_field"
-                                   maxWidth="1.7976931348623157E308"
-                                   style="-fx-pref-height:40px;"/>
+                                   styleClass="input_field, profile-field-input"
+                                   maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Số điện thoại"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Số điện thoại" styleClass="profile-field-label"/>
                         <TextField fx:id="phoneField"
                                    promptText="0xxxxxxxxx"
-                                   styleClass="input_field"
-                                   maxWidth="1.7976931348623157E308"
-                                   style="-fx-pref-height:40px;"/>
+                                   styleClass="input_field, profile-field-input"
+                                   maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <Button text="💾  Lưu thay đổi"
-                             styleClass="button-login"
+                             styleClass="button-login, profile-action-btn"
                              onAction="#handleSaveProfile"
                              mnemonicParsing="false"
-                             maxWidth="1.7976931348623157E308"
-                             style="-fx-pref-height:42px; -fx-font-size:14px;"/>
+                             maxWidth="1.7976931348623157E308"/>
                   </VBox>
 
                   <!-- ── CARD: ĐỔI MẬT KHẨU ── -->
-                  <VBox spacing="16"
-                        style="-fx-background-color:#111827; -fx-background-radius:14;
-                               -fx-border-color:#1f2937; -fx-border-radius:14;
-                               -fx-border-width:1; -fx-padding:24;">
-                     <Label text="Đổi mật khẩu"
-                            style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#e5e7eb;"/>
-                     <Region style="-fx-background-color:#1f2937; -fx-pref-height:1; -fx-min-height:1;"/>
+                  <VBox spacing="16" styleClass="profile-card">
+                     <Label text="Đổi mật khẩu" styleClass="profile-card-title"/>
+                     <Region styleClass="profile-divider"/>
 
                      <VBox spacing="6">
-                        <Label text="Mật khẩu hiện tại"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Mật khẩu hiện tại" styleClass="profile-field-label"/>
                         <PasswordField fx:id="oldPasswordField"
                                        promptText="Nhập mật khẩu hiện tại"
-                                       styleClass="input_field"
-                                       maxWidth="1.7976931348623157E308"
-                                       style="-fx-pref-height:40px;"/>
+                                       styleClass="input_field, profile-field-input"
+                                       maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Mật khẩu mới"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Mật khẩu mới" styleClass="profile-field-label"/>
                         <PasswordField fx:id="newPasswordField"
                                        promptText="Tối thiểu 6 ký tự, có chữ hoa, số và ký tự đặc biệt"
-                                       styleClass="input_field"
-                                       maxWidth="1.7976931348623157E308"
-                                       style="-fx-pref-height:40px;"/>
+                                       styleClass="input_field, profile-field-input"
+                                       maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Xác nhận mật khẩu mới"
-                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <Label text="Xác nhận mật khẩu mới" styleClass="profile-field-label"/>
                         <PasswordField fx:id="confirmPasswordField"
                                        promptText="Nhập lại mật khẩu mới"
-                                       styleClass="input_field"
-                                       maxWidth="1.7976931348623157E308"
-                                       style="-fx-pref-height:40px;"/>
+                                       styleClass="input_field, profile-field-input"
+                                       maxWidth="1.7976931348623157E208"/>
                      </VBox>
 
                      <Label text="⚠  Mật khẩu cần có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
                             wrapText="true"
-                            style="-fx-font-size:11px; -fx-text-fill:#4b5563;"/>
+                            styleClass="profile-hint-label"/>
 
                      <Button text="🔒  Đổi mật khẩu"
-                             styleClass="button-login"
+                             styleClass="button-login, profile-action-btn"
                              onAction="#handleChangePassword"
                              mnemonicParsing="false"
-                             maxWidth="1.7976931348623157E308"
-                             style="-fx-pref-height:42px; -fx-font-size:14px;"/>
+                             maxWidth="1.7976931348623157E308"/>
                   </VBox>
 
                   <!-- ── THÔNG BÁO TRẠNG THÁI ── -->

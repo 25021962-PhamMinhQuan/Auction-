@@ -22,6 +22,7 @@ import org.example.domain.user.User;
 import org.example.service.UserService;
 import org.example.factory.ServiceFactory;
 import org.example.util.SupabaseStorage; // Hoặc package chứa tiện ích upload của bạn
+import org.example.util.ThemeManager;
 
 public class ProfileController {
 
@@ -214,7 +215,9 @@ public class ProfileController {
             );
 
             Stage stage = (Stage) navUsernameLabel.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            ThemeManager.applyTheme(scene);
+            stage.setScene(scene);
             stage.show();
 
         } catch (IOException e) {
