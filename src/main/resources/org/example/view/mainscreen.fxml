@@ -271,7 +271,7 @@
                      <Label styleClass="panel-role-badge" text="Username" />
 
                      <!-- Edit Profile Button -->
-                     <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-panel-primary" text="✏  Edit Profile">
+                     <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-panel-primary" text="✏  Edit Profile"  onAction="#handleOpenProfile">
                         <VBox.margin>
                            <Insets top="8" />
                         </VBox.margin>

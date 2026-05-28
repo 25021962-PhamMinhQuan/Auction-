@@ -24,7 +24,7 @@ public class DBConnection {
             config.setPassword(props.getProperty("db.password"));
             config.setDriverClassName(props.getProperty("db.driver"));
 
-            config.setMaximumPoolSize(10); // Giữ sẵn 10 kết nối luôn mở
+            config.setMaximumPoolSize(3); // Giữ sẵn 10 kết nối luôn mở
             config.setConnectionTimeout(30000); // Đợi tối đa 30s
             config.setIdleTimeout(600000);
 
