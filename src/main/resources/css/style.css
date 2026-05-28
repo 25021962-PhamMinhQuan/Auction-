@@ -225,6 +225,7 @@
 .item-price {
     -fx-text-fill: #fbbf24;
     -fx-font-weight: bold;
+    -fx-font-size: 22px;
 }
 
 .item-time {
@@ -1339,3 +1340,43 @@
 }
 
 
+
+/* ── Bid History Popup ── */
+.popup {
+    -fx-background-color: #111827;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: #374151;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 40, 0.3, 0, 8);
+    -fx-min-width: 380;
+    -fx-max-width: 460;
+    -fx-min-height: 300;
+}
+
+/* ── Auto Bid Section Box ── */
+.section-box {
+    -fx-background-color: #1a2235;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2d3748;
+    -fx-border-width: 1;
+    -fx-padding: 14 16 14 16;
+}
+
+/* ── Bid History Row ── */
+.bid-history-row {
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+}
+
+/* ── Bid History Entry ── */
+.history-entry {
+    -fx-text-fill: #d1d5db;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI";
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+}

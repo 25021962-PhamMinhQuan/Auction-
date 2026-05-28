@@ -24,10 +24,9 @@
                 </HBox>
 
                 <!-- TOP: image + info -->
-                <HBox alignment="CENTER" maxWidth="1200" spacing="40">
+                <HBox alignment="TOP_LEFT" maxWidth="1200" spacing="40">
 
-                    <ImageView fx:id="itemImage" fitWidth="400" preserveRatio="true" HBox.hgrow="ALWAYS" />
-                    <Region prefHeight="374.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                    <ImageView fx:id="itemImage" fitWidth="420" fitHeight="500" preserveRatio="true" />
 
                     <VBox spacing="15" HBox.hgrow="ALWAYS">
 
@@ -68,16 +67,26 @@
         </content>
     </ScrollPane>
 
+    <!-- Backdrop for bid history popup — fills entire StackPane -->
+    <Region fx:id="historyBackdrop" managed="false" visible="false"
+            maxWidth="1.7976931348623157E308" maxHeight="1.7976931348623157E308"
+            style="-fx-background-color: rgba(0,0,0,0.60);" />
+
     <!-- Bid history popup -->
-    <VBox fx:id="historyPopup" managed="false" maxHeight="500" maxWidth="420" styleClass="popup" visible="false" StackPane.alignment="CENTER">
-        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+    <VBox fx:id="historyPopup" managed="false" maxHeight="520" maxWidth="440" styleClass="popup" visible="false" StackPane.alignment="CENTER">
+        <padding><Insets bottom="24" left="24" right="24" top="20" /></padding>
         <spacing>12</spacing>
 
-        <Label styleClass="section-title" text="Bid History" />
+        <HBox alignment="CENTER_LEFT">
+            <Label styleClass="section-title" text="Bid History" HBox.hgrow="ALWAYS" />
+        </HBox>
 
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <ScrollPane fitToWidth="true" prefHeight="380" VBox.vgrow="ALWAYS"
+                    style="-fx-background-color: transparent; -fx-background: transparent;">
             <content>
-                <VBox fx:id="historyBox" spacing="8" />
+                <VBox fx:id="historyBox" spacing="8">
+                    <padding><Insets top="4" bottom="4" /></padding>
+                </VBox>
             </content>
         </ScrollPane>
 
