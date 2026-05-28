@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AuctionClient {
-    private static final String HOST = "localhost";
+    private static final String HOST = "172.236.140.98";
     private static final int    PORT = 2501;
 
     private Socket         socket;
