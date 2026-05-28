@@ -20,8 +20,10 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class AdminScreenController {
@@ -30,70 +32,119 @@ public class AdminScreenController {
     private final AuctionService auctionService = ServiceFactory.getInstance().getAuctionService();
     // ── Topbar ──
     private User currentAdmin;
-    @FXML private Label adminUsernameLabel;
+    @FXML
+    private Label adminUsernameLabel;
 
     // ── Side panel ──
-    @FXML private AnchorPane overlayAdminPanel;
-    @FXML private Label      panelAdminName;
+    @FXML
+    private AnchorPane overlayAdminPanel;
+    @FXML
+    private Label panelAdminName;
 
     // ── Sidebar nav buttons ──
-    @FXML private Button navDashboard;
-    @FXML private Button navUsers;
-    @FXML private Button navItems;
-    @FXML private Button navAuctions;
+    @FXML
+    private Button navDashboard;
+    @FXML
+    private Button navUsers;
+    @FXML
+    private Button navItems;
+    @FXML
+    private Button navAuctions;
 
     // ── Content sections ──
-    @FXML private VBox sectionDashboard;
-    @FXML private VBox sectionUsers;
-    @FXML private VBox sectionItems;
-    @FXML private VBox sectionAuctions;
+    @FXML
+    private VBox sectionDashboard;
+    @FXML
+    private VBox sectionUsers;
+    @FXML
+    private VBox sectionItems;
+    @FXML
+    private VBox sectionAuctions;
 
     // ── Dashboard stat labels ──
-    @FXML private Label statTotalUsers;
-    @FXML private Label statTotalItems;
-    @FXML private Label statActiveAuctions;
-    @FXML private Label statTotalRevenue;
-    @FXML private Label statBanned;
-    @FXML private Label statUpcoming;
-    @FXML private Label statPendingItems;
-    @FXML private Label statTodayBids;
-    @FXML private VBox  recentActivityList;
+    @FXML
+    private Label statTotalUsers;
+    @FXML
+    private Label statTotalItems;
+    @FXML
+    private Label statActiveAuctions;
+    @FXML
+    private Label statTotalRevenue;
+    @FXML
+    private Label statBanned;
+    @FXML
+    private Label statUpcoming;
+    @FXML
+    private Label statPendingItems;
+    @FXML
+    private Label statTodayBids;
+    @FXML
+    private VBox recentActivityList;
 
     // ── User Management ──
-    @FXML private TextField userSearchField;
-    @FXML private TableView<User> userTable;
-    @FXML private TableColumn<User, String> colUserId;
-    @FXML private TableColumn<User, String> colUsername;
-    @FXML private TableColumn<User, String> colEmail;
-    @FXML private TableColumn<User, String> colRole;
-    @FXML private TableColumn<User, String> colUserStatus;
-    @FXML private TableColumn<User, String> colUserDate;
+    @FXML
+    private TextField userSearchField;
+    @FXML
+    private TableView<User> userTable;
+    @FXML
+    private TableColumn<User, String> colUserId;
+    @FXML
+    private TableColumn<User, String> colUsername;
+    @FXML
+    private TableColumn<User, String> colEmail;
+    @FXML
+    private TableColumn<User, String> colRole;
+    @FXML
+    private TableColumn<User, String> colUserStatus;
+    @FXML
+    private TableColumn<User, String> colUserDate;
+    private final Map<String, String> itemSellerNameCache = new HashMap<>();
 
     // ── Item Management ──
-    @FXML private TextField itemSearchField;
-    @FXML private TableView<Item> itemTable;
-    @FXML private TableColumn<Item, String> colItemId;
-    @FXML private TableColumn<Item, String> colItemName;
-    @FXML private TableColumn<Item, String> colItemSeller;
-    @FXML private TableColumn<Item, String> colItemCategory;
-    @FXML private TableColumn<Item, String> colItemPrice;
-    @FXML private TableColumn<Item, String> colItemStatus;
+    @FXML
+    private TextField itemSearchField;
+    @FXML
+    private TableView<Item> itemTable;
+    @FXML
+    private TableColumn<Item, String> colItemId;
+    @FXML
+    private TableColumn<Item, String> colItemName;
+    @FXML
+    private TableColumn<Item, String> colItemSeller;
+    @FXML
+    private TableColumn<Item, String> colItemCategory;
+    @FXML
+    private TableColumn<Item, String> colItemPrice;
+    @FXML
+    private TableColumn<Item, String> colItemStatus;
 
     // ── Auction Management ──
-    @FXML private TextField auctionSearchField;
-    @FXML private TableView<Auction> auctionTable;
-    @FXML private TableColumn<Auction, String> colAuctionId;
-    @FXML private TableColumn<Auction, String> colAuctionItem;
-    @FXML private TableColumn<Auction, String> colAuctionStart;
-    @FXML private TableColumn<Auction, String> colAuctionEnd;
-    @FXML private TableColumn<Auction, String> colAuctionPrice;
-    @FXML private TableColumn<Auction, String> colAuctionStatus;
+    @FXML
+    private TextField auctionSearchField;
+    @FXML
+    private TableView<Auction> auctionTable;
+    @FXML
+    private TableColumn<Auction, String> colAuctionId;
+    @FXML
+    private TableColumn<Auction, String> colAuctionItem;
+    @FXML
+    private TableColumn<Auction, String> colAuctionStart;
+    @FXML
+    private TableColumn<Auction, String> colAuctionEnd;
+    @FXML
+    private TableColumn<Auction, String> colAuctionPrice;
+    @FXML
+    private TableColumn<Auction, String> colAuctionStatus;
 
     // ── Confirm Dialog ──
-    @FXML private StackPane confirmOverlay;
-    @FXML private Label     confirmTitle;
-    @FXML private Label     confirmMessage;
-    @FXML private Button    confirmOkBtn;
+    @FXML
+    private StackPane confirmOverlay;
+    @FXML
+    private Label confirmTitle;
+    @FXML
+    private Label confirmMessage;
+    @FXML
+    private Button confirmOkBtn;
     private static final DateTimeFormatter DATE_TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final NumberFormat VND_FORMAT =
@@ -112,6 +163,7 @@ public class AdminScreenController {
         showDashboard();
         loadDashboardStats();
     }
+
     private void setupTables() {
         colUserId.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getId()));
@@ -131,7 +183,7 @@ public class AdminScreenController {
         colItemName.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getName()));
         colItemSeller.setCellValueFactory(data ->
-                new SimpleStringProperty("—"));
+                new SimpleStringProperty(resolveSellerName(data.getValue())));
         colItemCategory.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getType()));
         colItemPrice.setCellValueFactory(data ->
@@ -152,13 +204,16 @@ public class AdminScreenController {
         colAuctionStatus.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getStatus().name()));
     }
+
     private void setupSearchFields() {
         userSearchField.textProperty().addListener((obs, oldValue, newValue) -> loadUsers());
         itemSearchField.textProperty().addListener((obs, oldValue, newValue) -> loadItems());
         auctionSearchField.textProperty().addListener((obs, oldValue, newValue) -> loadAuctions());
     }
 
-    /** Gán user admin hiện tại vào màn hình */
+    /**
+     * Gán user admin hiện tại vào màn hình
+     */
     public void setAdminUser(org.example.domain.user.User user) {
         this.currentAdmin = user;
         if (user != null) {
@@ -198,7 +253,9 @@ public class AdminScreenController {
         loadAuctions();
     }
 
-    /** Ẩn tất cả section, hiện section được chọn */
+    /**
+     * Ẩn tất cả section, hiện section được chọn
+     */
     private void switchSection(VBox target) {
         for (VBox s : new VBox[]{sectionDashboard, sectionUsers, sectionItems, sectionAuctions}) {
             s.setVisible(false);
@@ -208,7 +265,9 @@ public class AdminScreenController {
         target.setManaged(true);
     }
 
-    /** Đặt active style cho nút sidebar được chọn */
+    /**
+     * Đặt active style cho nút sidebar được chọn
+     */
     private void setActiveNav(Button active) {
         for (Button b : new Button[]{navDashboard, navUsers, navItems, navAuctions}) {
             b.getStyleClass().removeAll("sidebar-btn-active");
@@ -267,8 +326,15 @@ public class AdminScreenController {
     }
 
 
-    @FXML public void refreshUsers()   { loadUsers(); }
-    @FXML public void filterAllUsers() { loadUsers(); }
+    @FXML
+    public void refreshUsers() {
+        loadUsers();
+    }
+
+    @FXML
+    public void filterAllUsers() {
+        loadUsers();
+    }
 
     @FXML
     public void filterLockedUsers() {
@@ -312,6 +378,7 @@ public class AdminScreenController {
                         + "\nEmail: " + nullToDash(selectedUser.getEmail())
                         + "\nPhone: " + nullToDash(selectedUser.getPhone()));
     }
+
     @FXML
     public void handleDeleteUser() {
         User selectedUser = userTable.getSelectionModel().getSelectedItem();
@@ -352,20 +419,35 @@ public class AdminScreenController {
         itemTable.setItems(FXCollections.observableArrayList(items));
     }
 
-    @FXML public void refreshItems()      { loadItems(); }
-    @FXML public void filterAllItems()    { loadItems(); }
-    @FXML public void filterPendingItems(){ List<Item> items = itemService.findAllItems().stream()
-            .filter(item -> item.getStartTime() != null
-                    && item.getStartTime().isAfter(java.time.LocalDateTime.now()))
-            .toList();
-        itemTable.setItems(FXCollections.observableArrayList(items)); }
-    @FXML public void filterActiveItems() { List<Item> items = itemService.findAllItems().stream()
-            .filter(item -> item.getStartTime() != null
-                    && item.getEndTime() != null
-                    && !item.getStartTime().isAfter(java.time.LocalDateTime.now())
-                    && item.getEndTime().isAfter(java.time.LocalDateTime.now()))
-            .toList();
-        itemTable.setItems(FXCollections.observableArrayList(items)); }
+    @FXML
+    public void refreshItems() {
+        loadItems();
+    }
+
+    @FXML
+    public void filterAllItems() {
+        loadItems();
+    }
+
+    @FXML
+    public void filterPendingItems() {
+        List<Item> items = itemService.findAllItems().stream()
+                .filter(item -> item.getStartTime() != null
+                        && item.getStartTime().isAfter(java.time.LocalDateTime.now()))
+                .toList();
+        itemTable.setItems(FXCollections.observableArrayList(items));
+    }
+
+    @FXML
+    public void filterActiveItems() {
+        List<Item> items = itemService.findAllItems().stream()
+                .filter(item -> item.getStartTime() != null
+                        && item.getEndTime() != null
+                        && !item.getStartTime().isAfter(java.time.LocalDateTime.now())
+                        && item.getEndTime().isAfter(java.time.LocalDateTime.now()))
+                .toList();
+        itemTable.setItems(FXCollections.observableArrayList(items));
+    }
 
     @FXML
     public void handleApproveItem() {
@@ -435,7 +517,10 @@ public class AdminScreenController {
         auctionTable.setItems(FXCollections.observableArrayList(auctions));
     }
 
-    @FXML public void refreshAuctions() { loadAuctions(); }
+    @FXML
+    public void refreshAuctions() {
+        loadAuctions();
+    }
 
     @FXML
     public void handleStopAuction() {
@@ -454,7 +539,9 @@ public class AdminScreenController {
                 });
     }
 
-    @FXML public void handleViewAuction() {Auction selectedAuction = auctionTable.getSelectionModel().getSelectedItem();
+    @FXML
+    public void handleViewAuction() {
+        Auction selectedAuction = auctionTable.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
             showInfo("Chưa chọn phiên đấu giá", "Vui lòng chọn một phiên đấu giá trước.");
             return;
@@ -466,7 +553,8 @@ public class AdminScreenController {
                         + "\nTrạng thái: " + selectedAuction.getStatus()
                         + "\nGiá hiện tại: " + formatMoney(selectedAuction.getCurrentPrice())
                         + "\nBắt đầu: " + formatDateTime(selectedAuction.getItem().getStartTime())
-                        + "\nKết thúc: " + formatDateTime(selectedAuction.getItem().getEndTime())); }
+                        + "\nKết thúc: " + formatDateTime(selectedAuction.getItem().getEndTime()));
+    }
 
     @FXML
     public void handleDeleteAuction() {
@@ -536,64 +624,82 @@ public class AdminScreenController {
 
     @FXML
     public void handleLogout() {
-            showConfirm("Đăng xuất",
-                    "Bạn có chắc muốn đăng xuất khỏi trang quản trị?",
-                    () -> {
-                        try {
-                            AuctionClient.getInstance().disconnect();
+        showConfirm("Đăng xuất",
+                "Bạn có chắc muốn đăng xuất khỏi trang quản trị?",
+                () -> {
+                    try {
+                        AuctionClient.getInstance().disconnect();
 
-                            FXMLLoader loader = new FXMLLoader(
-                                    getClass().getResource("/org/example/view/login.fxml"));
-                            Parent root = loader.load();
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/org/example/view/login.fxml"));
+                        Parent root = loader.load();
 
-                            Stage stage = (Stage) adminUsernameLabel.getScene().getWindow();
-                            stage.setScene(new Scene(root));
-                            stage.centerOnScreen();
-                            stage.show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            showInfo("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
-                        }
-                    });
-        }
-            private String nullToDash(String value) {
-                return value == null || value.isBlank() ? "—" : value;
-            }
-
-            private boolean containsIgnoreCase(String value, String keyword) {
-                return value != null && value.toLowerCase().contains(keyword);
-            }
-
-            private String formatMoney(double amount) {
-                return VND_FORMAT.format(amount) + " ₫";
-            }
-
-            private String formatDateTime(java.time.LocalDateTime dateTime) {
-                return dateTime == null ? "—" : dateTime.format(DATE_TIME_FMT);
-            }
-
-            private String resolveItemStatus(Item item) {
-                if (item.getStartTime() == null || item.getEndTime() == null) {
-                    return "UNKNOWN";
-                }
-
-                java.time.LocalDateTime now = java.time.LocalDateTime.now();
-
-                if (now.isBefore(item.getStartTime())) {
-                    return "UPCOMING";
-                }
-                if (now.isAfter(item.getEndTime())) {
-                    return "ENDED";
-                }
-                return "ACTIVE";
-            }
-
-            private void showInfo(String title, String message) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(title);
-                alert.setHeaderText(null);
-                alert.setContentText(message);
-                alert.showAndWait();
-            }
+                        Stage stage = (Stage) adminUsernameLabel.getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.centerOnScreen();
+                        stage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showInfo("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
+                    }
+                });
     }
+
+    private String nullToDash(String value) {
+        return value == null || value.isBlank() ? "—" : value;
+    }
+
+    private boolean containsIgnoreCase(String value, String keyword) {
+        return value != null && value.toLowerCase().contains(keyword);
+    }
+
+    private String formatMoney(double amount) {
+        return VND_FORMAT.format(amount) + " ₫";
+    }
+
+    private String formatDateTime(java.time.LocalDateTime dateTime) {
+        return dateTime == null ? "—" : dateTime.format(DATE_TIME_FMT);
+    }
+
+    private String resolveItemStatus(Item item) {
+        if (item.getStartTime() == null || item.getEndTime() == null) {
+            return "UNKNOWN";
+        }
+
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        if (now.isBefore(item.getStartTime())) {
+            return "UPCOMING";
+        }
+        if (now.isAfter(item.getEndTime())) {
+            return "ENDED";
+        }
+        return "ACTIVE";
+    }
+
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private String resolveSellerName(Item item) {
+        if (item == null || item.getId() == null) {
+            return "—";
+        }
+
+        return itemSellerNameCache.computeIfAbsent(item.getId(), itemId -> {
+            String sellerId = itemService.getSellerIdByItemId(itemId);
+            if (sellerId == null || sellerId.isBlank()) {
+                return "—";
+            }
+
+            User seller = userService.findUserById(sellerId);
+            return seller == null ? "—" : seller.getUsername();
+        });
+    }
+
+
+}
 

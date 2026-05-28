@@ -90,6 +90,9 @@ public class UserService {
     public User findUser(String name){
         return UserRepositoryImpl.findByUsername(name);
     }
+    public User findUserById(String id) {
+        return UserRepositoryImpl.findById(id);
+    }
     public List<User> findAllUsers() {
         return UserRepositoryImpl.findAll();
     }

@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane stylesheets="@../../../css/style.css%20@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AdminScreenController">
+<StackPane stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AdminScreenController">
 
     <children>
 
@@ -80,7 +80,7 @@
                         </padding>
 
                         <Label styleClass="sidebar-section-label" text="TỔNG QUAN" />
-                        <Button fx:id="navDashboard" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="sidebar-btn, sidebar-btn-active" text="📊  Dashboard" />
+                        <Button fx:id="navDashboard" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="sidebar-btn" text="📊  Dashboard" />
 
                         <Label styleClass="sidebar-section-label" text="QUẢN LÝ">
                             <VBox.margin>
