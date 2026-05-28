@@ -145,6 +145,61 @@ public class AuctionDAO implements AuctionRepository {
         }
         return result;
     }
+    @Override
+    public List<Auction> findAll() {
+        List<Auction> result = new ArrayList<>();
+        String sql = "SELECT a.id, a.current_price, a.status, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.start_time, i.end_time " +
+                "FROM auction a JOIN item i ON a.item_id = i.id " +
+                "ORDER BY a.id DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.add(parseAuction(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+    @Override
+    public Auction findById(int id) {
+        String sql = "SELECT a.id, a.current_price, a.status, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.start_time, i.end_time " +
+                "FROM auction a JOIN item i ON a.item_id = i.id " +
+                "WHERE a.id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return parseAuction(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM auction WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private Auction parseAuction(ResultSet rs) throws SQLException {
         Timestamp startTs = rs.getTimestamp("start_time");

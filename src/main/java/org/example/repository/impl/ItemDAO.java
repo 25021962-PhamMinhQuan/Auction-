@@ -83,6 +83,24 @@ public class ItemDAO implements ItemRepository {
         }
         return items;
     }
+    @Override
+    public String findSellerIdByItemId(String itemId) {
+        String sql = "SELECT seller_id FROM item WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, itemId);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("seller_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
 
     @Override
     public void update(Item item) {
@@ -122,7 +140,22 @@ public class ItemDAO implements ItemRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    @Override
+    public List<Item> findAll() {
+        String sql = "SELECT * FROM item ORDER BY start_time DESC";
+        List<Item> items = new ArrayList<>();
 
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                items.add(buildItem(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
+        return items;
     }
 }
