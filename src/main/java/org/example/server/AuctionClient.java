@@ -30,12 +30,13 @@ public class AuctionClient {
     private Consumer<List<String[]>>    myItemsCallback;
     private Consumer<List<String[]>> searchAuctionCallback;
     private BiConsumer<Boolean, String> deleteItemCallback;
-    private final List<String[]> pendingAuctions = new ArrayList<>();
     private final List<String[]> pendingMyItems  = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
     private Runnable newAuctionListener;
     private Consumer<List<String>> suggestCallback;
     private Consumer<List<String[]>> categoryCallback;
+    private final List<String[]> pendingOpen    = new ArrayList<>();
+    private final List<String[]> pendingRunning = new ArrayList<>();
 
     // ──────────────── Singleton ────────────────
 
@@ -219,38 +220,54 @@ public class AuctionClient {
                 break;
             }
             case "AUCTION_ITEM": {
-                // "AUCTION_ITEM|id|name|price|endTime|status"
-                if (parts.length < 6) return;
-                synchronized (pendingAuctions) {
-                    pendingAuctions.add(parts);
+                if (parts.length < 2) return;
+                String itemStatus = parts.length > 5 ? parts[5] : "";
+                if ("OPEN".equals(itemStatus)) {
+                    synchronized (pendingOpen)    { pendingOpen.add(parts); }
+                } else {
+                    synchronized (pendingRunning) { pendingRunning.add(parts); }
                 }
                 break;
             }
             case "AUCTION_LIST_END": {
-                String status = parts.length > 1 ? parts[1] : "";  // ← đọc từ message
+                String status = parts.length > 1 ? parts[1] : "";
                 List<String[]> snapshot;
-                synchronized (pendingAuctions) {
-                    snapshot = new ArrayList<>(pendingAuctions);
-                    pendingAuctions.clear();
-                }
                 Consumer<List<String[]>> cb;
+
                 if ("OPEN".equals(status)) {
+                    synchronized (pendingOpen) {
+                        snapshot = new ArrayList<>(pendingOpen);
+                        pendingOpen.clear();
+                    }
                     cb = openAuctionCallback;
                     openAuctionCallback = null;
                 } else if ("SEARCH".equals(status)) {
+                    synchronized (pendingRunning) {
+                        snapshot = new ArrayList<>(pendingRunning);
+                        pendingRunning.clear();
+                    }
                     cb = searchAuctionCallback;
                     searchAuctionCallback = null;
-                }
-                else if ("CATEGORY".equals(status)) {
+                } else if ("CATEGORY".equals(status)) {
+                    synchronized (pendingRunning) {
+                        snapshot = new ArrayList<>(pendingRunning);
+                        pendingRunning.clear();
+                    }
                     cb = categoryCallback;
                     categoryCallback = null;
-                }
-                else  {
+                } else { // RUNNING
+                    synchronized (pendingRunning) {
+                        snapshot = new ArrayList<>(pendingRunning);
+                        pendingRunning.clear();
+                    }
                     cb = runningAuctionCallback;
                     runningAuctionCallback = null;
                 }
 
-                if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                if (cb != null) {
+                    final List<String[]> snap = snapshot;
+                    Platform.runLater(() -> cb.accept(snap));
+                }
                 break;
             }
 
@@ -310,8 +327,13 @@ public class AuctionClient {
     }
 
     public void requestAuctions(String status, Consumer<List<String[]>> callback) {
-        if ("OPEN".equals(status))    this.openAuctionCallback    = callback;
-        else                          this.runningAuctionCallback  = callback;
+        if ("OPEN".equals(status)) {
+            synchronized (pendingOpen)    { pendingOpen.clear(); }
+            this.openAuctionCallback = callback;
+        } else {
+            synchronized (pendingRunning) { pendingRunning.clear(); }
+            this.runningAuctionCallback = callback;
+        }
         sendCommand("LIST_AUCTIONS|" + status);
     }
 

@@ -59,6 +59,7 @@ public class MainScreenController {
         wireHoverMenus();
         wireAutocomplete();
         loadUpcoming();
+        loadOngoing();
     }
 
 
@@ -81,7 +82,6 @@ public class MainScreenController {
                         upcomingHbox.getChildren().add(
                                 buildCard(items.get(i), ItemCardController.CardMode.DETAIL));
                     }
-                    loadOngoing();
                 })
         );
     }
@@ -228,6 +228,7 @@ public class MainScreenController {
     }
     public void onNewAuction() {
         loadUpcoming();
+        loadOngoing();
     }
 
     public void updateAuctionPrice(int auctionId, double newPrice, String bidder) {
@@ -242,6 +243,7 @@ public class MainScreenController {
                 auctionId, winner, finalPrice);
         // Reload cả hai hàng để đồng bộ trạng thái
         loadUpcoming();
+        loadOngoing();
     }
 
 
