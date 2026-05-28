@@ -82,7 +82,7 @@
                                           -fx-border-width:2.5;">
                            <ImageView fx:id="avatarImageView"
                                       fitWidth="86" fitHeight="86"
-                                      preserveRatio="true"
+                                      preserveRatio="false"
                                       visible="false"/>
                            <Label fx:id="avatarPlaceholder" text="👤"
                                   style="-fx-font-size:38px;"/>

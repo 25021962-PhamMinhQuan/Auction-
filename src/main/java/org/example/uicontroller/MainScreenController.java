@@ -59,6 +59,11 @@ public class MainScreenController {
     private VBox openMenu = null;
     @FXML private ImageView navAvatarView;
     @FXML private StackPane navAvatarPane;
+    @FXML private ImageView navDefaultIcon;   // thêm mới
+    @FXML private Label     panelUsernameLabel; // thêm mới
+    @FXML private Label     panelRoleLabel;     // thêm mới
+    @FXML private ImageView panelAvatarView;    // thêm mới
+    @FXML private Label     panelAvatarIcon;    // thêm mới
 
 
 
@@ -374,6 +379,23 @@ public class MainScreenController {
                     ? user.getFullName()
                     : user.getUsername();
             usernameLabel.setText(displayName + " (" + user.getRole() + ")");
+            // Cập nhật dashboard panel
+            if (panelUsernameLabel != null)
+                panelUsernameLabel.setText(user.getFullName() != null && !user.getFullName().isBlank()
+                        ? user.getFullName() : user.getUsername());
+            if (panelRoleLabel != null)
+                panelRoleLabel.setText(user.getRole() != null ? user.getRole() : "BIDDER");
+
+// Hiện avatar ở cả navbar lẫn panel
+            if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                Image avatar = new Image(user.getAvatarUrl(), true);
+                avatar.progressProperty().addListener((obs, o, newV) -> {
+                    if (newV.doubleValue() >= 1.0 && !avatar.isError()) {
+                        Platform.runLater(() -> applyAvatarToNavbar(avatar));
+                        Platform.runLater(() -> applyAvatarToPanel(avatar));
+                    }
+                });
+            }
         }
         // Hiện avatar nếu có
         if (navAvatarView != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
@@ -565,5 +587,23 @@ public class MainScreenController {
         } catch (java.io.IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void applyAvatarToNavbar(Image avatar) {
+        if (navAvatarView == null) return;
+        navAvatarView.setImage(avatar);
+        navAvatarView.setVisible(true);
+        if (navDefaultIcon != null) navDefaultIcon.setVisible(false);
+        double r = navAvatarView.getFitWidth() / 2.0;
+        navAvatarView.setClip(new javafx.scene.shape.Circle(r, r, r));
+    }
+
+    private void applyAvatarToPanel(Image avatar) {
+        if (panelAvatarView == null) return;
+        panelAvatarView.setImage(avatar);
+        panelAvatarView.setVisible(true);
+        if (panelAvatarIcon != null) panelAvatarIcon.setVisible(false);
+        double r = panelAvatarView.getFitWidth() / 2.0;
+        panelAvatarView.setClip(new javafx.scene.shape.Circle(r, r, r));
     }
 }

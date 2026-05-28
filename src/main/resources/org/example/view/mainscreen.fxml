@@ -142,11 +142,14 @@
                      <Button mnemonicParsing="false" onAction="#handleDashboard" styleClass="nav-avatar-btn">
                         <graphic>
                            <HBox alignment="CENTER" spacing="8">
-                              <StackPane styleClass="avatar-circle">
-                                 <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" styleClass="icon-img">
-                                    <image>
-                                       <Image url="@../../../icon_user.png" />
-                                    </image>
+                              <StackPane fx:id="navAvatarPane" styleClass="avatar-circle"
+                                         minWidth="26" minHeight="26" maxWidth="26" maxHeight="26">
+                                 <ImageView fx:id="navAvatarView"
+                                            fitHeight="26" fitWidth="26"
+                                            preserveRatio="false" visible="false"/>
+                                 <ImageView fx:id="navDefaultIcon"
+                                            fitHeight="20" fitWidth="20" preserveRatio="true">
+                                    <image><Image url="@../../../icon_user.png"/></image>
                                  </ImageView>
                               </StackPane>
                               <Label fx:id="usernameLabel" styleClass="nav-username" text="Guest" mouseTransparent="true" />
@@ -262,13 +265,17 @@
                      </padding>
 
                      <!-- Avatar -->
-                     <StackPane alignment="CENTER" styleClass="panel-avatar-wrap">
-                        <Label styleClass="panel-avatar-icon" text="👤" />
+                     <StackPane fx:id="panelAvatarPane" alignment="CENTER" styleClass="panel-avatar-wrap"
+                                minWidth="72" minHeight="72" maxWidth="72" maxHeight="72">
+                        <ImageView fx:id="panelAvatarView"
+                                   fitWidth="72" fitHeight="72"
+                                   preserveRatio="false" visible="false"/>
+                        <Label fx:id="panelAvatarIcon" styleClass="panel-avatar-icon" text="👤"/>
                      </StackPane>
 
                      <!-- Name & Role -->
-                     <Label styleClass="panel-username" text="Label" />
-                     <Label styleClass="panel-role-badge" text="Username" />
+                     <Label fx:id="panelUsernameLabel" styleClass="panel-username" text="Label" />
+                     <Label fx:id="panelRoleLabel" styleClass="panel-role-badge" text="Username" />
 
                      <!-- Edit Profile Button -->
                      <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-panel-primary" text="✏  Edit Profile"  onAction="#handleOpenProfile">

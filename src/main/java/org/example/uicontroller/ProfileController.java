@@ -94,24 +94,45 @@ public class ProfileController {
         if (file == null) return;
 
         // Upload lên Supabase (chạy thread riêng tránh block UI)
-        new Thread(() -> {
-            String url = SupabaseStorage.uploadAvatar(file, currentUser.getId());
-            Platform.runLater(() -> {
-                if (url != null) {
-                    avatarImageView.setImage(new Image(url, true));
-                    avatarImageView.setVisible(true);
-                    avatarPlaceholder.setVisible(false);
-                    applyCircleClip(avatarImageView);
-                    removeAvatarBtn.setVisible(true);
-                    removeAvatarBtn.setManaged(true);
+        // Mở crop dialog trước khi upload
+        Image rawImage = new Image(file.toURI().toString());
+        Stage ownerStage = (Stage) avatarImageView.getScene().getWindow();
 
-                    currentUser.setAvatarUrl(url);
-                    showStatus("Ảnh đã tải lên thành công. Nhấn Lưu thay đổi để xác nhận.", true);
-                } else {
-                    showStatus("Tải ảnh thất bại", false);
+        AvatarCropDialog.show(ownerStage, rawImage, croppedImage -> {
+            if (croppedImage == null) return; // user nhấn Huỷ
+
+            // Preview ngay lên UI
+            avatarImageView.setImage(croppedImage);
+            avatarImageView.setVisible(true);
+            avatarPlaceholder.setVisible(false);
+            applyCircleClip(avatarImageView);
+            removeAvatarBtn.setVisible(true);
+            removeAvatarBtn.setManaged(true);
+
+            // Export ra file tạm rồi upload
+            new Thread(() -> {
+                try {
+                    File tmp = java.nio.file.Files.createTempFile("avatar_", ".png").toFile();
+                    javax.imageio.ImageIO.write(
+                            javafx.embed.swing.SwingFXUtils.fromFXImage(croppedImage, null),
+                            "png", tmp
+                    );
+                    String url = SupabaseStorage.uploadAvatar(tmp, currentUser.getId());
+                    tmp.delete();
+
+                    Platform.runLater(() -> {
+                        if (url != null) {
+                            currentUser.setAvatarUrl(url);
+                            showStatus("Ảnh đã tải lên. Nhấn Lưu thay đổi để xác nhận.", true);
+                        } else {
+                            showStatus("Tải ảnh thất bại.", false);
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() -> showStatus("Lỗi: " + e.getMessage(), false));
                 }
-            });
-        }).start();
+            }).start();
+        });
     }
 
     /**
@@ -140,6 +161,9 @@ public class ProfileController {
         // Kiểm tra kết quả trả về từ service để gán trạng thái màu sắc chuẩn
         boolean isSuccess = result.toLowerCase().contains("thành công");
         showStatus(result, isSuccess);
+        if (isSuccess && MainScreenController.getInstance() != null) {
+            MainScreenController.getInstance().setCurrentUser(currentUser);
+        }
     }
 
     /**
@@ -216,9 +240,10 @@ public class ProfileController {
         statusLabel.setStyle("-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:" + textColor + ";");
     }
 
-    private void applyCircleClip(ImageView imageView) {
-        double r = imageView.getFitWidth() / 2;
-        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(r, r, r);
-        imageView.setClip(clip);
+    private void applyCircleClip(ImageView iv) {
+        double cx = iv.getFitWidth()  / 2.0;
+        double cy = iv.getFitHeight() / 2.0;
+        double r  = Math.min(cx, cy);
+        iv.setClip(new javafx.scene.shape.Circle(cx, cy, r));
     }
 }
