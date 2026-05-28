@@ -39,14 +39,26 @@ public class UserDAO implements UserRepository {
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                String id = rs.getString("id");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
                 String role = rs.getString("role");
-                if (role.equals(User.UserRole.ADMIN.name())) {
-                    return new Admin(rs.getString("id"), rs.getString("username"), rs.getString("password"));
-                } else if (role.equals(User.UserRole.SELLER.name())) {
-                    return new Seller(rs.getString("id"), rs.getString("username"), rs.getString("password"));
-                } else if (role.equals(User.UserRole.BIDDER.name())) {
-                    return new Bidder(rs.getString("id"), rs.getString("username"), rs.getString("password"));
+                String fullName  = rs.getString("full_name");
+                String email     = rs.getString("email");
+                String phone     = rs.getString("phone");
+                String avatarUrl = rs.getString("avatar_url");
+                switch (User.UserRole.valueOf(role)) {
+                    case ADMIN:
+                        return new Admin(id, username, password, fullName, email, phone, avatarUrl);
 
+                    case SELLER:
+                        return new Seller(id, username, password, fullName, email, phone, avatarUrl);
+
+                    case BIDDER:
+                        return new Bidder(id, username, password, fullName, email, phone, avatarUrl);
+
+                    default:
+                        throw new IllegalArgumentException("Unknown role: " + role);
                 }
             }
             // tao ra 1 bien user tam thoi de gui no di
@@ -57,6 +69,42 @@ public class UserDAO implements UserRepository {
         }
 
         return null;
+    }
+    @Override
+    public User findById(String id) {
+        String sql = "SELECT * FROM account WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                // map giống findByUsername
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
+    }
+    @Override
+    public void updateProfile(User user) {
+        String sql = "UPDATE account SET full_name=?, email=?, phone=?, avatar_url=? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getFullName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPhone());
+            stmt.setString(4, user.getAvatarUrl());
+            stmt.setString(5, user.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    @Override
+    public void updatePassword(String userId, String hashedPassword) {
+        String sql = "UPDATE account SET password=? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 }
 

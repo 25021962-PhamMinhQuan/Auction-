@@ -11,6 +11,8 @@ public class SupabaseStorage {
     private static final String SUPABASE_URL;
     private static final String SUPABASE_KEY;
     private static final String BUCKET;
+    private static final String AVATAR_BUCKET;
+
 
     private static final OkHttpClient client;
 
@@ -35,6 +37,9 @@ public class SupabaseStorage {
             SUPABASE_KEY = props.getProperty("supabase.key");
 
             BUCKET = props.getProperty("supabase.bucket", "item-images");
+
+            AVATAR_BUCKET = props.getProperty("supabase.bucket.avatar", "Avatar-imange");
+
 
             if (SUPABASE_URL == null || SUPABASE_KEY == null) {
                 throw new RuntimeException("Missing Supabase configuration!");
@@ -124,6 +129,62 @@ public class SupabaseStorage {
                 return null;
             }
 
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Upload ảnh đại diện lên bucket Avatar-imange
+     * @param file   file ảnh
+     * @param userId id của user (để đặt tên file cố định, tránh tạo file rác)
+     * @return public URL nếu thành công, null nếu thất bại
+     */
+    public static String uploadAvatar(File file, String userId) {
+        if (file == null || !file.exists()) {
+            System.err.println("File does not exist!");
+            return null;
+        }
+
+        // Đặt tên file theo userId → mỗi user chỉ có 1 ảnh, upload mới sẽ ghi đè
+        String ext = file.getName().toLowerCase().endsWith(".png") ? ".png" : ".jpg";
+        String fileName = "avatar_" + userId + ext;
+
+        String uploadUrl = SUPABASE_URL
+                + "/storage/v1/object/"
+                + AVATAR_BUCKET
+                + "/"
+                + fileName;
+
+        String mimeType = fileName.endsWith(".png") ? "image/png" : "image/jpeg";
+
+        RequestBody body = RequestBody.create(file, MediaType.parse(mimeType));
+
+        Request request = new Request.Builder()
+                .url(uploadUrl)
+                .post(body)
+                .addHeader("Authorization", "Bearer " + SUPABASE_KEY)
+                .addHeader("apikey", SUPABASE_KEY)
+                .addHeader("x-upsert", "true")   // ghi đè nếu đã tồn tại
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String publicUrl = SUPABASE_URL
+                        + "/storage/v1/object/public/"
+                        + AVATAR_BUCKET
+                        + "/"
+                        + fileName;
+                System.out.println("Avatar upload successful: " + publicUrl);
+                return publicUrl;
+            } else {
+                String errorBody = response.body() != null
+                        ? response.body().string() : "Unknown error";
+                System.err.println("Avatar upload failed: "
+                        + response.code() + " - " + errorBody);
+                return null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return null;

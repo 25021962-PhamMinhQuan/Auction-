@@ -1,163 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="835.0" styleClass="root" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
+<BorderPane
+        styleClass="root"
+        stylesheets="@../../../css/style.css"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="org.example.uicontroller.ProfileController">
+
+   <!-- ══════════════ NAVBAR ══════════════ -->
    <top>
-      <HBox alignment="CENTER_LEFT"
-            spacing="10"
-            styleClass="navbar"
-            BorderPane.alignment="CENTER_LEFT">
-         <padding><Insets top="10" bottom="10" left="10" right="10"/></padding>
+      <VBox styleClass="navbar-wrapper">
+         <HBox alignment="CENTER_LEFT" spacing="10" styleClass="navbar">
+            <padding><Insets top="10" bottom="10" left="16" right="16"/></padding>
 
-         <Button mnemonicParsing="false" styleClass="nav-button">
-            <graphic>
-               <ImageView fitHeight="43" fitWidth="93"
-                          pickOnBounds="true" preserveRatio="true"
-                          styleClass="icon-button">
-                  <image><Image url="@../../../Auction_App.png"/></image>
-               </ImageView>
-            </graphic>
-         </Button>
-
-         <StackPane fx:id="categoryBox">
-            <Button fx:id="categoryButton"
-                    text="Categories"
-                    maxHeight="1.7976931348623157E308"
-                    mnemonicParsing="false"
-                    styleClass="nav-button"/>
-            <VBox fx:id="categoryMenu"
-                  visible="false"
-                  managed="false"
-                  styleClass="dropdown-menu"
-                  translateY="40">
-               <Button text="Art"         mnemonicParsing="false" styleClass="dropdown-item"/>
-               <Button text="Electronics" mnemonicParsing="false" styleClass="dropdown-item"/>
-               <Button text="Other"       mnemonicParsing="false" styleClass="dropdown-item"/>
-            </VBox>
-         </StackPane>
-
-         <StackPane fx:id="auctionBox">
-            <Button fx:id="auctionButton"
-                    text="Auctions"
-                    maxHeight="1.7976931348623157E308"
-                    mnemonicParsing="false"
-                    styleClass="nav-button"/>
-            <VBox fx:id="auctionMenu"
-                  visible="false"
-                  managed="false"
-                  styleClass="dropdown-menu"
-                  translateY="40">
-               <Button text="Upcoming" mnemonicParsing="false" styleClass="dropdown-item"/>
-               <Button text="Ongoing"  mnemonicParsing="false" styleClass="dropdown-item"/>
-            </VBox>
-         </StackPane>
-
-         <Button text="Introduction"
-                 mnemonicParsing="false"
-                 maxHeight="1.7976931348623157E308"
-                 styleClass="nav-button"/>
-         <Button text="Contact"
-                 mnemonicParsing="false"
-                 maxHeight="1.7976931348623157E308"
-                 styleClass="nav-button"/>
-
-         <Region HBox.hgrow="ALWAYS"/>
-
-         <HBox alignment="CENTER_RIGHT" spacing="20">
-            <padding><Insets right="10"/></padding>
-
-            <Label fx:id="usernameLabel" styleClass="label-secondary" text="Guest"/>
-
-            <Button mnemonicParsing="false" styleClass="icon-btn">
+            <Button styleClass="nav-logo-btn" onAction="#handleBack" mnemonicParsing="false">
                <graphic>
-                  <ImageView fitHeight="32" fitWidth="13"
-                             pickOnBounds="true" preserveRatio="true"
-                             styleClass="icon-img">
-                     <image><Image url="@../../../find_icon.png"/></image>
+                  <ImageView fitHeight="38" fitWidth="85" preserveRatio="true" pickOnBounds="true">
+                     <image><Image url="@../../../Auction_App.png"/></image>
                   </ImageView>
                </graphic>
             </Button>
 
-            <Button mnemonicParsing="false" styleClass="icon-btn">
+            <Button text="← Quay lại"
+                    styleClass="nav-link"
+                    onAction="#handleBack"
+                    mnemonicParsing="false"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label fx:id="navUsernameLabel" text="Guest" styleClass="label-secondary"/>
+
+            <Button styleClass="icon-btn" mnemonicParsing="false">
                <graphic>
-                  <ImageView fitHeight="32" fitWidth="13"
-                             pickOnBounds="true" preserveRatio="true"
-                             styleClass="icon-img">
+                  <ImageView fitHeight="28" fitWidth="28" preserveRatio="true" pickOnBounds="true">
                      <image><Image url="@../../../icon_user.png"/></image>
                   </ImageView>
                </graphic>
             </Button>
          </HBox>
-      </HBox>
+         <Region styleClass="navbar-accent-line"/>
+      </VBox>
    </top>
 
+   <!-- ══════════════ CONTENT ══════════════ -->
    <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fitToWidth="true" styleClass="scroll-pane" BorderPane.alignment="CENTER">
          <content>
-            <VBox>
-               <Button fx:id="backButton"
-                       text="← Back"
-                       visible="false"
-                       managed="false"
-                       mnemonicParsing="false"
-                       onAction="#handleBack"
-                       styleClass="button-login">
-                  <VBox.margin>
-                     <Insets top="10" bottom="10" left="10" right="10"/>
-                  </VBox.margin>
-               </Button>
+            <VBox alignment="TOP_CENTER">
+               <padding><Insets top="40" bottom="60" left="20" right="20"/></padding>
 
-               <ScrollPane fx:id="gridScroll"
-                           fitToWidth="true"
-                           visible="false"
-                           managed="false">
-                  <content>
-                     <FlowPane fx:id="gridPane"
-                               hgap="20" vgap="20"
-                               styleClass="grid-pane"/>
-                  </content>
-               </ScrollPane>
+               <VBox spacing="20" maxWidth="620" minWidth="320">
 
-               <VBox fx:id="mainContent"
-                     alignment="TOP_CENTER"
-                     spacing="20">
-                  <padding><Insets top="40"/></padding>
+                  <!-- ── TIÊU ĐỀ TRANG ── -->
+                  <VBox spacing="4">
+                     <Label text="Chỉnh sửa hồ sơ"
+                            style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#f9fafb;"/>
+                     <Label text="Quản lý thông tin cá nhân và bảo mật tài khoản"
+                            styleClass="label-secondary"/>
+                  </VBox>
 
-                  <Label text="Upcoming Auction" styleClass="section-title"/>
-                  <ScrollPane hbarPolicy="ALWAYS" vbarPolicy="NEVER" fitToWidth="false">
-                     <content>
-                        <HBox fx:id="upcomingHbox" spacing="20"/>
-                     </content>
-                  </ScrollPane>
-                  <Button fx:id="viewAllUpcoming"
-                          text="View all"
-                          mnemonicParsing="false"
-                          onAction="#handleViewAllUpcoming"
-                          styleClass="button-login"/>
+                  <!-- ── CARD: AVATAR ── -->
+                  <VBox spacing="16"
+                        style="-fx-background-color:#111827; -fx-background-radius:14;
+                               -fx-border-color:#1f2937; -fx-border-radius:14;
+                               -fx-border-width:1; -fx-padding:24;">
+                     <HBox alignment="CENTER_LEFT" spacing="24">
 
-                  <Label text="Ongoing Auction" styleClass="section-title"/>
-                  <ScrollPane hbarPolicy="ALWAYS" vbarPolicy="NEVER" fitToWidth="false">
-                     <content>
-                        <HBox fx:id="ongoingHbox" spacing="20"/>
-                     </content>
-                  </ScrollPane>
-                  <Button fx:id="viewAllOngoing"
-                          text="View all"
-                          mnemonicParsing="false"
-                          onAction="#handleViewAllOngoing"
-                          styleClass="button-login"/>
+                        <!-- Avatar tròn -->
+                        <StackPane fx:id="avatarWrapper"
+                                   minWidth="90" minHeight="90"
+                                   maxWidth="90" maxHeight="90"
+                                   style="-fx-background-color:linear-gradient(to bottom right,#374151,#1f2937);
+                                          -fx-background-radius:999;
+                                          -fx-border-color:#fbbf24;
+                                          -fx-border-radius:999;
+                                          -fx-border-width:2.5;">
+                           <ImageView fx:id="avatarImageView"
+                                      fitWidth="86" fitHeight="86"
+                                      preserveRatio="true"
+                                      visible="false"/>
+                           <Label fx:id="avatarPlaceholder" text="👤"
+                                  style="-fx-font-size:38px;"/>
+                        </StackPane>
+
+                        <!-- Thông tin bên cạnh avatar -->
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                           <Label fx:id="displayUsernameLabel" text="Username"
+                                  style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#f9fafb;"/>
+                           <Label fx:id="displayRoleLabel" text="BIDDER"
+                                  styleClass="panel-role-badge" maxWidth="80"/>
+                           <HBox spacing="10" alignment="CENTER_LEFT">
+                              <Button fx:id="chooseAvatarBtn"
+                                      text="📷  Chọn ảnh"
+                                      styleClass="button-secondary"
+                                      onAction="#handleChooseAvatar"
+                                      mnemonicParsing="false"/>
+                              <Button fx:id="removeAvatarBtn"
+                                      text="✕  Xóa ảnh"
+                                      styleClass="btn-danger"
+                                      onAction="#handleRemoveAvatar"
+                                      mnemonicParsing="false"
+                                      visible="false"
+                                      managed="false"/>
+                           </HBox>
+                           <Label text="PNG hoặc JPG. Kích thước tối đa 2MB."
+                                  style="-fx-font-size:11px; -fx-text-fill:#4b5563;"/>
+                        </VBox>
+                     </HBox>
+                  </VBox>
+
+                  <!-- ── CARD: THÔNG TIN CÁ NHÂN ── -->
+                  <VBox spacing="16"
+                        style="-fx-background-color:#111827; -fx-background-radius:14;
+                               -fx-border-color:#1f2937; -fx-border-radius:14;
+                               -fx-border-width:1; -fx-padding:24;">
+                     <Label text="Thông tin cá nhân"
+                            style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#e5e7eb;"/>
+                     <Region style="-fx-background-color:#1f2937; -fx-pref-height:1; -fx-min-height:1;"/>
+
+                     <VBox spacing="6">
+                        <Label text="Họ và tên"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <TextField fx:id="fullNameField"
+                                   promptText="Nhập họ và tên của bạn"
+                                   styleClass="input_field"
+                                   maxWidth="1.7976931348623157E308"
+                                   style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <VBox spacing="6">
+                        <Label text="Email"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <TextField fx:id="emailField"
+                                   promptText="example@email.com"
+                                   styleClass="input_field"
+                                   maxWidth="1.7976931348623157E308"
+                                   style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <VBox spacing="6">
+                        <Label text="Số điện thoại"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <TextField fx:id="phoneField"
+                                   promptText="0xxxxxxxxx"
+                                   styleClass="input_field"
+                                   maxWidth="1.7976931348623157E308"
+                                   style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <Button text="💾  Lưu thay đổi"
+                             styleClass="button-login"
+                             onAction="#handleSaveProfile"
+                             mnemonicParsing="false"
+                             maxWidth="1.7976931348623157E308"
+                             style="-fx-pref-height:42px; -fx-font-size:14px;"/>
+                  </VBox>
+
+                  <!-- ── CARD: ĐỔI MẬT KHẨU ── -->
+                  <VBox spacing="16"
+                        style="-fx-background-color:#111827; -fx-background-radius:14;
+                               -fx-border-color:#1f2937; -fx-border-radius:14;
+                               -fx-border-width:1; -fx-padding:24;">
+                     <Label text="Đổi mật khẩu"
+                            style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#e5e7eb;"/>
+                     <Region style="-fx-background-color:#1f2937; -fx-pref-height:1; -fx-min-height:1;"/>
+
+                     <VBox spacing="6">
+                        <Label text="Mật khẩu hiện tại"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <PasswordField fx:id="oldPasswordField"
+                                       promptText="Nhập mật khẩu hiện tại"
+                                       styleClass="input_field"
+                                       maxWidth="1.7976931348623157E308"
+                                       style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <VBox spacing="6">
+                        <Label text="Mật khẩu mới"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <PasswordField fx:id="newPasswordField"
+                                       promptText="Tối thiểu 6 ký tự, có chữ hoa, số và ký tự đặc biệt"
+                                       styleClass="input_field"
+                                       maxWidth="1.7976931348623157E308"
+                                       style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <VBox spacing="6">
+                        <Label text="Xác nhận mật khẩu mới"
+                               style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#9ca3af;"/>
+                        <PasswordField fx:id="confirmPasswordField"
+                                       promptText="Nhập lại mật khẩu mới"
+                                       styleClass="input_field"
+                                       maxWidth="1.7976931348623157E308"
+                                       style="-fx-pref-height:40px;"/>
+                     </VBox>
+
+                     <Label text="⚠  Mật khẩu cần có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+                            wrapText="true"
+                            style="-fx-font-size:11px; -fx-text-fill:#4b5563;"/>
+
+                     <Button text="🔒  Đổi mật khẩu"
+                             styleClass="button-login"
+                             onAction="#handleChangePassword"
+                             mnemonicParsing="false"
+                             maxWidth="1.7976931348623157E308"
+                             style="-fx-pref-height:42px; -fx-font-size:14px;"/>
+                  </VBox>
+
+                  <!-- ── THÔNG BÁO TRẠNG THÁI ── -->
+                  <StackPane fx:id="statusPane"
+                             visible="false"
+                             managed="false">
+                     <Label fx:id="statusLabel"
+                            wrapText="true"
+                            maxWidth="1.7976931348623157E308"/>
+                  </StackPane>
 
                </VBox>
             </VBox>

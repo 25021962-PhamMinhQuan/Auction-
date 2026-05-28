@@ -14,6 +14,10 @@ public abstract class User extends Entity {
     protected String username;
     protected String password;
     protected String role;
+    protected String fullName;
+    protected String email;
+    protected String phone;
+    protected String avatarUrl;
 
     public User(String username, String password, String role) {
         super(IDGenerator.generatorUID());
@@ -27,6 +31,18 @@ public abstract class User extends Entity {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public User(String id, String username, String password, String role,
+                String fullName, String email, String phone, String avatarUrl) {
+        super(id);
+        this.username  = username;
+        this.password  = password;
+        this.role      = role;
+        this.fullName  = fullName;
+        this.email     = email;
+        this.phone     = phone;
+        this.avatarUrl = avatarUrl;
     }
 
 
@@ -44,5 +60,15 @@ public abstract class User extends Entity {
     public String getRole() {
         return role;
     }
+
+    public String getFullName()  { return fullName; }
+    public String getEmail()     { return email; }
+    public String getPhone()     { return phone; }
+    public String getAvatarUrl() { return avatarUrl; }
+
+    public void setFullName(String fullName)   { this.fullName = fullName; }
+    public void setEmail(String email)         { this.email = email; }
+    public void setPhone(String phone)         { this.phone = phone; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }
 

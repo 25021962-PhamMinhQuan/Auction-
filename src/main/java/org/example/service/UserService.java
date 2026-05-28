@@ -66,6 +66,25 @@ public class UserService {
         return user;
     }
 
+    public String updateProfile(User user) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty()
+                && !user.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            return "Invalid email";
+        }
+        UserRepositoryImpl.updateProfile(user);
+        return "Update successful";
+    }
+
+    public String changePassword(User user, String oldPassword, String newPassword) {
+        if (!BCrypt.checkpw(oldPassword, user.getPassword()))
+            return "The old password is incorrect.";
+        if (!isValidPassword(newPassword))
+            return "The new password is not strong enough.";
+        String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        UserRepositoryImpl.updatePassword(user.getId(), hashed);
+        return "Password changed successfully.";
+    }
+
     public User findUser(String name){
         return UserRepositoryImpl.findByUsername(name);
     }

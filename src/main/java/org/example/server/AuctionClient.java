@@ -1,6 +1,8 @@
 package org.example.server;
 
 import javafx.application.Platform;
+import org.example.domain.user.User;
+import org.example.factory.ServiceFactory;
 import org.example.uicontroller.MainScreenController;
 
 import java.io.*;
@@ -37,6 +39,7 @@ public class AuctionClient {
     private Consumer<List<String[]>> categoryCallback;
     private final List<String[]> pendingOpen    = new ArrayList<>();
     private final List<String[]> pendingRunning = new ArrayList<>();
+    private User currentUser;
 
     // ──────────────── Singleton ────────────────
 
@@ -93,16 +96,27 @@ public class AuctionClient {
 
         switch (type) {
             case "OK": {
-                // "OK|ROLE|username"
                 if (parts.length < 3) return;
+
                 currentRole = parts[1];
                 currentUsername = parts[2];
 
-                // FIX: chỉ gọi callback, không tự openMainScreen()
-                // LoginController sẽ tự chuyển scene trên đúng stage
                 BiConsumer<Boolean, String> cb = loginCallback;
                 loginCallback = null;
+
                 if (cb != null) cb.accept(true, null);
+
+                try {
+                    User user = ServiceFactory.getInstance()
+                            .getUserService()
+                            .findUser(currentUsername);
+
+                    setCurrentUser(user);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 break;
             }
             case "REGISTER_OK": {
@@ -314,6 +328,7 @@ public class AuctionClient {
         currentRole     = null;
         activeBidController = null;
         newAuctionListener  = null;
+        currentUser = null;
         try {
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException ignored) {}
@@ -390,6 +405,9 @@ public class AuctionClient {
     public void setActiveBidController(org.example.uicontroller.ItemBidingUIController ctrl) {
         this.activeBidController = ctrl;
     }
+
+    public User getCurrentUser() { return currentUser; }
+    public void setCurrentUser(User user) { this.currentUser = user; }
 
     /** Gọi khi đóng màn hình bid (back về main) */
     public void clearActiveBidController() {

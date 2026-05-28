@@ -1,121 +1,224 @@
 package org.example.uicontroller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-
+import javafx.stage.FileChooser;
+import java.io.File;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import java.io.IOException;
-import java.io.UncheckedIOException;
+
+// Giả định các class Model/Service của bạn nằm ở các package này
+import org.example.domain.user.User;
+import org.example.service.UserService;
+import org.example.factory.ServiceFactory;
+import org.example.util.SupabaseStorage; // Hoặc package chứa tiện ích upload của bạn
 
 public class ProfileController {
 
-    @FXML private HBox      upcomingHbox;
-    @FXML private HBox      ongoingHbox;
-    @FXML private FlowPane  gridPane;
-    @FXML private ScrollPane gridScroll;
-    @FXML private VBox      mainContent;
-    @FXML private Button    backButton;
-    @FXML private StackPane categoryBox;
-    @FXML private VBox      categoryMenu;
-    @FXML private StackPane auctionBox;
-    @FXML private VBox      auctionMenu;
+    // ── Các thuộc tính FXML đã đồng bộ với file FXML của bạn ──
+    @FXML private ImageView avatarImageView; // Đã đổi từ avatarView sang avatarImageView để khớp FXML
+    @FXML private Label avatarPlaceholder;
+    @FXML private Button removeAvatarBtn;
+    @FXML private Button chooseAvatarBtn;
 
+    @FXML private Label navUsernameLabel;
+    @FXML private Label displayUsernameLabel;
+    @FXML private Label displayRoleLabel;
 
-    private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
-    private static final int    PREVIEW_COUNT  = 7;
-    private static final int    GRID_COUNT     = 10;
+    @FXML private TextField fullNameField;
+    @FXML private TextField emailField;
+    @FXML private TextField phoneField;
 
+    @FXML private PasswordField oldPasswordField;
+    @FXML private PasswordField newPasswordField;
+    @FXML private PasswordField confirmPasswordField;
 
+    @FXML private StackPane statusPane;
+    @FXML private Label statusLabel;
 
-    @FXML
-    public void initialize() {
-        populateRow(upcomingHbox, "Upcoming", PREVIEW_COUNT);
-        populateRow(ongoingHbox,  "Ongoing",  PREVIEW_COUNT);
-        wireHoverMenus();
+    // ── Các thuộc tính nghiệp vụ ──
+    private User currentUser;
+    private final UserService userService = ServiceFactory.getInstance().getUserService();
+
+    /**
+     * Khởi tạo dữ liệu người dùng lên giao diện
+     */
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+
+        // Cập nhật thông tin Navbar và Header Card
+        navUsernameLabel.setText(user.getUsername());
+        displayUsernameLabel.setText(user.getUsername());
+        displayRoleLabel.setText(user.getRole());
+
+        // Cập nhật thông tin các trường Form
+        fullNameField.setText(user.getFullName() != null ? user.getFullName() : "");
+        emailField.setText(user.getEmail() != null ? user.getEmail() : "");
+        phoneField.setText(user.getPhone() != null ? user.getPhone() : "");
+
+        // Xử lý hiển thị Avatar
+        if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+            avatarImageView.setImage(new Image(user.getAvatarUrl(), true)); // true = background load
+            avatarImageView.setVisible(true);
+            avatarPlaceholder.setVisible(false);
+            applyCircleClip(avatarImageView);
+            removeAvatarBtn.setVisible(true);
+            removeAvatarBtn.setManaged(true);
+        } else {
+            avatarImageView.setVisible(false);
+            avatarPlaceholder.setVisible(true);
+            removeAvatarBtn.setVisible(false);
+            removeAvatarBtn.setManaged(false);
+        }
     }
 
-
-
+    /**
+     * Hành động: Chọn ảnh đại diện mới và upload lên Supabase
+     */
     @FXML
-    private void handleViewAllUpcoming() {
-        showGrid("Upcoming", GRID_COUNT);
+    private void handleChooseAvatar() {
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
+        File file = chooser.showOpenDialog(avatarImageView.getScene().getWindow());
+        if (file == null) return;
+
+        // Upload lên Supabase (chạy thread riêng tránh block UI)
+        new Thread(() -> {
+            String url = SupabaseStorage.uploadAvatar(file, currentUser.getId());
+            Platform.runLater(() -> {
+                if (url != null) {
+                    avatarImageView.setImage(new Image(url, true));
+                    avatarImageView.setVisible(true);
+                    avatarPlaceholder.setVisible(false);
+                    applyCircleClip(avatarImageView);
+                    removeAvatarBtn.setVisible(true);
+                    removeAvatarBtn.setManaged(true);
+
+                    currentUser.setAvatarUrl(url);
+                    showStatus("Ảnh đã tải lên thành công. Nhấn Lưu thay đổi để xác nhận.", true);
+                } else {
+                    showStatus("Tải ảnh thất bại", false);
+                }
+            });
+        }).start();
     }
 
+    /**
+     * Hành động: Xóa ảnh đại diện tạm thời
+     */
     @FXML
-    private void handleViewAllOngoing() {
-        showGrid("Ongoing", GRID_COUNT);
+    private void handleRemoveAvatar() {
+        avatarImageView.setVisible(false);
+        avatarPlaceholder.setVisible(true);
+        currentUser.setAvatarUrl(null);
+        removeAvatarBtn.setVisible(false);
+        removeAvatarBtn.setManaged(false);
+        showStatus("Đã xóa ảnh đại diện tạm thời. Nhấn Lưu thay đổi để xác nhận.", false);
     }
 
+    /**
+     * Hành động: Lưu thông tin cá nhân
+     */
+    @FXML
+    private void handleSaveProfile() {
+        currentUser.setFullName(fullNameField.getText().trim());
+        currentUser.setEmail(emailField.getText().trim());
+        currentUser.setPhone(phoneField.getText().trim());
+
+        String result = userService.updateProfile(currentUser);
+        // Kiểm tra kết quả trả về từ service để gán trạng thái màu sắc chuẩn
+        boolean isSuccess = result.toLowerCase().contains("thành công");
+        showStatus(result, isSuccess);
+    }
+
+    /**
+     * Hành động: Thay đổi mật khẩu
+     */
+    @FXML
+    private void handleChangePassword() {
+        String oldPw  = oldPasswordField.getText();
+        String newPw  = newPasswordField.getText();
+        String confirm = confirmPasswordField.getText();
+
+        if (newPw.isEmpty() || oldPw.isEmpty() || confirm.isEmpty()) {
+            showStatus("Vui lòng điền đầy đủ các trường mật khẩu", false);
+            return;
+        }
+
+        if (!newPw.equals(confirm)) {
+            showStatus("Mật khẩu xác nhận không khớp", false);
+            return;
+        }
+
+        String result = userService.changePassword(currentUser, oldPw, newPw);
+        boolean isSuccess = result.equals("Đổi mật khẩu thành công");
+        showStatus(result, isSuccess);
+
+        if (isSuccess) {
+            oldPasswordField.clear();
+            newPasswordField.clear();
+            confirmPasswordField.clear();
+        }
+    }
+
+    /**
+     * Hành động: Quay lại trang trước đó
+     */
     @FXML
     private void handleBack() {
-        setGridVisible(false);
-    }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/org/example/view/mainscreen.fxml"));
+            Parent root = loader.load();
 
+            MainScreenController controller = loader.getController();
+            MainScreenController.setInstance(controller);
+            controller.setCurrentUser(
+                    currentUser.getUsername(),
+                    currentUser.getRole()
+            );
 
-    private void populateRow(HBox row, String label, int count) {
-        for (int i = 0; i < count; i++) {
-            try {
-                row.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load item card for " + label + " " + i, e);
-            }
+            Stage stage = (Stage) navUsernameLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-   
-    private void showGrid(String label, int count) {
-        gridPane.getChildren().clear();
-        for (int i = 0; i < count; i++) {
-            try {
-                gridPane.getChildren().add(loadItemCard(label + " " + i, String.valueOf(i * 100), "10AM"));
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load grid item card " + i, e);
-            }
-        }
-        setGridVisible(true);
+    /**
+     * Phương thức bổ trợ: Hiển thị thanh thông báo trạng thái đẹp mắt
+     */
+    private void showStatus(String message, boolean isSuccess) {
+        statusLabel.setText(message);
+        statusPane.setVisible(true);
+        statusPane.setManaged(true);
+
+        String color = isSuccess ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)";
+        String borderColor = isSuccess ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)";
+        String textColor = isSuccess ? "#4ade80" : "#f87171";
+
+        statusPane.setStyle("-fx-background-color:" + color + "; -fx-background-radius:10;"
+                + "-fx-border-color:" + borderColor + "; -fx-border-radius:10;"
+                + "-fx-border-width:1; -fx-padding:12 16;");
+        statusLabel.setStyle("-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:" + textColor + ";");
     }
 
-
-    private Node loadItemCard(String name, String price, String time) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
-        Node node = loader.load();
-        ItemCardController ctrl = loader.getController();
-        return node;
-    }
-
-   
-    private void setGridVisible(boolean show) {
-        mainContent.setVisible(!show);
-        mainContent.setManaged(!show);
-        gridScroll.setVisible(show);
-        gridScroll.setManaged(show);
-        backButton.setVisible(show);
-        backButton.setManaged(show);
-    }
-
-    
-    private void wireHoverMenus() {
-        // Category dropdown
-        categoryBox.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
-        categoryBox.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
-        categoryMenu.setOnMouseEntered(e -> setMenuVisible(categoryMenu, true));
-        categoryMenu.setOnMouseExited(e  -> setMenuVisible(categoryMenu, false));
-
-        // Auction dropdown
-        auctionBox.setOnMouseEntered(e  -> setMenuVisible(auctionMenu, true));
-        auctionBox.setOnMouseExited(e   -> setMenuVisible(auctionMenu, false));
-        auctionMenu.setOnMouseEntered(e -> setMenuVisible(auctionMenu, true));
-        auctionMenu.setOnMouseExited(e  -> setMenuVisible(auctionMenu, false));
-    }
-
-    private void setMenuVisible(VBox menu, boolean visible) {
-        menu.setVisible(visible);
-        menu.setManaged(visible);
+    private void applyCircleClip(ImageView imageView) {
+        double r = imageView.getFitWidth() / 2;
+        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(r, r, r);
+        imageView.setClip(clip);
     }
 }

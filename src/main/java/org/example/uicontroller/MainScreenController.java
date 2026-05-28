@@ -5,13 +5,19 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import org.example.domain.user.User;
+import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +57,8 @@ public class MainScreenController {
     private String  currentLang      = "EN";
     private String  currentTheme     = "DARK";
     private VBox openMenu = null;
+    @FXML private ImageView navAvatarView;
+    @FXML private StackPane navAvatarPane;
 
 
 
@@ -116,6 +124,19 @@ public class MainScreenController {
                 })
         );
     }
+
+    @FXML
+    private void handleOpenProfile(ActionEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/profile.fxml"));
+        Parent root = loader.load();
+        ProfileController ctrl = loader.getController();
+        ctrl.setCurrentUser(AuctionClient.getInstance().getCurrentUser()); // truyền user hiện tại
+
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
     @FXML
     private void handleViewAllUpcoming() {
         currentGridType = "OPEN";
@@ -348,7 +369,26 @@ public class MainScreenController {
     public void setCurrentUser(User user) {
         this.currentUser = user;
         if (usernameLabel != null) {
-            usernameLabel.setText(user.getUsername() + " (" + user.getRole() + ")");
+            // Hiện full name nếu có, không thì dùng username
+            String displayName = (user.getFullName() != null && !user.getFullName().isEmpty())
+                    ? user.getFullName()
+                    : user.getUsername();
+            usernameLabel.setText(displayName + " (" + user.getRole() + ")");
+        }
+        // Hiện avatar nếu có
+        if (navAvatarView != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+            Image avatar = new Image(user.getAvatarUrl(), true);
+            navAvatarView.setImage(avatar);
+            // Clip tròn
+            double r = 13;
+            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(r, r, r);
+            navAvatarView.setClip(clip);
+            // Bo tròn StackPane
+            navAvatarPane.setStyle(
+                    "-fx-background-color: transparent;" +
+                            "-fx-background-radius: 999;" +
+                            "-fx-border-radius: 999;"
+            );
         }
     }
 
@@ -359,6 +399,11 @@ public class MainScreenController {
         if (addItemBtn != null && "SELLER".equals(role)) {
             addItemBtn.setVisible(true);
             addItemBtn.setManaged(true);
+        }
+        // Load đầy đủ User object để lấy avatar + full name
+        User user = ServiceFactory.getInstance().getUserService().findUser(username);
+        if (user != null) {
+            setCurrentUser(user); // gọi lại overload bên trên
         }
     }
     @FXML
