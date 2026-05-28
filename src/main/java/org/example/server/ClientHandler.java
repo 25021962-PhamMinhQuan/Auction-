@@ -141,7 +141,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         Auction a = coordinator.getAuction();
                         AuctionServer.broadCast("UPDATE|" + auctionId
                                 + "|" + a.getCurrentPrice()
-                                + "|" + currentUser.getUsername());
+                                + "|" + currentUser.getUsername()+ "|" + a.getItem().getEndTime());
                     } catch (Exception e) {
                         sendMessage("ERROR|" + e.getMessage());
                     }
@@ -175,7 +175,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                             coordinator.triggerAutoBid();
                             AuctionServer.broadCast("UPDATE|" + auctionId
                                     + "|" + a.getCurrentPrice()
-                                    + "|" + a.getHighestBidder().getUsername());
+                                    + "|" + currentUser.getUsername()
+                                    + "|" + a.getItem().getEndTime());
                         }
 
                         sendMessage("AUTOBID_OK|AutoBid đã được đăng ký");
