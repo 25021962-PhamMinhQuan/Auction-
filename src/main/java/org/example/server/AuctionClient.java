@@ -135,6 +135,9 @@ public class AuctionClient {
                 double newPrice = Double.parseDouble(parts[2]);
                 String bidder = parts[3];
                 Platform.runLater(() -> {
+                    //cập nhật màn hình bid
+                    if (activeBidController != null)
+                        activeBidController.updatePrice(newPrice, bidder);
                     MainScreenController ctrl = MainScreenController.getInstance();
                     if (ctrl != null) ctrl.updateAuctionPrice(auctionId, newPrice, bidder);
                 });

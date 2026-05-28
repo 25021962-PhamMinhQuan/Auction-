@@ -137,6 +137,11 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
 
                     auctionService.placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
+                    //broadcast cho tất cả mn
+                    Auction a = coordinator.getAuction();
+                    AuctionServer.broadCast("UPDATE|" + auctionId
+                            + "|" + a.getCurrentPrice()
+                            + "|" + currentUser.getUsername());
                 } catch (Exception e) {
                     sendMessage("ERROR|" + e.getMessage());
                 }
