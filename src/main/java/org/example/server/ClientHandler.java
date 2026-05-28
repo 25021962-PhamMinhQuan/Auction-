@@ -133,10 +133,10 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     int    auctionId = Integer.parseInt(parts[1]);
                     double amount    = Double.parseDouble(parts[2]);
 
-                    BiddingCoordinator coordinator = auctionService.getCoordinator(auctionId);
+                    BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
                     if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
 
-                    auctionService.placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
+                    getAuctionService().placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
                     //broadcast cho tất cả mn
                     Auction a = coordinator.getAuction();
                     AuctionServer.broadCast("UPDATE|" + auctionId
@@ -157,11 +157,11 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     double maxBid    = Double.parseDouble(parts[2]);
                     double increment = Double.parseDouble(parts[3]);
 
-                    BiddingCoordinator coordinator = auctionService.getCoordinator(auctionId);
+                    BiddingCoordinator coordinator = getAuctionService().getCoordinator(auctionId);
                     if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
 
                     AutoBid autoBid = new AutoBid((Bidder) currentUser, maxBid, increment);
-                    auctionService.registerAutoBid(coordinator.getAuction(), autoBid);
+                    getAuctionService().registerAutoBid(coordinator.getAuction(), autoBid);
                     coordinator.getNotifier().addObserver(this);
                     sendMessage("SUCCESS|AutoBid registered");
                 } catch (Exception e) {
@@ -236,7 +236,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     sendMessage("ERROR|Item chưa có lịch đấu giá");
                     return;
                 }
-                if (item.getEndTime().isBefore(java.time.LocalDateTime.now())) {
+                if (item.getEndTime().isBefore(AuctionService.now())) {
                     sendMessage("ERROR|Thời gian kết thúc đã qua");
                     return;
                 }
@@ -307,7 +307,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
             case "SEARCH_AUCTIONS": {
                 // "SEARCH_AUCTIONS|keyword"
                 String keyword = parts[1];
-                List<Auction> results = auctionService.searchByName(keyword);
+                List<Auction> results = getAuctionService().searchByName(keyword);
                 sendMessage("AUCTION_LIST|" + results.size());
                 for (Auction a : results) {
                     sendMessage("AUCTION_ITEM|"
@@ -326,7 +326,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
 
             case "SUGGEST_AUCTIONS": {
                 String keyword = parts.length > 1 ? parts[1] : "";
-                List<Auction> suggestions = auctionService.searchByName(keyword);
+                List<Auction> suggestions = getAuctionService().searchByName(keyword);
                 StringBuilder sb = new StringBuilder("SUGGEST_RESULT");
                 int max = Math.min(suggestions.size(), 8);
                 for (int i = 0; i < max; i++) {
@@ -338,7 +338,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
 
             case "LIST_BY_CATEGORY": {
                 String type = parts.length > 1 ? parts[1] : "";
-                List<Auction> results = auctionService.searchByType(type);
+                List<Auction> results = getAuctionService().searchByType(type);
                 sendMessage("AUCTION_LIST|" + results.size());
                 for (Auction a : results) {
                     sendMessage("AUCTION_ITEM|"
@@ -406,6 +406,6 @@ public class ClientHandler implements Runnable, AuctionObserver {
     }
 
     private Auction findbyId(int id) {
-        return auctionService.findbyId(id);
+        return getAuctionService().findbyId(id);
     }
 }

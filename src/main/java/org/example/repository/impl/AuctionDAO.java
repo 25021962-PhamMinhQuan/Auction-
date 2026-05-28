@@ -44,9 +44,10 @@ public class AuctionDAO implements AuctionRepository {
 
             pstmt.setDouble(1, auction.getCurrentPrice());
             if (auction.getHighestBidder() == null) {
-                throw new IllegalStateException("Cannot update auction without highest bidder");
+                pstmt.setNull(2, Types.VARCHAR);
+            } else {
+                pstmt.setString(2, auction.getHighestBidder().getId());
             }
-            pstmt.setString(2, auction.getHighestBidder().getId());
             pstmt.setString(3, status);
             pstmt.setInt(4, auction.getId());
 

@@ -16,6 +16,7 @@ import org.example.repository.ItemRepository;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -28,6 +29,7 @@ public class AuctionService {
     private final Map<Integer, BiddingCoordinator> coordinators = new ConcurrentHashMap<>();
     private final Map<Integer, ScheduledExecutorService> schedulers = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
+    private static final ZoneId AUCTION_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     public AuctionService(AuctionRepository auctionDAO,
                           BidRepository bidDAO,
@@ -39,6 +41,11 @@ public class AuctionService {
         this.autoBidDao = autoBidDAO;
         restoreSchedulers();
     }
+
+    public static LocalDateTime now() {
+        return LocalDateTime.now(AUCTION_ZONE);
+    }
+
     private void restoreSchedulers() {
         try {
             List<Auction> openAuctions    = auctionDAO.findByStatus("OPEN");
@@ -71,7 +78,7 @@ public class AuctionService {
         schedulers.put(auction.getId(), scheduler);
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime now = now();
                 if (auction.getStatus() == Auction.Status.OPEN) {
                     if (now.isBefore(auction.getItem().getStartTime())) return;
                     auction.start();
@@ -115,7 +122,7 @@ public class AuctionService {
 
         // Nếu item chưa có thời gian, tự động gán: bắt đầu = now, kết thúc = now + 30 phút
         if (auction.getItem().getStartTime() == null) {
-            auction.getItem().setStartTime(LocalDateTime.now());
+            auction.getItem().setStartTime(now());
         }
         if (auction.getItem().getEndTime() == null) {
             auction.getItem().setEndTime(auction.getItem().getStartTime().plusMinutes(30));
@@ -135,7 +142,7 @@ public class AuctionService {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime now = now();
 
                 // Chưa đến startTime → chưa bắt đầu, bỏ qua
                 if (auction.getStatus() == Auction.Status.OPEN) {
@@ -210,6 +217,13 @@ public class AuctionService {
         auctionDAO.update(auction, Auction.Status.FINISHED.name());
         autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
+        String winner = auction.getHighestBidder() != null
+                ? auction.getHighestBidder().getUsername()
+                : "";
+        org.example.server.AuctionServer.broadCast("FINISHED|"
+                + auction.getId() + "|"
+                + winner + "|"
+                + auction.getCurrentPrice());
     }
 
     public void cancelAuction(Auction auction, User requester){
