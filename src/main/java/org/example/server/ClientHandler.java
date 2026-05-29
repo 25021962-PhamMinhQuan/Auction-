@@ -137,11 +137,14 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         if (coordinator == null) { sendMessage("ERROR|Auction not found"); return; }
 
                         getAuctionService().placeBid(coordinator.getAuction(), (Bidder) currentUser, amount);
-                        //broadcast cho tất cả mn
+                        // Sau placeBid, autobid loop co the da chay -> lay highestBidder thuc su
                         Auction a = coordinator.getAuction();
+                        String highestName = a.getHighestBidder() != null
+                                ? a.getHighestBidder().getUsername()
+                                : currentUser.getUsername();
                         AuctionServer.broadCast("UPDATE|" + auctionId
                                 + "|" + a.getCurrentPrice()
-                                + "|" + currentUser.getUsername()+ "|" + a.getItem().getEndTime());
+                                + "|" + highestName + "|" + a.getItem().getEndTime());
                     } catch (Exception e) {
                         sendMessage("ERROR|" + e.getMessage());
                     }
