@@ -3,6 +3,7 @@ package org.example.domain.auction;
 import org.example.domain.user.Bidder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class BidTransaction {
     private Bidder bidder;
@@ -13,7 +14,7 @@ public class BidTransaction {
     public BidTransaction(Bidder bidder, double amount,BidType type) {
         this.bidder = bidder;
         this.amount = amount;
-        this.time = LocalDateTime.now();
+        this.time = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         this.type = type;
     }
 

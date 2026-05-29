@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,9 @@ public class ItemDAO implements ItemRepository {
         String imageUrl    = rs.getString("image_url");
         java.sql.Timestamp startTs = rs.getTimestamp("start_time");
         java.sql.Timestamp endTs   = rs.getTimestamp("end_time");
-        LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
-        LocalDateTime endTime   = endTs   != null ? endTs.toLocalDateTime()   : null;
+        ZoneId hcm = ZoneId.of("Asia/Ho_Chi_Minh");
+        LocalDateTime startTime = startTs != null ? startTs.toInstant().atZone(hcm).toLocalDateTime() : null;
+        LocalDateTime endTime   = endTs   != null ? endTs.toInstant().atZone(hcm).toLocalDateTime()   : null;
 
         return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime,imageUrl);
     }
@@ -42,8 +44,8 @@ public class ItemDAO implements ItemRepository {
             pstmt.setDouble(4,item.getStartPrice());
             pstmt.setString(5,item.getType());
             pstmt.setString(6,seller_id);
-            pstmt.setTimestamp(7, java.sql.Timestamp.valueOf(item.getStartTime()));
-            pstmt.setTimestamp(8, java.sql.Timestamp.valueOf(item.getEndTime()));
+            pstmt.setTimestamp(7, java.sql.Timestamp.from(item.getStartTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
+            pstmt.setTimestamp(8, java.sql.Timestamp.from(item.getEndTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
             pstmt.setString(9, item.getImageUrl());
             pstmt.executeUpdate();
         } catch (SQLException e) {

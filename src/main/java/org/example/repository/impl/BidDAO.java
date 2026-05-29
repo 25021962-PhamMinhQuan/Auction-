@@ -4,6 +4,8 @@ import org.example.domain.auction.BidTransaction;
 import org.example.repository.BidRepository;
 
 import java.sql.*;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +21,8 @@ public class BidDAO implements BidRepository {
             pstmt.setInt(1, auctionId);
             pstmt.setString(2, bids.getBidder().getId());
             pstmt.setDouble(3, bids.getAmount());
-            pstmt.setObject(4, bids.getTime());
+            pstmt.setObject(4, bids.getTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()
+                    .atZone(ZoneId.of("UTC")).toLocalDateTime());
             pstmt.setString(5, bids.getType().toString());
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -39,11 +42,17 @@ public class BidDAO implements BidRepository {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, auctionId);
             ResultSet rs = pstmt.executeQuery();
+            ZoneId hcm = ZoneId.of("Asia/Ho_Chi_Minh");
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             while (rs.next()) {
+                Timestamp ts = rs.getTimestamp("time");
+                String timeStr = ts != null
+                        ? ts.toInstant().atZone(hcm).toLocalDateTime().format(fmt)
+                        : "";
                 result.add(new String[]{
                         rs.getString("username"),
                         rs.getString("amount"),
-                        rs.getString("time")
+                        timeStr
                 });
             }
         } catch (SQLException e) {

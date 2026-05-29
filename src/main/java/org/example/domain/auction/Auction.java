@@ -46,7 +46,7 @@ public class Auction {
             if (status != Status.RUNNING) {
                 throw new IllegalStateException("Auction not running");
             }
-            if (LocalDateTime.now().isAfter(item.getEndTime())) {
+            if (LocalDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh")).isAfter(item.getEndTime())) {
                 throw new IllegalStateException("Auction ended");
             }
             if (amount <= item.getCurrentPrice() || amount < item.getCurrentPrice() + getMinIncrement()) {

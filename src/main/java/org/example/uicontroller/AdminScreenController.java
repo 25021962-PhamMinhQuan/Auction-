@@ -433,7 +433,7 @@ public class AdminScreenController {
     public void filterPendingItems() {
         List<Item> items = itemService.findAllItems().stream()
                 .filter(item -> item.getStartTime() != null
-                        && item.getStartTime().isAfter(java.time.LocalDateTime.now()))
+                        && item.getStartTime().isAfter(java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))))
                 .toList();
         itemTable.setItems(FXCollections.observableArrayList(items));
     }
@@ -443,8 +443,8 @@ public class AdminScreenController {
         List<Item> items = itemService.findAllItems().stream()
                 .filter(item -> item.getStartTime() != null
                         && item.getEndTime() != null
-                        && !item.getStartTime().isAfter(java.time.LocalDateTime.now())
-                        && item.getEndTime().isAfter(java.time.LocalDateTime.now()))
+                        && !item.getStartTime().isAfter(java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh")))
+                        && item.getEndTime().isAfter(java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))))
                 .toList();
         itemTable.setItems(FXCollections.observableArrayList(items));
     }

@@ -17,6 +17,7 @@ import org.example.util.ThemeManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -94,7 +95,7 @@ public class ItemCardController {
         try {
             LocalDateTime end = LocalDateTime.parse(endTimeStr);
             cardCountdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-                long sec = ChronoUnit.SECONDS.between(LocalDateTime.now(), end);
+                long sec = ChronoUnit.SECONDS.between(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")), end);
                 if (sec <= 0) {
                     timeopen.setText("Hết giờ");
                     cardCountdown.stop();

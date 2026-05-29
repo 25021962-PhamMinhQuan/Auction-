@@ -3,6 +3,7 @@ package org.example.util;
 import org.example.domain.user.Bidder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class AutoBid {
 
@@ -15,7 +16,7 @@ public class AutoBid {
         this.bidder = bidder;
         this.maxBid = maxBid;
         this.increment = increment;
-        this.time = LocalDateTime.now();
+        this.time = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
     }
     public LocalDateTime getTime() { return time; }
     public Bidder getBidder() {

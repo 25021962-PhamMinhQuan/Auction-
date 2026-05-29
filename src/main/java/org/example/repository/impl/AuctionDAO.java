@@ -6,6 +6,7 @@ import org.example.repository.AuctionRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,8 +206,9 @@ public class AuctionDAO implements AuctionRepository {
         Timestamp startTs = rs.getTimestamp("start_time");
         Timestamp endTs = rs.getTimestamp("end_time");
 
-        LocalDateTime startTime = startTs != null ? startTs.toLocalDateTime() : null;
-        LocalDateTime endTime = endTs != null ? endTs.toLocalDateTime() : null;
+        ZoneId hcm = ZoneId.of("Asia/Ho_Chi_Minh");
+        LocalDateTime startTime = startTs != null ? startTs.toInstant().atZone(hcm).toLocalDateTime() : null;
+        LocalDateTime endTime = endTs != null ? endTs.toInstant().atZone(hcm).toLocalDateTime() : null;
 
         Item item = ItemFactory.createItemFromDAO(
                 rs.getString("type"),
@@ -237,10 +239,6 @@ public class AuctionDAO implements AuctionRepository {
                 auction.markPaid();
             }
         }
-            return auction;
-        }
+        return auction;
     }
-
-
-
-
+}

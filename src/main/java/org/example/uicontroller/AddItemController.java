@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -115,7 +116,7 @@ public class AddItemController {
                             + String.format("%,.0f VND", price));
                     lInfo.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
                     HBox btnRow = new HBox(8);
-                    if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now())) {
+                    if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")))) {
                         // Đã lên lịch, chưa đến giờ → không cho start thủ công
                         Label scheduledLbl = new Label("⏳ Đã lên lịch: " + itemStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                         scheduledLbl.setStyle("-fx-text-fill: #fd7e14; -fx-font-weight: bold;");

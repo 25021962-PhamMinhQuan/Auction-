@@ -28,6 +28,8 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -260,7 +262,7 @@ public class ItemBidingUIController {
     private void refreshCountdown() {
         if (endTime == null) return;
 
-        long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime);
+        long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")), endTime);
 
         if (secondsLeft <= 0) {
             // ← SỬA: phân biệt readOnly hay không
