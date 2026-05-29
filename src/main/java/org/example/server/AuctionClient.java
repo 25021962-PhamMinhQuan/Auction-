@@ -174,7 +174,7 @@ public class AuctionClient {
                     }
                     // Fix: MainScreenController phải nằm ngoài if ở trên
                     MainScreenController ctrl = MainScreenController.getInstance();
-                    if (ctrl != null) ctrl.updateAuctionPrice(auctionId, newPrice, bidder);
+                    if (ctrl != null) ctrl.updateAuctionPrice(auctionId, newPrice, bidder,newEndTime);
                 });
                 break;
             }

@@ -560,10 +560,10 @@ public class MainScreenController {
         loadOngoing();
     }
 
-    public void updateAuctionPrice(int auctionId, double newPrice, String bidder) {
-        updateCardsInContainer(ongoingHbox, auctionId, newPrice, bidder);
+    public void updateAuctionPrice(int auctionId, double newPrice, String bidder, String newEndTime) {
+        updateCardsInContainer(ongoingHbox, auctionId, newPrice, bidder, newEndTime);
         if ("RUNNING".equals(currentGridType)) {
-            updateCardsInContainer(gridPane, auctionId, newPrice, bidder);
+            updateCardsInContainer(gridPane, auctionId, newPrice, bidder, newEndTime);
         }
     }
 
@@ -675,13 +675,16 @@ public class MainScreenController {
     }
 
     private void updateCardsInContainer(Pane container, int auctionId,
-                                        double newPrice, String bidder) {
+                                        double newPrice, String bidder,String newEndTime) {
         for (Node node : container.getChildren()) {
             Object ctrl = node.getProperties().get("controller");
             if (ctrl instanceof ItemCardController) {
                 ItemCardController card = (ItemCardController) ctrl;
                 if (card.getAuctionId() == auctionId) {
                     card.liveUpdatePrice(newPrice, bidder);
+                    if (newEndTime!=null){
+                        card.liveUpdateEndTime(newEndTime);
+                    }
                 }
             }
         }

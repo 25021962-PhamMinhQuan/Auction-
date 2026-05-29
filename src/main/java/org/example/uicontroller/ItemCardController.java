@@ -93,6 +93,11 @@ public class ItemCardController {
         pause.setOnFinished(e -> price.setStyle(""));
         pause.play();
     }
+    public void liveUpdateEndTime(String newEndTimeStr) {
+        this.endTime = newEndTimeStr;
+        if (cardCountdown != null) cardCountdown.stop();
+        startCardCountdown(newEndTimeStr);
+    }
     private void startCardCountdown(String endTimeStr) {
         try {
             LocalDateTime end = LocalDateTime.parse(endTimeStr);
@@ -101,7 +106,9 @@ public class ItemCardController {
                 if (sec <= 0) {
                     timeopen.setText(LanguageManager.get("itemcard.time_up"));
                     cardCountdown.stop();
+                    detailsbutton.setDisable(true);  // ← không cho bid khi hết giờ
                 } else {
+                    detailsbutton.setDisable(false); // ← bật lại nếu anti-snipe extend
                     long h = sec / 3600, m = (sec % 3600) / 60, s = sec % 60;
                     timeopen.setText(String.format(LanguageManager.get("itemcard.time_left"), h, m, s));
                 }
@@ -109,8 +116,7 @@ public class ItemCardController {
             cardCountdown.setCycleCount(Animation.INDEFINITE);
             cardCountdown.play();
         } catch (Exception ignored) {}
-    }
-    public int getAuctionId() { return auctionId; }
+    } int getAuctionId() { return auctionId; }
 
     @FXML
     private void handleDetail() throws IOException {
