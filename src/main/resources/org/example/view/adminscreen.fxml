@@ -80,7 +80,7 @@
                         <Button fx:id="navItems" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showItemManagement" styleClass="sidebar-btn" text="%admin.nav.items" />
                         <Button fx:id="navAuctions" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showAuctionManagement" styleClass="sidebar-btn" text="%admin.nav.auctions" />
                         <Button fx:id="navDeposits" maxWidth="1.7976931348623157E308"
-                                onAction="#showDepositManagement" styleClass="sidebar-btn" text="💰  Nạp Tiền"/>
+                                onAction="#showDepositManagement" styleClass="sidebar-btn" text="%admin.nav.deposits"/>
 
 
                         <Region VBox.vgrow="ALWAYS" />
@@ -282,40 +282,40 @@
 
                                     <HBox alignment="CENTER_LEFT" spacing="12">
                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-page-title" text="Quản Lý Nạp Tiền" />
-                                            <Label styleClass="admin-page-subtitle" text="Duyệt hoặc từ chối yêu cầu nạp tiền của người dùng" />
+                                            <Label styleClass="admin-page-title" text="%admin.deposits.title" />
+                                            <Label styleClass="admin-page-subtitle" text="%admin.deposits.subtitle" />
                                         </VBox>
-                                        <Button mnemonicParsing="false" onAction="#refreshDeposits" styleClass="button-secondary" text="↻  Làm mới" />
+                                        <Button mnemonicParsing="false" onAction="#refreshDeposits" styleClass="button-secondary" text="%common.refresh" />
                                     </HBox>
 
                                     <!-- Filter buttons -->
                                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
                                         <Button fx:id="depositFilterAll" mnemonicParsing="false" onAction="#filterAllDeposits"
-                                                styleClass="filter-btn, filter-btn-active" text="Tất cả" />
+                                                styleClass="filter-btn, filter-btn-active" text="%admin.filter.all" />
                                         <Button fx:id="depositFilterPending" mnemonicParsing="false" onAction="#filterPendingDeposits"
-                                                styleClass="filter-btn" text="⏳ Chờ duyệt" />
+                                                styleClass="filter-btn" text="%admin.filter.pending" />
                                         <Button fx:id="depositFilterApproved" mnemonicParsing="false" onAction="#filterApprovedDeposits"
-                                                styleClass="filter-btn" text="✅ Đã duyệt" />
+                                                styleClass="filter-btn" text="%admin.filter.approved" />
                                         <Button fx:id="depositFilterRejected" mnemonicParsing="false" onAction="#filterRejectedDeposits"
-                                                styleClass="filter-btn" text="❌ Từ chối" />
+                                                styleClass="filter-btn" text="%admin.filter.rejected" />
                                     </HBox>
 
                                     <TableView fx:id="depositTable" styleClass="admin-table">
                                         <columns>
-                                            <TableColumn fx:id="colDepositId"       prefWidth="55"  text="ID" />
-                                            <TableColumn fx:id="colDepositUser"     prefWidth="130" text="Người dùng" />
-                                            <TableColumn fx:id="colDepositAmount"   prefWidth="140" text="Số tiền" />
-                                            <TableColumn fx:id="colDepositNote"     prefWidth="180" text="Ghi chú" />
-                                            <TableColumn fx:id="colDepositStatus"   prefWidth="100" text="Trạng thái" />
-                                            <TableColumn fx:id="colDepositDate"     prefWidth="150" text="Thời gian" />
+                                            <TableColumn fx:id="colDepositId"       prefWidth="55"  text="%admin.col.id" />
+                                            <TableColumn fx:id="colDepositUser"     prefWidth="130" text="%admin.col.user" />
+                                            <TableColumn fx:id="colDepositAmount"   prefWidth="140" text="%admin.col.amount" />
+                                            <TableColumn fx:id="colDepositNote"     prefWidth="180" text="%admin.col.note" />
+                                            <TableColumn fx:id="colDepositStatus"   prefWidth="100" text="%admin.col.status" />
+                                            <TableColumn fx:id="colDepositDate"     prefWidth="150" text="%admin.col.time" />
                                         </columns>
                                     </TableView>
 
                                     <HBox spacing="12">
                                         <Button fx:id="btnApproveDeposit" mnemonicParsing="false" onAction="#handleApproveDeposit"
-                                                styleClass="btn-panel-primary" text="✅  Duyệt nạp tiền" />
+                                                styleClass="btn-panel-primary" text="%admin.deposit.approve" />
                                         <Button fx:id="btnRejectDeposit"  mnemonicParsing="false" onAction="#handleRejectDeposit"
-                                                styleClass="btn-warn" text="❌  Từ chối" />
+                                                styleClass="btn-warn" text="%admin.deposit.reject" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="depositActionInfo" styleClass="label-secondary" text="" />
                                     </HBox>

@@ -92,6 +92,14 @@ public class MainScreenController {
     @FXML private AnchorPane depositOverlay;
     @FXML private TextField  depositAmountField;
     @FXML private TextField  depositNoteField;
+    @FXML private Label depositTitleLabel;
+    @FXML private Label depositAmountLabel;
+    @FXML private Label depositNoteLabel;
+    @FXML private Label depositInfoLabel;
+    @FXML private Button depositCancelBtn;
+    @FXML private Button depositSubmitBtn;
+    @FXML private Label balanceTitleLabel;
+    @FXML private Button depositBtn;
 
 
 
@@ -407,6 +415,16 @@ public class MainScreenController {
 
         if (auctionUpcomingBtn != null) auctionUpcomingBtn.setText(LanguageManager.get("main.auction.upcoming"));
         if (auctionOngoingBtn != null) auctionOngoingBtn.setText(LanguageManager.get("main.auction.ongoing"));
+        if (depositTitleLabel != null) depositTitleLabel.setText(LanguageManager.get("deposit.title"));
+        if (depositAmountLabel != null) depositAmountLabel.setText(LanguageManager.get("deposit.amount"));
+        if (depositAmountField != null) depositAmountField.setPromptText(LanguageManager.get("deposit.amount.placeholder"));
+        if (depositNoteLabel != null) depositNoteLabel.setText(LanguageManager.get("deposit.note"));
+        if (depositNoteField != null) depositNoteField.setPromptText(LanguageManager.get("deposit.note.placeholder"));
+        if (depositInfoLabel != null) depositInfoLabel.setText(LanguageManager.get("deposit.info"));
+        if (depositCancelBtn != null) depositCancelBtn.setText(LanguageManager.get("common.cancel"));
+        if (depositSubmitBtn != null) depositSubmitBtn.setText(LanguageManager.get("deposit.submit"));
+        if (balanceTitleLabel != null) balanceTitleLabel.setText(LanguageManager.get("main.panel.balance"));
+        if (depositBtn != null) depositBtn.setText(LanguageManager.get("deposit.open"));
     }
     private void refreshVisibleCardsLanguage() {
         refreshCardsInContainer(upcomingHbox);
@@ -734,7 +752,7 @@ public class MainScreenController {
         try { amount = Double.parseDouble(amountText); }
         catch (NumberFormatException e) {
             new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION,
-                    "Vui lòng nhập số tiền hợp lệ").showAndWait(); return;
+                    LanguageManager.get("deposit.invalid_amount")).showAndWait(); return;
         }
         if (currentUser == null) return;
         String result = depositService.requestDeposit(currentUser.getId(), currentUser.getUsername(), amount, note);
