@@ -14,6 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.example.domain.user.User;
+import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
 import org.example.util.ThemeManager;
 
@@ -120,20 +122,18 @@ public class LoginController implements Initializable {
             // Callback sau khi login xong
             client.setLoginCallback((success, message) ->
                     Platform.runLater(() -> {
-
                         loginBtn.setDisable(false);
 
                         if (success) {
                             AuctionClient client2 = AuctionClient.getInstance();
-                            openMainScreen(stage, client2.getCurrentUsername(), client2.getCurrentRole());
-
+                            openScreenByRole(stage, client2.getCurrentUsername(), client2.getCurrentRole());
                         } else {
                             warning.setText(message);
                         }
                     })
             );
 
-            // Gửi request login
+            // Gửi request login đúng 1 lần
             client.login(username, password);
 
         } catch (IOException ex) {
@@ -142,7 +142,45 @@ public class LoginController implements Initializable {
             ex.printStackTrace();
         }
     }
+    private void openScreenByRole(Stage stage, String username, String role) {
+        if (User.UserRole.ADMIN.name().equals(role)) {
+            openAdminScreen(stage, username);
+        } else {
+            openMainScreen(stage, username, role);
+        }
+    }
 
+    private void openAdminScreen(Stage stage, String username) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/adminscreen.fxml"));
+            Parent root = loader.load();
+
+            AdminScreenController controller = loader.getController();
+
+            User adminUser = AuctionClient.getInstance().getCurrentUser();
+            if (adminUser == null && username != null) {
+                adminUser = ServiceFactory.getInstance()
+                        .getUserService()
+                        .findUser(username);
+            }
+
+            controller.setAdminUser(adminUser);
+
+            stage.setWidth(1200);
+            stage.setHeight(700);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(600);
+
+            Scene scene = new Scene(root);
+            ThemeManager.applyTheme(scene);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            warning.setText("Không thể mở màn hình quản trị.");
+        }
+    }
     private void openMainScreen(Stage stage, String username, String role) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/mainscreen.fxml"));
