@@ -22,12 +22,17 @@ public class UserDAO implements UserRepository {
         String email = rs.getString("email");
         String phone = rs.getString("phone");
         String avatarUrl = rs.getString("avatar_url");
+        double balance;
+        try { balance = rs.getDouble("balance"); } catch (SQLException e) { balance = 1_000_000_000.0; }
 
-        return switch (User.UserRole.valueOf(role)) {
+        User user = switch (User.UserRole.valueOf(role)) {
             case ADMIN -> new Admin(id, username, password, fullName, email, phone, avatarUrl);
             case SELLER -> new Seller(id, username, password, fullName, email, phone, avatarUrl);
             case BIDDER -> new Bidder(id, username, password, fullName, email, phone, avatarUrl);
         };
+
+        user.setBalance(balance);
+        return user;
     }
 
     @Override
@@ -44,6 +49,15 @@ public class UserDAO implements UserRepository {
             System.out.println(e);
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void updateBalance(String userId, double newBalance) {
+        String sql = "UPDATE account SET balance=? WHERE id=?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, newBalance); stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
     @Override

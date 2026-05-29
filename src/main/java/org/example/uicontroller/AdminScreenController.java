@@ -25,10 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import org.example.domain.user.DepositRequest;
+import org.example.service.DepositService;
 
 public class AdminScreenController {
     private final UserService userService = ServiceFactory.getInstance().getUserService();
+    private final DepositService depositService = ServiceFactory.getInstance().getDepositService();
     private final ItemService itemService = ServiceFactory.getInstance().getItemService();
     private final AuctionService auctionService = ServiceFactory.getInstance().getAuctionService();
     // ── Topbar ──
@@ -146,6 +148,17 @@ public class AdminScreenController {
     private Label confirmMessage;
     @FXML
     private Button confirmOkBtn;
+
+    @FXML private Button navDeposits;
+    @FXML private VBox   sectionDeposits;
+    @FXML private TableView<DepositRequest>          depositTable;
+    @FXML private TableColumn<DepositRequest, String> colDepositId, colDepositUser,
+            colDepositAmount, colDepositNote,
+            colDepositStatus, colDepositDate;
+    @FXML private Label depositActionInfo;
+    private List<DepositRequest> currentDepositList;
+
+
     private static final DateTimeFormatter DATE_TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final NumberFormat VND_FORMAT =
@@ -204,6 +217,16 @@ public class AdminScreenController {
                 new SimpleStringProperty(formatMoney(data.getValue().getCurrentPrice())));
         colAuctionStatus.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getStatus().name()));
+
+        colDepositId.setCellValueFactory(d -> new SimpleStringProperty(String.valueOf(d.getValue().getId())));
+        colDepositUser.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getUsername()));
+        colDepositAmount.setCellValueFactory(d -> new SimpleStringProperty(formatMoney(d.getValue().getAmount())));
+        colDepositNote.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNote() != null ? d.getValue().getNote() : "—"));
+        colDepositStatus.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getStatus().name()));
+        colDepositDate.setCellValueFactory(d -> {
+            java.time.LocalDateTime dt = d.getValue().getCreatedAt();
+            return new SimpleStringProperty(dt != null ? dt.format(DATE_TIME_FMT) : "—");
+        });
     }
 
     private void setupSearchFields() {
@@ -258,7 +281,7 @@ public class AdminScreenController {
      * Ẩn tất cả section, hiện section được chọn
      */
     private void switchSection(VBox target) {
-        for (VBox s : new VBox[]{sectionDashboard, sectionUsers, sectionItems, sectionAuctions}) {
+        for (VBox s : new VBox[]{sectionDashboard, sectionUsers, sectionItems, sectionAuctions, sectionDeposits}) {
             s.setVisible(false);
             s.setManaged(false);
         }
@@ -270,7 +293,7 @@ public class AdminScreenController {
      * Đặt active style cho nút sidebar được chọn
      */
     private void setActiveNav(Button active) {
-        for (Button b : new Button[]{navDashboard, navUsers, navItems, navAuctions}) {
+        for (Button b : new Button[]{navDashboard, navUsers, navItems, navAuctions, navDeposits}) {
             b.getStyleClass().removeAll("sidebar-btn-active");
             if (!b.getStyleClass().contains("sidebar-btn"))
                 b.getStyleClass().add("sidebar-btn");
@@ -701,6 +724,98 @@ public class AdminScreenController {
         });
     }
 
+    @FXML
+    public void showDepositManagement() {
+        switchSection(sectionDeposits);
+        setActiveNav(navDeposits);
+        loadDeposits();
+    }
+
+    private void loadDeposits() {
+        currentDepositList = depositService.getAllRequests();
+        depositTable.setItems(FXCollections.observableArrayList(currentDepositList));
+    }
+
+    @FXML
+    public void refreshDeposits() {
+        loadDeposits();
+    }
+
+    @FXML
+    public void filterAllDeposits() {
+        currentDepositList = depositService.getAllRequests();
+        depositTable.setItems(FXCollections.observableArrayList(currentDepositList));
+    }
+
+    @FXML
+    public void filterPendingDeposits() {
+        currentDepositList = depositService.getPendingRequests();
+        depositTable.setItems(FXCollections.observableArrayList(currentDepositList));
+    }
+
+    @FXML
+    public void filterApprovedDeposits() {
+        currentDepositList = depositService.getAllRequests().stream()
+                .filter(r -> r.getStatus() == org.example.domain.user.DepositRequest.Status.APPROVED)
+                .toList();
+        depositTable.setItems(FXCollections.observableArrayList(currentDepositList));
+    }
+
+    @FXML
+    public void filterRejectedDeposits() {
+        currentDepositList = depositService.getAllRequests().stream()
+                .filter(r -> r.getStatus() == org.example.domain.user.DepositRequest.Status.REJECTED)
+                .toList();
+        depositTable.setItems(FXCollections.observableArrayList(currentDepositList));
+    }
+
+    @FXML
+    public void handleApproveDeposit() {
+        DepositRequest selected = depositTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showInfo("Chưa chọn yêu cầu", "Vui lòng chọn một yêu cầu nạp tiền.");
+            return;
+        }
+        if (selected.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
+            showInfo("Không hợp lệ", "Chỉ có thể duyệt yêu cầu đang chờ xử lý.");
+            return;
+        }
+        java.text.NumberFormat fmt = java.text.NumberFormat.getInstance(new java.util.Locale("vi","VN"));
+        showConfirm(
+                "Duyệt nạp tiền",
+                "Nạp " + fmt.format((long) selected.getAmount()) + " ₫ cho tài khoản \"" + selected.getUsername() + "\"?",
+                () -> {
+                    depositService.approve(selected.getId());
+                    loadDeposits();
+                    if (depositActionInfo != null)
+                        depositActionInfo.setText("✅ Đã duyệt #" + selected.getId());
+                }
+        );
+    }
+
+    @FXML
+    public void handleRejectDeposit() {
+        DepositRequest selected = depositTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showInfo("Chưa chọn yêu cầu", "Vui lòng chọn một yêu cầu nạp tiền.");
+            return;
+        }
+        if (selected.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
+            showInfo("Không hợp lệ", "Chỉ có thể từ chối yêu cầu đang chờ xử lý.");
+            return;
+        }
+        showConfirm(
+                "Từ chối yêu cầu",
+                "Từ chối yêu cầu nạp tiền của \"" + selected.getUsername() + "\"?",
+                () -> {
+                    depositService.reject(selected.getId());
+                    loadDeposits();
+                    if (depositActionInfo != null)
+                        depositActionInfo.setText("❌ Đã từ chối #" + selected.getId());
+                }
+        );
+    }
 
 }
+
 

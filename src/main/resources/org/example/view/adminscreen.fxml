@@ -79,6 +79,9 @@
                         <Button fx:id="navUsers" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showUserManagement" styleClass="sidebar-btn" text="%admin.nav.accounts" />
                         <Button fx:id="navItems" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showItemManagement" styleClass="sidebar-btn" text="%admin.nav.items" />
                         <Button fx:id="navAuctions" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showAuctionManagement" styleClass="sidebar-btn" text="%admin.nav.auctions" />
+                        <Button fx:id="navDeposits" maxWidth="1.7976931348623157E308"
+                                onAction="#showDepositManagement" styleClass="sidebar-btn" text="💰  Nạp Tiền"/>
+
 
                         <Region VBox.vgrow="ALWAYS" />
 
@@ -269,6 +272,52 @@
                                         <Button fx:id="btnViewAuction" mnemonicParsing="false" onAction="#handleViewAuction" styleClass="button-secondary" text="%admin.btn.view_detail" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Button fx:id="btnDeleteAuction" mnemonicParsing="false" onAction="#handleDeleteAuction" styleClass="btn-danger" text="%admin.auction.delete" />
+                                    </HBox>
+                                </VBox>
+
+                                <VBox fx:id="sectionDeposits" managed="false" spacing="20" styleClass="admin-content-section" visible="false">
+                                    <padding>
+                                        <Insets bottom="28" left="28" right="28" top="28" />
+                                    </padding>
+
+                                    <HBox alignment="CENTER_LEFT" spacing="12">
+                                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                            <Label styleClass="admin-page-title" text="Quản Lý Nạp Tiền" />
+                                            <Label styleClass="admin-page-subtitle" text="Duyệt hoặc từ chối yêu cầu nạp tiền của người dùng" />
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#refreshDeposits" styleClass="button-secondary" text="↻  Làm mới" />
+                                    </HBox>
+
+                                    <!-- Filter buttons -->
+                                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
+                                        <Button fx:id="depositFilterAll" mnemonicParsing="false" onAction="#filterAllDeposits"
+                                                styleClass="filter-btn, filter-btn-active" text="Tất cả" />
+                                        <Button fx:id="depositFilterPending" mnemonicParsing="false" onAction="#filterPendingDeposits"
+                                                styleClass="filter-btn" text="⏳ Chờ duyệt" />
+                                        <Button fx:id="depositFilterApproved" mnemonicParsing="false" onAction="#filterApprovedDeposits"
+                                                styleClass="filter-btn" text="✅ Đã duyệt" />
+                                        <Button fx:id="depositFilterRejected" mnemonicParsing="false" onAction="#filterRejectedDeposits"
+                                                styleClass="filter-btn" text="❌ Từ chối" />
+                                    </HBox>
+
+                                    <TableView fx:id="depositTable" styleClass="admin-table">
+                                        <columns>
+                                            <TableColumn fx:id="colDepositId"       prefWidth="55"  text="ID" />
+                                            <TableColumn fx:id="colDepositUser"     prefWidth="130" text="Người dùng" />
+                                            <TableColumn fx:id="colDepositAmount"   prefWidth="140" text="Số tiền" />
+                                            <TableColumn fx:id="colDepositNote"     prefWidth="180" text="Ghi chú" />
+                                            <TableColumn fx:id="colDepositStatus"   prefWidth="100" text="Trạng thái" />
+                                            <TableColumn fx:id="colDepositDate"     prefWidth="150" text="Thời gian" />
+                                        </columns>
+                                    </TableView>
+
+                                    <HBox spacing="12">
+                                        <Button fx:id="btnApproveDeposit" mnemonicParsing="false" onAction="#handleApproveDeposit"
+                                                styleClass="btn-panel-primary" text="✅  Duyệt nạp tiền" />
+                                        <Button fx:id="btnRejectDeposit"  mnemonicParsing="false" onAction="#handleRejectDeposit"
+                                                styleClass="btn-warn" text="❌  Từ chối" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="depositActionInfo" styleClass="label-secondary" text="" />
                                     </HBox>
                                 </VBox>
 

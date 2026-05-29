@@ -18,12 +18,16 @@ public abstract class User extends Entity {
     protected String email;
     protected String phone;
     protected String avatarUrl;
+    protected double balance;
+
 
     public User(String username, String password, String role) {
         super(IDGenerator.generatorUID());
         this.username = username;
         this.password = password;
         this.role = role;
+        this.balance = 1_000_000_000.0;
+
     }
 
     public User(String id, String username, String password, String role) {
@@ -31,6 +35,8 @@ public abstract class User extends Entity {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.balance = 1_000_000_000.0;
+
     }
 
     public User(String id, String username, String password, String role,
@@ -43,8 +49,17 @@ public abstract class User extends Entity {
         this.email     = email;
         this.phone     = phone;
         this.avatarUrl = avatarUrl;
+        this.balance = 1_000_000_000.0;
+
     }
 
+    public User(String id, String username, String password, String role,
+                String fullName, String email, String phone, String avatarUrl, double balance) {
+        super(id);
+        this.username = username; this.password = password; this.role = role;
+        this.fullName = fullName; this.email = email; this.phone = phone;
+        this.avatarUrl = avatarUrl; this.balance = balance;
+    }
 
     public abstract User cloneWithNewPassword(User user, String newPassword);
 
@@ -70,5 +85,8 @@ public abstract class User extends Entity {
     public void setEmail(String email)         { this.email = email; }
     public void setPhone(String phone)         { this.phone = phone; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+    public double getBalance()             { return balance; }
+    public void setBalance(double balance) { this.balance = balance; }
+
 }
 

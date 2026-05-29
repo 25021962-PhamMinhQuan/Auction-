@@ -1469,3 +1469,122 @@
 .default-color0.chart-bar:hover    { -fx-bar-fill: #f59e0b; }
 .chart-legend                      { -fx-background-color: transparent; }
 .chart-legend-item                 { -fx-text-fill: #9ca3af; }
+
+/* ═══════════════════════════════════════════════
+   BALANCE & DEPOSIT — Panel styles
+═══════════════════════════════════════════════ */
+
+/* Balance card inside the right-side panel */
+.panel-balance-card {
+    -fx-background-color: #1a2b1a;
+    -fx-background-radius: 12;
+    -fx-border-color: #2d5a2d;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+}
+
+.panel-balance-icon {
+    -fx-font-size: 18px;
+}
+
+.panel-balance-title {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+    -fx-font-family: "Inter";
+}
+
+.panel-balance-amount {
+    -fx-text-fill: #4ade80;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Inter";
+}
+
+/* Deposit request button */
+.btn-deposit {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 8 14 8 14;
+}
+.btn-deposit:hover {
+    -fx-background-color: #15803d;
+}
+
+/* ── Deposit Dialog ── */
+.deposit-dialog {
+    -fx-background-color: #111827;
+    -fx-background-radius: 16;
+    -fx-border-color: #374151;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 40, 0.35, 0, 10);
+}
+
+.deposit-dialog-title {
+    -fx-text-fill: #f9fafb;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Inter";
+}
+
+.deposit-field-label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+    -fx-font-family: "Inter";
+}
+
+.deposit-input {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #f9fafb;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-border-color: #374151;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+    -fx-font-family: "Inter";
+}
+.deposit-input:focused {
+    -fx-border-color: #16a34a;
+}
+
+.deposit-info-text {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 11.5px;
+    -fx-font-family: "Inter";
+    -fx-background-color: #1f2937;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+}
+
+.btn-cancel {
+    -fx-background-color: #374151;
+    -fx-text-fill: #d1d5db;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 8 0 8 0;
+}
+.btn-cancel:hover {
+    -fx-background-color: #4b5563;
+}
+
+.btn-deposit-submit {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 8 0 8 0;
+}
+.btn-deposit-submit:hover {
+    -fx-background-color: #15803d;
+}

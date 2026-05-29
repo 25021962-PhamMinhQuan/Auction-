@@ -12,4 +12,6 @@ public interface UserRepository {
     void updatePassword(String userId, String hashedPassword);
     List<User> findAll();
     void delete(String id);
+    void updateBalance(String userId, double newBalance);
+
 }

@@ -294,6 +294,17 @@
                      <Region HBox.hgrow="ALWAYS" />
                   </HBox>
 
+                  <VBox styleClass="panel-balance-card" spacing="4">
+                     <VBox.margin><Insets left="12" right="12" bottom="6" /></VBox.margin>
+                     <padding><Insets top="14" bottom="14" left="16" right="16" /></padding>
+                     <HBox spacing="8"><Label text="💰" /><Label styleClass="panel-balance-title" text="Số dư tài khoản"/></HBox>
+                     <Label fx:id="balanceLabel" styleClass="panel-balance-amount" text="1.000.000.000 ₫"/>
+                     <Button fx:id="depositBtn" maxWidth="1.7976931348623157E308" styleClass="btn-deposit"
+                             text="＋  Yêu cầu nạp tiền" onAction="#handleOpenDeposit">
+                        <VBox.margin><Insets top="8"/></VBox.margin>
+                     </Button>
+                  </VBox>
+
                   <!-- Navigation Buttons -->
                   <VBox spacing="2" styleClass="panel-nav-group">
                      <padding>
@@ -402,6 +413,45 @@
                styleClass="suggest-dropdown"
                AnchorPane.topAnchor="62" AnchorPane.rightAnchor="54" />
 
+      </AnchorPane>
+
+      <!-- DEPOSIT REQUEST DIALOG -->
+      <AnchorPane fx:id="depositOverlay" managed="false" visible="false" styleClass="overlay-backdrop"
+                  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                  AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+         <VBox alignment="CENTER" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+               AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <VBox styleClass="deposit-dialog" spacing="16" maxWidth="360">
+               <padding><Insets top="28" bottom="28" left="28" right="28" /></padding>
+               <!-- Header -->
+               <HBox alignment="CENTER_LEFT">
+                  <Label styleClass="deposit-dialog-title" text="💳  Yêu cầu nạp tiền" HBox.hgrow="ALWAYS"/>
+                  <Button mnemonicParsing="false" styleClass="panel-close-btn" text="✕" onAction="#handleCloseDeposit"/>
+               </HBox>
+               <!-- Amount -->
+               <VBox spacing="6">
+                  <Label styleClass="deposit-field-label" text="Số tiền muốn nạp (VND)" />
+                  <TextField fx:id="depositAmountField" styleClass="deposit-input"
+                             promptText="VD: 10000000" />
+               </VBox>
+               <!-- Note -->
+               <VBox spacing="6">
+                  <Label styleClass="deposit-field-label" text="Ghi chú (tuỳ chọn)" />
+                  <TextField fx:id="depositNoteField" styleClass="deposit-input"
+                             promptText="VD: Chuyển khoản MB Bank..." />
+               </VBox>
+               <!-- Info -->
+               <Label styleClass="deposit-info-text"
+                      text="⚠  Yêu cầu sẽ được gửi đến Admin xem xét và xử lý." wrapText="true"/>
+               <!-- Buttons -->
+               <HBox spacing="10">
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                          styleClass="btn-cancel" text="Huỷ" onAction="#handleCloseDeposit" HBox.hgrow="ALWAYS"/>
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                          styleClass="btn-deposit-submit" text="Gửi yêu cầu" onAction="#handleSubmitDeposit" HBox.hgrow="ALWAYS"/>
+               </HBox>
+            </VBox>
+         </VBox>
       </AnchorPane>
 
    </children>

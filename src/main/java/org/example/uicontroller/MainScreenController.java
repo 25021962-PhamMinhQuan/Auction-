@@ -88,6 +88,10 @@ public class MainScreenController {
     @FXML private Label       languageSettingLabel;
     @FXML private Label       themeSettingLabel;
     @FXML private Button      logOutBtn;
+    @FXML private Label      balanceLabel;
+    @FXML private AnchorPane depositOverlay;
+    @FXML private TextField  depositAmountField;
+    @FXML private TextField  depositNoteField;
 
 
 
@@ -97,6 +101,7 @@ public class MainScreenController {
     private static final int PREVIEW_COUNT = 7;
     private final ScheduledExecutorService debounceExecutor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> pendingSuggest;
+    private final org.example.service.DepositService depositService = org.example.factory.ServiceFactory.getInstance().getDepositService();
 
     // FIX: không tự new() — instance được set từ ngoài vào bằng setInstance()
     // Nếu tự new() thì @FXML fields sẽ null hết vì JavaFX không inject vào
@@ -477,6 +482,7 @@ public class MainScreenController {
                         ? user.getFullName() : user.getUsername());
             if (panelRoleLabel != null)
                 panelRoleLabel.setText(user.getRole() != null ? user.getRole() : "BIDDER");
+            updateBalanceLabel(user.getBalance());
 
 // Hiện avatar ở cả navbar lẫn panel
             if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
@@ -699,5 +705,40 @@ public class MainScreenController {
         if (panelAvatarIcon != null) panelAvatarIcon.setVisible(false);
         double r = panelAvatarView.getFitWidth() / 2.0;
         panelAvatarView.setClip(new javafx.scene.shape.Circle(r, r, r));
+    }
+
+    public void updateBalanceLabel(double balance) {
+        if (balanceLabel != null) {
+            java.text.NumberFormat fmt = java.text.NumberFormat.getInstance(new java.util.Locale("vi","VN"));
+            balanceLabel.setText(fmt.format((long) balance) + " ₫");
+        }
+    }
+
+    @FXML private void handleOpenDeposit() {
+        if (depositOverlay != null) {
+            depositAmountField.clear(); depositNoteField.clear();
+            depositOverlay.setVisible(true); depositOverlay.setManaged(true);
+        }
+    }
+
+    @FXML private void handleCloseDeposit() {
+        if (depositOverlay != null) {
+            depositOverlay.setVisible(false); depositOverlay.setManaged(false);
+        }
+    }
+
+    @FXML private void handleSubmitDeposit() {
+        String amountText = depositAmountField.getText().trim().replace(",","").replace(".","");
+        String note = depositNoteField.getText().trim();
+        double amount;
+        try { amount = Double.parseDouble(amountText); }
+        catch (NumberFormatException e) {
+            new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION,
+                    "Vui lòng nhập số tiền hợp lệ").showAndWait(); return;
+        }
+        if (currentUser == null) return;
+        String result = depositService.requestDeposit(currentUser.getId(), currentUser.getUsername(), amount, note);
+        handleCloseDeposit();
+        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION, result).showAndWait();
     }
 }
