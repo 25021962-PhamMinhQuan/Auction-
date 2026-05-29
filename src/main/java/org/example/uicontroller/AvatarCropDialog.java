@@ -149,14 +149,14 @@ public class AvatarCropDialog {
         });
 
         // ── Nút Xác nhận / Huỷ ───────────────────────────────────────────────
-        Button confirmBtn = new Button("✔  Xác nhận");
+        Button confirmBtn = new Button(LanguageManager.get("avatar.crop.confirm"));
         confirmBtn.setStyle(
                 "-fx-background-color: #fbbf24; -fx-text-fill: #111827;" +
                         "-fx-font-weight: bold; -fx-font-size: 13px;" +
                         "-fx-background-radius: 8; -fx-padding: 8 20;"
         );
 
-        Button cancelBtn = new Button("✕  Huỷ");
+        Button cancelBtn = new Button(LanguageManager.get("avatar.crop.cancel"));
         cancelBtn.setStyle(
                 "-fx-background-color: #374151; -fx-text-fill: #e5e7eb;" +
                         "-fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 8 20;"

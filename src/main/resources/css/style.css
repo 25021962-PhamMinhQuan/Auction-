@@ -7,15 +7,6 @@
     -fx-background-position: center;
 }
 
-@font-face {
-    font-family: 'Inter';
-    src: url('fonts/Inter_18pt-Regular.ttf');
-}
-@font-face {
-    font-family: 'Inter';
-    src: url('fonts/Inter_18pt-Bold.ttf');
-    font-weight: bold;
-}
 /* login */
 .login_bg {
     -fx-background-image: url("/background.jpg");

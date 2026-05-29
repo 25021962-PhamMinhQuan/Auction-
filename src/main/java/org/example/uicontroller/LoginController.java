@@ -79,7 +79,7 @@ public class LoginController implements Initializable {
 
     @FXML
     public void gotoRegister(ActionEvent e) throws IOException {
-        Parent root  = FXMLLoader.load(getClass().getResource("/org/example/view/register.fxml"));
+        Parent root  = FXMLLoader.load(getClass().getResource("/org/example/view/register.fxml"),LanguageManager.getBundle());
         Stage  stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         ThemeManager.applyTheme(scene);
@@ -184,7 +184,7 @@ public class LoginController implements Initializable {
     }
     private void openMainScreen(Stage stage, String username, String role) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/mainscreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/mainscreen.fxml"),LanguageManager.getBundle());
             Parent root = loader.load();
 
             MainScreenController controller = loader.getController();

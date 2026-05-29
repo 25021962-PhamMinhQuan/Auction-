@@ -16,7 +16,7 @@
 
 <StackPane fx:id="spane" prefHeight="500.0" prefWidth="700.0" styleClass="login_bg" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.LoginController">
    <children>
-      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-radius: 15;" styleClass="login_card" StackPane.alignment="CENTER_LEFT">
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-radius: 15;" styleClass="login_card" StackPane.alignment="CENTER">
          <children>
             <ImageView fitHeight="117.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <VBox.margin>
@@ -86,7 +86,7 @@
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" prefWidth="53.0" text="%register.hpl" textFill="#fbbf24">
+                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" text="%register.hpl" textFill="#fbbf24">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

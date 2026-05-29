@@ -18,19 +18,19 @@
 
 <StackPane fx:id="spane" prefHeight="500.0" prefWidth="700.0" styleClass="login_bg" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.RegisterController">
    <children>
-      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-radius: 15;" styleClass="login_card" StackPane.alignment="CENTER_LEFT">
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="345.0" style="-fx-background-radius: 15;" styleClass="login_card" StackPane.alignment="CENTER">
          <children>
             <ImageView fitHeight="113.0" fitWidth="196.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../Auction_App.png" />
                </image>
                <VBox.margin>
-                  <Insets left="50.0" top="80.0" />
+                  <Insets top="80.0" />
                </VBox.margin>
             </ImageView>
             <Label styleClass="title" text="%register.title">
                <VBox.margin>
-                  <Insets left="50.0" top="10.0" />
+                  <Insets top="10.0" />
                </VBox.margin>
                <font>
                   <Font name="Montserrat Bold" size="29.0" />
@@ -38,7 +38,7 @@
             </Label>
             <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="%login.username">
                <VBox.margin>
-                  <Insets left="50.0" />
+                  <Insets />
                </VBox.margin>
             </Label>
             <TextField fx:id="usernameTextField" maxWidth="-Infinity" prefHeight="26.0" prefWidth="130.0" styleClass="input_field">
@@ -46,12 +46,12 @@
                   <Insets />
                </opaqueInsets>
                <VBox.margin>
-                  <Insets left="50.0" />
+                  <Insets />
                </VBox.margin>
             </TextField>
             <Label prefHeight="25.0" styleClass="label-secondary" text="%login.password">
                <VBox.margin>
-                  <Insets left="50.0" />
+                  <Insets />
                </VBox.margin>
             </Label>
             <HBox prefHeight="26.0" prefWidth="162.0">
@@ -62,7 +62,7 @@
                         <PasswordField fx:id="passwordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field" />
                      </children>
                      <HBox.margin>
-                        <Insets left="50.0" />
+                        <Insets />
                      </HBox.margin>
                   </StackPane>
                   <ToggleButton fx:id="showPasswordbtn" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleTogglePass" prefHeight="24.0" prefWidth="24.0" styleClass="icon-button" />
@@ -73,7 +73,7 @@
             </HBox>
             <Label prefHeight="25.0" styleClass="label-secondary" text="%register.confirm_password">
                <VBox.margin>
-                  <Insets left="50.0" />
+                  <Insets />
                </VBox.margin>
             </Label>
             <HBox prefHeight="26.0" prefWidth="162.0">
@@ -84,7 +84,7 @@
                         <PasswordField fx:id="cfpasswordfield" maxWidth="-Infinity" prefHeight="25.0" prefWidth="130.0" styleClass="input_field" />
                      </children>
                      <HBox.margin>
-                        <Insets left="50.0" />
+                        <Insets />
                      </HBox.margin>
                   </StackPane>
                   <ToggleButton fx:id="showcfPasswordbtn" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleToggleConfirm" prefHeight="24.0" prefWidth="24.0" styleClass="icon-button" />
@@ -97,7 +97,7 @@
             </Label>
             <HBox spacing="10.0">
                <VBox.margin>
-                  <Insets left="50.0" top="10.0" />
+                  <Insets top="10.0" />
                </VBox.margin>
                <children>
                   <RadioButton fx:id="sellerRadio" mnemonicParsing="false" text="Seller">
@@ -115,17 +115,13 @@
                <children>
                   <Button fx:id="registerBtn" defaultButton="true" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" styleClass="button-login" text="%register.btn">
                      <HBox.margin>
-                        <Insets left="50.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Label prefHeight="26.0" prefWidth="150.0" styleClass="label-secondary" text="%register.have_account">
-                     <HBox.margin>
                         <Insets />
                      </HBox.margin>
-                  </Label>
-                  <Hyperlink fx:id="backLoginbtn" onAction="#gotoLogin" prefHeight="26.0" prefWidth="38.0" text="%login.hpl" textFill="#fbbf24">
+                  </Button>
+                  <Label prefHeight="26.0" styleClass="label-secondary" text="%register.have_account" />
+                  <Hyperlink fx:id="backLoginbtn" onAction="#gotoLogin" prefHeight="26.0" text="%login.hpl" textFill="#fbbf24">
                      <HBox.margin>
-                        <Insets left="-10.0" />
+                        <Insets />
                      </HBox.margin>
                   </Hyperlink>
                </children>
@@ -134,6 +130,9 @@
                </VBox.margin>
             </HBox>
          </children>
+         <padding>
+            <Insets left="50.0" />
+         </padding>
       </VBox>
    </children>
 </StackPane>

@@ -78,7 +78,7 @@ public class RegisterController implements Initializable {
     @FXML
     public void gotoLogin() throws IOException {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/register.fxml"),
+                getClass().getResource("/org/example/view/login.fxml"),
                 LanguageManager.getBundle()
         );
         Parent root = loader.load();
