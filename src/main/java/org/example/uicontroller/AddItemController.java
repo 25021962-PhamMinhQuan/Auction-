@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import org.example.util.LanguageManager;
 
 public class AddItemController {
 
@@ -89,7 +90,7 @@ public class AddItemController {
             Platform.runLater(() -> {
                 myItemsBox.getChildren().clear();
                 if (items.isEmpty()) {
-                    myItemsBox.getChildren().add(new Label("Chưa có item nào."));
+                    myItemsBox.getChildren().add(new Label(LanguageManager.get("additem.no_items")));
                     return;
                 }
                 for (String[] p : items) {
@@ -112,22 +113,22 @@ public class AddItemController {
 
                     Label lName  = new Label(name);
                     lName.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
-                    Label lInfo  = new Label(type + "  |  Giá khởi điểm: "
+                    Label lInfo  = new Label(type + LanguageManager.get("additem.info.prefix")
                             + String.format("%,.0f VND", price));
                     lInfo.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
                     HBox btnRow = new HBox(8);
                     if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")))) {
                         // Đã lên lịch, chưa đến giờ → không cho start thủ công
-                        Label scheduledLbl = new Label("⏳ Đã lên lịch: " + itemStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                        Label scheduledLbl = new Label(LanguageManager.get("additem.scheduled") + itemStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                         scheduledLbl.setStyle("-fx-text-fill: #fd7e14; -fx-font-weight: bold;");
                         btnRow.getChildren().add(scheduledLbl);
                     } else {
-                        Button startBtn = new Button("▶ Bắt đầu đấu giá");
+                        Button startBtn = new Button(LanguageManager.get("additem.auction.start"));
                         startBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; "
                                 + "-fx-font-weight: bold; -fx-cursor: hand;");
                         startBtn.setOnAction(e -> handleStartAuction(id, name, startBtn));
                     }
-                    Button deleteBtn = new Button("🗑 Xóa");
+                    Button deleteBtn = new Button(LanguageManager.get("additem.error.delete").replace(":", ""));
                     deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; "
                             + "-fx-font-weight: bold; -fx-cursor: hand;");
                     deleteBtn.setOnAction(e -> handleDeleteItem(id, name, card));
@@ -143,7 +144,7 @@ public class AddItemController {
     @FXML
     private void handleChooseImage() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Chọn ảnh sản phẩm");
+        chooser.setTitle(LanguageManager.get("additem.image.choose"));
         chooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
 
@@ -153,7 +154,7 @@ public class AddItemController {
 
         // Preview ngay lập tức
         imagePreview.setImage(new javafx.scene.image.Image(file.toURI().toString()));
-        imagePathLabel.setText("Đang upload...");
+        imagePathLabel.setText(LanguageManager.get("additem.image.uploading"));
         submitBtn.setDisable(true);
 
         // Upload lên Supabase trên background thread
@@ -163,10 +164,10 @@ public class AddItemController {
                 submitBtn.setDisable(false);
                 if (url != null) {
                     selectedImagePath = url;   // ← lưu URL thay vì đường dẫn local
-                    imagePathLabel.setText("✓ Upload thành công");
+                    imagePathLabel.setText(LanguageManager.get("additem.image.success"));
                 } else {
                     selectedImagePath = null;
-                    imagePathLabel.setText("✗ Upload thất bại");
+                    imagePathLabel.setText(LanguageManager.get("additem.image.failed"));
                 }
             });
         });
@@ -185,7 +186,7 @@ public class AddItemController {
 
         // Validate text fields
         if (name.isEmpty() || priceStr.isEmpty()) {
-            showStatus("Vui lòng điền đầy đủ thông tin.", false);
+            showStatus(LanguageManager.get("additem.fill_all"), false);
             return;
         }
 
@@ -196,7 +197,7 @@ public class AddItemController {
                 || endDatePicker.getValue() == null
                 || endHourCombo.getValue() == null
                 || endMinuteCombo.getValue() == null) {
-            showStatus("Vui lòng chọn đầy đủ ngày và giờ.", false);
+            showStatus(LanguageManager.get("additem.fill_datetime"), false);
             return;
         }
 
@@ -205,7 +206,7 @@ public class AddItemController {
             price = Double.parseDouble(priceStr);
             if (price <= 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            showStatus("Giá khởi điểm phải là số dương.", false);
+            showStatus(LanguageManager.get("additem.error.price"), false);
             return;
         }
 
@@ -222,12 +223,12 @@ public class AddItemController {
                         Integer.parseInt(endMinuteCombo.getValue())));
 
         if (!end.isAfter(start)) {
-            showStatus("Thời gian kết thúc phải sau thời gian bắt đầu.", false);
+            showStatus(LanguageManager.get("additem.end_after_start"), false);
             return;
         }
 
         submitBtn.setDisable(true);
-        showStatus("Đang gửi...", true);
+        showStatus(LanguageManager.get("additem.sending"), true);
 
         DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -238,11 +239,11 @@ public class AddItemController {
                 (success, msg) -> {
                     submitBtn.setDisable(false);
                     if (success) {
-                        showStatus("✓ Đã thêm item \"" + name + "\" thành công!", true);
+                        showStatus(String.format(LanguageManager.get("additem.auction.started"), name), true);
                         clearForm();
                         loadMyItems();
                     } else {
-                        showStatus("Lỗi: " + msg, false);
+                        showStatus(LanguageManager.get("additem.error.prefix") + " " + msg, false);
                     }
                 }
         );
@@ -252,25 +253,25 @@ public class AddItemController {
 
      private void handleStartAuction(String itemId, String itemName, Button btn) {
         btn.setDisable(true);
-        btn.setText("Đang xử lý...");
+        btn.setText(LanguageManager.get("additem.processing"));
 
         AuctionClient.getInstance().startAuction(itemId, (success, msg) -> {
             if (success) {
-                btn.setText("✓ Đang đấu giá");
+                btn.setText(LanguageManager.get("additem.auction.active"));
                 btn.setStyle("-fx-background-color: #6c757d; -fx-text-fill: white;");
-                showStatus("Phiên đấu giá cho \"" + itemName + "\" đã bắt đầu!", true);
+                showStatus(String.format(LanguageManager.get("additem.auction.started"), itemName), true);
             } else {
                 btn.setDisable(false);
-                btn.setText("▶ Bắt đầu đấu giá");
-                showStatus("Lỗi: " + msg, false);
+                btn.setText(LanguageManager.get("additem.auction.start"));
+                showStatus(LanguageManager.get("additem.error.prefix") + " " + msg, false);
             }
         });
     }
     private void handleDeleteItem(String itemId, String itemName, VBox card) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận xóa");
-        confirm.setHeaderText("Xóa item \"" + itemName + "\"?");
-        confirm.setContentText("Hành động này không thể hoàn tác.");
+        confirm.setTitle(LanguageManager.get("additem.confirm.delete.title"));
+        confirm.setHeaderText(String.format(LanguageManager.get("additem.confirm.delete.header"), itemName));
+        confirm.setContentText(LanguageManager.get("additem.confirm.delete.content"));
 
         confirm.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
@@ -279,12 +280,12 @@ public class AddItemController {
                         Platform.runLater(() -> {
                             myItemsBox.getChildren().remove(card);
                             if (myItemsBox.getChildren().isEmpty()) {
-                                myItemsBox.getChildren().add(new Label("Chưa có item nào."));
+                                myItemsBox.getChildren().add(new Label(LanguageManager.get("additem.no_items")));
                             }
                             showStatus("✓ Đã xóa item \"" + itemName + "\".", true);
                         });
                     } else {
-                        showStatus("Lỗi khi xóa: " + msg, false);
+                        showStatus(LanguageManager.get("additem.error.delete") + " " + msg, false);
                     }
                 });
             }
@@ -296,7 +297,7 @@ public class AddItemController {
     @FXML
     private void handleBack(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/mainscreen.fxml"));
+                getClass().getResource("/org/example/view/mainscreen.fxml"),LanguageManager.getBundle());
         Parent root = loader.load();
         MainScreenController controller = loader.getController();
         MainScreenController.setInstance(controller);
@@ -335,7 +336,7 @@ public class AddItemController {
         typeCombo.getSelectionModel().selectFirst();
         selectedImagePath = null;
         imagePreview.setImage(null);
-        imagePathLabel.setText("Chưa chọn ảnh");
+        imagePathLabel.setText(LanguageManager.get("additem.image.none"));
     }
 
 }

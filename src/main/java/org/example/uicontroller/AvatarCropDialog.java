@@ -17,6 +17,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.example.util.LanguageManager;
 
 import java.util.function.Consumer;
 
@@ -165,11 +166,11 @@ public class AvatarCropDialog {
         btnRow.setAlignment(Pos.CENTER_RIGHT);
 
         // ── Hint text ─────────────────────────────────────────────────────────
-        Label hint = new Label("Kéo để di chuyển  •  Cuộn chuột hoặc kéo thanh để phóng to/thu nhỏ");
+        Label hint = new Label(LanguageManager.get("avatar.crop.hint"));
         hint.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 11px;");
 
         // ── Layout ────────────────────────────────────────────────────────────
-        Label title = new Label("Chỉnh sửa ảnh đại diện");
+        Label title = new Label(LanguageManager.get("avatar.crop.title"));
         title.setStyle("-fx-text-fill: #f9fafb; -fx-font-size: 16px; -fx-font-weight: bold;");
 
         VBox root = new VBox(16, title, cropPane, hint, zoomSlider, btnRow);

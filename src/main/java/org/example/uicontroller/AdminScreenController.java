@@ -16,6 +16,7 @@ import org.example.server.AuctionClient;
 import org.example.service.AuctionService;
 import org.example.service.ItemService;
 import org.example.service.UserService;
+import org.example.util.LanguageManager;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.text.NumberFormat;
@@ -298,7 +299,7 @@ public class AdminScreenController {
         statTodayBids.setText("0");
 
         recentActivityList.getChildren().clear();
-        recentActivityList.getChildren().add(new Label("Dashboard đã được cập nhật."));
+        recentActivityList.getChildren().add(new Label(LanguageManager.get("admin.dashboard.updated")));
     }
 
     // ═══════════════════════════════════════════
@@ -339,39 +340,39 @@ public class AdminScreenController {
     @FXML
     public void filterLockedUsers() {
         userTable.setItems(FXCollections.observableArrayList());
-        showInfo("Thông báo", "Chức năng lọc tài khoản bị khóa cần cột status/is_locked trong bảng account.");
+        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.filter_note"));
     }
 
     @FXML
     public void handleBanUser() {
         User selectedUser = userTable.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
-            showInfo("Chưa chọn tài khoản", "Vui lòng chọn một tài khoản trước.");
+            showInfo(LanguageManager.get("admin.account.none_selected"), LanguageManager.get("admin.account.none_selected.msg"));
             return;
         }
 
-        showInfo("Thông báo", "Chức năng khóa tài khoản cần bổ sung cột status/is_locked trong bảng account.");
+        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.lock_note"));
     }
 
     @FXML
     public void handleUnbanUser() {
         User selectedUser = userTable.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
-            showInfo("Chưa chọn tài khoản", "Vui lòng chọn một tài khoản trước.");
+            showInfo(LanguageManager.get("admin.account.none_selected"), LanguageManager.get("admin.account.none_selected.msg"));
             return;
         }
 
-        showInfo("Thông báo", "Chức năng mở khóa tài khoản cần bổ sung cột status/is_locked trong bảng account.");
+        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.unlock_note"));
     }
 
     @FXML
     public void handleViewUserDetail() {
         User selectedUser = userTable.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
-            showInfo("Chưa chọn tài khoản", "Vui lòng chọn một tài khoản trước.");
+            showInfo(LanguageManager.get("admin.account.none_selected"), LanguageManager.get("admin.account.none_selected.msg"));
             return;
         }
-        showInfo("Chi tiết tài khoản",
+        showInfo(LanguageManager.get("admin.account.detail"),
                 "ID: " + selectedUser.getId()
                         + "\nUsername: " + selectedUser.getUsername()
                         + "\nRole: " + selectedUser.getRole()
@@ -383,11 +384,11 @@ public class AdminScreenController {
     public void handleDeleteUser() {
         User selectedUser = userTable.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
-            showInfo("Chưa chọn tài khoản", "Vui lòng chọn một tài khoản trước.");
+            showInfo(LanguageManager.get("admin.account.none_selected"), LanguageManager.get("admin.account.none_selected.msg"));
             return;
         }
-        showConfirm("Xóa tài khoản",
-                "Hành động này không thể hoàn tác.\nTài khoản \"" + selectedUser.getUsername() + "\" sẽ bị xóa.",
+        showConfirm(LanguageManager.get("admin.account.delete.title"),
+                String.format(LanguageManager.get("admin.account.delete.msg"), selectedUser.getUsername()),
                 () -> {
                     userService.deleteUser(selectedUser.getId());
                     loadUsers();
@@ -453,21 +454,21 @@ public class AdminScreenController {
     public void handleApproveItem() {
         Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            showInfo("Chưa chọn sản phẩm", "Vui lòng chọn một sản phẩm trước.");
+            showInfo(LanguageManager.get("admin.item.none_selected"), LanguageManager.get("admin.item.none_selected.msg"));
             return;
         }
 
-        showInfo("Thông báo", "Sản phẩm hiện đang được tạo trực tiếp bởi Seller, chưa có trạng thái PENDING để duyệt.");
+        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.item.approve_note"));
     }
 
     @FXML
     public void handleViewItemDetail() {
         Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            showInfo("Chưa chọn sản phẩm", "Vui lòng chọn một sản phẩm trước.");
+            showInfo(LanguageManager.get("admin.item.none_selected"), LanguageManager.get("admin.item.none_selected.msg"));
             return;
         }
-        showInfo("Chi tiết sản phẩm",
+        showInfo(LanguageManager.get("admin.item.detail"),
                 "ID: " + selectedItem.getId()
                         + "\nTên: " + selectedItem.getName()
                         + "\nLoại: " + selectedItem.getType()
@@ -481,12 +482,12 @@ public class AdminScreenController {
     public void handleDeleteItem() {
         Item selectedItem = itemTable.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            showInfo("Chưa chọn sản phẩm", "Vui lòng chọn một sản phẩm trước.");
+            showInfo(LanguageManager.get("admin.item.none_selected"), LanguageManager.get("admin.item.none_selected.msg"));
             return;
         }
 
-        showConfirm("Xóa sản phẩm",
-                "Sản phẩm \"" + selectedItem.getName() + "\" sẽ bị xóa khỏi hệ thống. Tiếp tục?",
+        showConfirm(LanguageManager.get("admin.item.delete.title"),
+                String.format(LanguageManager.get("admin.item.delete.msg"), selectedItem.getName()),
                 () -> {
                     itemService.deleteItem(selectedItem.getId(), currentAdmin);
                     loadItems();
@@ -526,12 +527,12 @@ public class AdminScreenController {
     public void handleStopAuction() {
         Auction selectedAuction = auctionTable.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
-            showInfo("Chưa chọn phiên đấu giá", "Vui lòng chọn một phiên đấu giá trước.");
+            showInfo(LanguageManager.get("admin.auction.none_selected"), LanguageManager.get("admin.auction.none_selected.msg"));
             return;
         }
 
-        showConfirm("Dừng phiên đấu giá",
-                "Phiên đấu giá #" + selectedAuction.getId() + " sẽ bị dừng ngay lập tức. Tiếp tục?",
+        showConfirm(LanguageManager.get("admin.auction.stop.title"),
+                String.format(LanguageManager.get("admin.auction.stop.msg"), selectedAuction.getId()),
                 () -> {
                     auctionService.stopAuction(selectedAuction.getId(), currentAdmin);
                     loadAuctions();
@@ -543,11 +544,11 @@ public class AdminScreenController {
     public void handleViewAuction() {
         Auction selectedAuction = auctionTable.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
-            showInfo("Chưa chọn phiên đấu giá", "Vui lòng chọn một phiên đấu giá trước.");
+            showInfo(LanguageManager.get("admin.auction.none_selected"), LanguageManager.get("admin.auction.none_selected.msg"));
             return;
         }
 
-        showInfo("Chi tiết phiên đấu giá",
+        showInfo(LanguageManager.get("admin.auction.detail"),
                 "ID: " + selectedAuction.getId()
                         + "\nSản phẩm: " + selectedAuction.getItem().getName()
                         + "\nTrạng thái: " + selectedAuction.getStatus()
@@ -560,12 +561,12 @@ public class AdminScreenController {
     public void handleDeleteAuction() {
         Auction selectedAuction = auctionTable.getSelectionModel().getSelectedItem();
         if (selectedAuction == null) {
-            showInfo("Chưa chọn phiên đấu giá", "Vui lòng chọn một phiên đấu giá trước.");
+            showInfo(LanguageManager.get("admin.auction.none_selected"), LanguageManager.get("admin.auction.none_selected.msg"));
             return;
         }
 
-        showConfirm("Xóa phiên đấu giá",
-                "Phiên đấu giá #" + selectedAuction.getId() + " sẽ bị xóa. Tiếp tục?",
+        showConfirm(LanguageManager.get("admin.auction.delete.title"),
+                String.format(LanguageManager.get("admin.auction.delete.msg"), selectedAuction.getId()),
                 () -> {
                     auctionService.deleteAuction(selectedAuction.getId());
                     loadAuctions();
@@ -624,14 +625,14 @@ public class AdminScreenController {
 
     @FXML
     public void handleLogout() {
-        showConfirm("Đăng xuất",
-                "Bạn có chắc muốn đăng xuất khỏi trang quản trị?",
+        showConfirm(LanguageManager.get("admin.logout.confirm").replace("?",""),
+                LanguageManager.get("admin.logout.confirm"),
                 () -> {
                     try {
                         AuctionClient.getInstance().disconnect();
 
                         FXMLLoader loader = new FXMLLoader(
-                                getClass().getResource("/org/example/view/login.fxml"));
+                                getClass().getResource("/org/example/view/login.fxml"),LanguageManager.getBundle());
                         Parent root = loader.load();
 
                         Stage stage = (Stage) adminUsernameLabel.getScene().getWindow();
@@ -640,7 +641,7 @@ public class AdminScreenController {
                         stage.show();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        showInfo("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
+                        showInfo(LanguageManager.get("common.error"), LanguageManager.get("admin.logout.error"));
                     }
                 });
     }

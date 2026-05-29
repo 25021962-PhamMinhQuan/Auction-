@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import org.example.server.AuctionClient;
+import org.example.util.LanguageManager;
 import org.example.util.ThemeManager;
 
 import java.io.IOException;
@@ -76,7 +77,11 @@ public class RegisterController implements Initializable {
 
     @FXML
     public void gotoLogin() throws IOException {
-        Parent root  = FXMLLoader.load(getClass().getResource("/org/example/view/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/org/example/view/register.fxml"),
+                LanguageManager.getBundle()
+        );
+        Parent root = loader.load();
         Stage  stage = (Stage) spane.getScene().getWindow();
         Scene scene = new Scene(root);
         ThemeManager.applyTheme(scene);
@@ -95,9 +100,9 @@ public class RegisterController implements Initializable {
 
         // FIX 1: UI-level check — KHÔNG disable button ở đây, chỉ hiện lỗi và return
         // Button chỉ bị disable khi thực sự gửi lên server
-        if (username.isEmpty()) { warning.setText("Username is required"); return; }
-        if (password.isEmpty()) { warning.setText("Password is required"); return; }
-        if (!password.equals(confirm)) { warning.setText("Mật khẩu xác nhận không khớp"); return; }
+        if (username.isEmpty()) { warning.setText(LanguageManager.get("login.no_username")); return; }
+        if (password.isEmpty()) { warning.setText(LanguageManager.get("login.no_password")); return; }
+        if (!password.equals(confirm)) { warning.setText(LanguageManager.get("register.password_mismatch")); return; }
 
         // Từ đây mới disable button vì sắp gửi request
         warning.setText("");
@@ -110,7 +115,7 @@ public class RegisterController implements Initializable {
         try {
             AuctionClient.getInstance().connect(stage);
         } catch (IOException ex) {
-            warning.setText("Không thể kết nối server. Vui lòng thử lại.");
+            warning.setText(LanguageManager.get("register.error.no_server"));
             registerBtn.setDisable(false); // bật lại nếu connect thất bại
             return;
         }
@@ -133,9 +138,9 @@ public class RegisterController implements Initializable {
 
     private void showSuccessAlert() {
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Thông báo");
-        alert.setHeaderText("Đăng ký thành công!");
-        alert.setContentText("Bạn có thể đăng nhập ngay bây giờ.");
+        alert.setTitle(LanguageManager.get("register.notice"));
+        alert.setHeaderText(LanguageManager.get("register.success.header"));
+        alert.setContentText(LanguageManager.get("register.success.content"));
         alert.showAndWait();
     }
 }

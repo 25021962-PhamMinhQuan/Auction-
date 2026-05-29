@@ -28,7 +28,7 @@
                   <Insets left="50.0" top="80.0" />
                </VBox.margin>
             </ImageView>
-            <Label styleClass="title" text="Register">
+            <Label styleClass="title" text="%register.title">
                <VBox.margin>
                   <Insets left="50.0" top="10.0" />
                </VBox.margin>
@@ -36,7 +36,7 @@
                   <Font name="Montserrat Bold" size="29.0" />
                </font>
             </Label>
-            <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="Username">
+            <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="%login.username">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -49,7 +49,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </TextField>
-            <Label prefHeight="25.0" styleClass="label-secondary" text="Password">
+            <Label prefHeight="25.0" styleClass="label-secondary" text="%login.password">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -71,7 +71,7 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <Label prefHeight="25.0" styleClass="label-secondary" text="Confirm password">
+            <Label prefHeight="25.0" styleClass="label-secondary" text="%register.confirm_password">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -113,17 +113,17 @@
             </HBox>
             <HBox prefHeight="26.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <Button fx:id="registerBtn" defaultButton="true" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" styleClass="button-login" text="Register">
+                  <Button fx:id="registerBtn" defaultButton="true" mnemonicParsing="false" onAction="#handleRegister" prefHeight="26.0" prefWidth="75.0" styleClass="button-login" text="%register.btn">
                      <HBox.margin>
                         <Insets left="50.0" />
                      </HBox.margin>
                   </Button>
-                  <Label prefHeight="26.0" prefWidth="150.0" styleClass="label-secondary" text="Already have an account?">
+                  <Label prefHeight="26.0" prefWidth="150.0" styleClass="label-secondary" text="%register.have_account">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <Hyperlink fx:id="backLoginbtn" onAction="#gotoLogin" prefHeight="26.0" prefWidth="38.0" text="Login" textFill="#fbbf24">
+                  <Hyperlink fx:id="backLoginbtn" onAction="#gotoLogin" prefHeight="26.0" prefWidth="38.0" text="%login.hpl" textFill="#fbbf24">
                      <HBox.margin>
                         <Insets left="-10.0" />
                      </HBox.margin>

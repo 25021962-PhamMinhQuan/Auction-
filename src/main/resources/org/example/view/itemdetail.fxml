@@ -24,7 +24,7 @@
 
                 <!-- Back button -->
                 <HBox>
-                    <Button mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="← Back" />
+                    <Button mnemonicParsing="false" onAction="#handleBack" styleClass="button-login" text="%common.back" />
                 </HBox>
 
                 <!-- TOP: image + info -->
@@ -43,28 +43,28 @@
                         <VBox fx:id="bidSection" spacing="15">
 
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <TextField fx:id="bidInput" maxWidth="175.0" promptText="Nhập số tiền đặt bid" styleClass="input_field" HBox.hgrow="ALWAYS" />
-                                <Button fx:id="placeBidButton" onAction="#handleBid" styleClass="button-login" text="Place Bid" />
+                                <TextField fx:id="bidInput" maxWidth="175.0" promptText="%itembid.bid.placeholder" styleClass="input_field" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="placeBidButton" onAction="#handleBid" styleClass="button-login" text="%itembid.place_bid" />
                             </HBox>
 
                             <VBox spacing="8" styleClass="section-box">
-                                <Label styleClass="section-title" text="Auto Bid" />
-                                <TextField fx:id="maxBidInput" maxWidth="250.0" promptText="Max price" styleClass="input_field" />
-                                <TextField fx:id="incrementInput" maxWidth="250.0" promptText="Increment per bid" styleClass="input_field" />
-                                <Button onAction="#handleAutoBid" styleClass="button-login" text="Start Auto Bid" />
+                                <Label styleClass="section-title" text="%itembid.auto_bid" />
+                                <TextField fx:id="maxBidInput" maxWidth="250.0" promptText="%itembid.max_price" styleClass="input_field" />
+                                <TextField fx:id="incrementInput" maxWidth="250.0" promptText="%itembid.increment" styleClass="input_field" />
+                                <Button onAction="#handleAutoBid" styleClass="button-login" text="%itembid.start_auto_bid" />
                             </VBox>
 
                         </VBox>
 
-                        <Button onAction="#handleShowHistory" styleClass="button-login" text="Show Bid History" />
+                        <Button onAction="#handleShowHistory" styleClass="button-login" text="%itembid.show_history" />
 
                     </VBox>
                 </HBox>
 
                 <!-- Description -->
                 <VBox maxWidth="1000" spacing="10">
-                    <Label styleClass="section-title" text="Description" />
-                    <Label fx:id="description" styleClass="item-time" text="des" wrapText="true" />
+                    <Label styleClass="section-title" text="%itembid.description" />
+                    <Label fx:id="description" styleClass="item-time" wrapText="true" />
                 </VBox>
 
                 <!-- ===== CHARTS SECTION ===== -->
@@ -72,21 +72,21 @@
 
                     <!-- Line Chart: Biến động giá -->
                     <VBox spacing="10" styleClass="chart-section">
-                        <Label styleClass="section-title" text="📈 Biến Động Giá Theo Thời Gian" />
+                        <Label styleClass="section-title" text="%itemdetail.price_chart" />
                         <LineChart fx:id="priceLineChart" prefHeight="280.0" animated="false" legendVisible="false"
                                    style="-fx-background-color: transparent;">
-                            <xAxis><CategoryAxis fx:id="lineXAxis" label="Thời gian" /></xAxis>
-                            <yAxis><NumberAxis fx:id="lineYAxis" label="Giá (VND)" /></yAxis>
+                            <xAxis><CategoryAxis fx:id="lineXAxis" label="%itemdetail.time_axis" /></xAxis>
+                            <yAxis><NumberAxis fx:id="lineYAxis" label="%itemdetail.price_axis" /></yAxis>
                         </LineChart>
                     </VBox>
 
                     <!-- Bar Chart: Số lượt bid theo giờ -->
                     <VBox spacing="10" styleClass="chart-section">
-                        <Label styleClass="section-title" text="🕐 Lượt Bid Theo Giờ Trong Ngày" />
+                        <Label styleClass="section-title" text="%itemdetail.bid_by_hour_chart" />
                         <BarChart fx:id="bidBarChart" prefHeight="260.0" animated="false" legendVisible="false"
                                   style="-fx-background-color: transparent;">
-                            <xAxis><CategoryAxis label="Giờ" /></xAxis>
-                            <yAxis><NumberAxis label="Số lượt bid" /></yAxis>
+                            <xAxis><CategoryAxis label="%itemdetail.hour_axis" /></xAxis>
+                            <yAxis><NumberAxis label="%itemdetail.bid_count_axis" /></yAxis>
                         </BarChart>
                     </VBox>
 
@@ -107,7 +107,7 @@
         <spacing>12</spacing>
 
         <HBox alignment="CENTER_LEFT">
-            <Label styleClass="section-title" text="Bid History" HBox.hgrow="ALWAYS" />
+            <Label styleClass="section-title" text="%itembid.history" HBox.hgrow="ALWAYS" />
         </HBox>
 
         <ScrollPane fitToWidth="true" prefHeight="380" VBox.vgrow="ALWAYS"
@@ -119,7 +119,7 @@
             </content>
         </ScrollPane>
 
-        <Button onAction="#handleCloseHistory" styleClass="button-login" text="Close" />
+        <Button onAction="#handleCloseHistory" styleClass="button-login" text="%common.close" />
     </VBox>
 
 </StackPane>

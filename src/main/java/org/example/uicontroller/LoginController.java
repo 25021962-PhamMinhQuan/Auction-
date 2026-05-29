@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import org.example.domain.user.User;
 import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
+import org.example.util.LanguageManager;
 import org.example.util.ThemeManager;
 
 import java.io.IOException;
@@ -98,12 +99,12 @@ public class LoginController implements Initializable {
 
         // Validation
         if (username.isEmpty()) {
-            warning.setText("Username is required");
+            warning.setText(LanguageManager.get("login.no_username"));
             return;
         }
 
         if (password.isEmpty()) {
-            warning.setText("Password is required");
+            warning.setText(LanguageManager.get("login.no_password"));
             return;
         }
 
@@ -138,7 +139,7 @@ public class LoginController implements Initializable {
 
         } catch (IOException ex) {
             loginBtn.setDisable(false);
-            warning.setText("Không thể kết nối server. Vui lòng thử lại.");
+            warning.setText(LanguageManager.get("login.error.no_server"));
             ex.printStackTrace();
         }
     }
@@ -152,7 +153,7 @@ public class LoginController implements Initializable {
 
     private void openAdminScreen(Stage stage, String username) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/adminscreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/adminscreen.fxml"),LanguageManager.getBundle());
             Parent root = loader.load();
 
             AdminScreenController controller = loader.getController();
@@ -178,7 +179,7 @@ public class LoginController implements Initializable {
             stage.show();
         } catch (Exception ex) {
             ex.printStackTrace();
-            warning.setText("Không thể mở màn hình quản trị.");
+            warning.setText(LanguageManager.get("login.error.no_admin"));
         }
     }
     private void openMainScreen(Stage stage, String username, String role) {
@@ -201,7 +202,7 @@ public class LoginController implements Initializable {
             stage.show();
         } catch (Exception  ex) {
             ex.printStackTrace();
-            warning.setText("Không thể mở màn hình chính.");
+            warning.setText(LanguageManager.get("login.error.no_main"));
         }
     }
 }

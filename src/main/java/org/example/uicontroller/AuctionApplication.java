@@ -6,18 +6,19 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import org.example.util.ThemeManager;
+import org.example.util.LanguageManager;
 
 import java.io.IOException;
 
 public class AuctionApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginController.class.getResource("/org/example/view/login.fxml"),LanguageManager.getBundle());
         Scene scene = new Scene(fxmlLoader.load());
         ThemeManager.applyTheme(scene);
         Image icon = new Image("/icon.png");
         stage.getIcons().add(icon);
-        stage.setTitle("Auction App");
+        stage.setTitle(LanguageManager.get("app.title"));
 
 
         stage.setWidth(1200);

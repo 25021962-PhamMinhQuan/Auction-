@@ -26,7 +26,7 @@
                   <Image url="@../../../Auction_App.png" />
                </image>
             </ImageView>
-            <Label styleClass="title" text="Login">
+            <Label styleClass="title" text="%login.title">
                <VBox.margin>
                   <Insets left="50.0" top="15.0" />
                </VBox.margin>
@@ -34,7 +34,7 @@
                   <Font size="29.0" />
                </font>
             </Label>
-            <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="Username">
+            <Label prefHeight="25.0" prefWidth="90.0" styleClass="label-secondary" text="%login.username">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -47,7 +47,7 @@
                   <Insets left="50.0" />
                </VBox.margin>
             </TextField>
-            <Label prefHeight="25.0" styleClass="label-secondary" text="Password">
+            <Label prefHeight="25.0" styleClass="label-secondary" text="%login.password">
                <VBox.margin>
                   <Insets left="50.0" />
                </VBox.margin>
@@ -76,17 +76,17 @@
             </Label>
             <HBox prefHeight="26.0" prefWidth="600.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="button-login" text="Login" defaultButton="true">
+                  <Button mnemonicParsing="false" onAction="#handleLogin" styleClass="button-login" text="%login.btn" defaultButton="true">
                      <HBox.margin>
                         <Insets left="50.0" right="15.0" />
                      </HBox.margin>
                   </Button>
-                  <Label prefHeight="25.0" styleClass="label-secondary" text="Don't have an account?">
+                  <Label prefHeight="25.0" styleClass="label-secondary" text="%login.no_account">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" prefWidth="53.0" text="Register" textFill="#fbbf24">
+                  <Hyperlink onAction="#gotoRegister" prefHeight="26.0" prefWidth="53.0" text="%register.hpl" textFill="#fbbf24">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

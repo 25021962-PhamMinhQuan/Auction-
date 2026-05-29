@@ -20,12 +20,12 @@
    <children>
       <HBox alignment="TOP_CENTER">
          <children>
-            <Label styleClass="item-time" text="Open time" />
+            <Label fx:id="openTimeLabel" styleClass="item-time" text="%itemcard.open_time" />
          </children>
       </HBox>
       <HBox alignment="TOP_CENTER">
          <children>
-            <Label fx:id="timeopen" styleClass="item-price" text="Time">
+            <Label fx:id="timeopen" styleClass="item-price" text="%itemcard.time">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -37,17 +37,17 @@
             <ImageView fx:id="itemImage" fitHeight="162.0" fitWidth="220.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </HBox>
-      <Label fx:id="itemname" maxHeight="120.0" maxWidth="220.0" minWidth="220.0" prefWidth="220.0" styleClass="item-name" text="Item name" wrapText="true">
+      <Label fx:id="itemname" maxHeight="120.0" maxWidth="220.0" minWidth="220.0" prefWidth="220.0" styleClass="item-name" text="%itemcard.item_name" wrapText="true">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <Label fx:id="price" styleClass="item-price" text="Price">
+      <Label fx:id="price" styleClass="item-price" text="%itemcard.price">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
       <Region prefHeight="78.0" prefWidth="220.0" VBox.vgrow="ALWAYS" />
-      <Button fx:id="detailsbutton" mnemonicParsing="false" onAction="#handleDetail" prefHeight="26.0" prefWidth="254.0" styleClass="button-login" text="Detail" />
+      <Button fx:id="detailsbutton" mnemonicParsing="false" onAction="#handleDetail" prefHeight="26.0" prefWidth="254.0" styleClass="button-login" text="%itemcard.btn.view_detail" />
    </children>
 </VBox>

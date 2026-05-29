@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import org.example.domain.user.User;
 import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
+import org.example.util.LanguageManager;
 import org.example.util.Theme;
 import org.example.util.ThemeManager;
 
@@ -56,6 +57,14 @@ public class MainScreenController {
     @FXML private Button themeLightBtn;
     @FXML private Button themeDarkBtn;
     @FXML private StackPane searchContainer;
+    @FXML private Button catArtBtn;
+    @FXML private Button catElectronicsBtn;
+    @FXML private Button catEstateBtn;
+    @FXML private Button catFashionsBtn;
+    @FXML private Button catVehiclesBtn;
+    @FXML private Button catOthersBtn;
+    @FXML private Button auctionUpcomingBtn;
+    @FXML private Button auctionOngoingBtn;
     private boolean settingsExpanded = false;
     private String  currentLang      = "EN";
     private Theme currentTheme     = ThemeManager.getCurrentTheme();
@@ -66,7 +75,19 @@ public class MainScreenController {
     @FXML private Label     panelUsernameLabel; // thêm mới
     @FXML private Label     panelRoleLabel;     // thêm mới
     @FXML private ImageView panelAvatarView;    // thêm mới
-    @FXML private Label     panelAvatarIcon;    // thêm mới
+    @FXML private Label     panelAvatarIcon;
+    @FXML private Button      introButton;
+    @FXML private Button      contactButton;
+    @FXML private Label       upcomingTitleLabel;
+    @FXML private Label       ongoingTitleLabel;
+    @FXML private Button      viewAllUpcoming;
+    @FXML private Button      viewAllOngoing;
+    @FXML private Label       myAccountLabel;
+    @FXML private Button      editProfileBtn;
+    @FXML private Label       accountSectionLabel;
+    @FXML private Label       languageSettingLabel;
+    @FXML private Label       themeSettingLabel;
+    @FXML private Button      logOutBtn;
 
 
 
@@ -93,6 +114,7 @@ public class MainScreenController {
         wireDropdownClicks();
         wireGlobalClickToCloseDropdowns();
         loadOngoing();
+        applyLanguage();
     }
 
 
@@ -135,7 +157,7 @@ public class MainScreenController {
 
     @FXML
     private void handleOpenProfile(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/profile.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/profile.fxml"),LanguageManager.getBundle());
         Parent root = loader.load();
         ProfileController ctrl = loader.getController();
         ctrl.setCurrentUser(AuctionClient.getInstance().getCurrentUser()); // truyền user hiện tại
@@ -189,7 +211,7 @@ public class MainScreenController {
      */
     private Node buildCard(String[] parts, ItemCardController.CardMode mode) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ITEM_CARD_FXML),LanguageManager.getBundle());
             Node node = loader.load();
             ItemCardController ctrl = loader.getController();
 
@@ -213,7 +235,7 @@ public class MainScreenController {
     @FXML
     private void handleAddItem(ActionEvent e) throws java.io.IOException {
         javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                getClass().getResource("/org/example/view/additem.fxml"));
+                getClass().getResource("/org/example/view/additem.fxml"),LanguageManager.getBundle());
         javafx.scene.Parent root = loader.load();
         javafx.stage.Stage stage =
                 (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
@@ -315,32 +337,87 @@ public class MainScreenController {
             settingsBtn.getStyleClass().removeAll("panel-nav-btn");
             if (!settingsBtn.getStyleClass().contains("panel-nav-btn-expanded"))
                 settingsBtn.getStyleClass().add("panel-nav-btn-expanded");
-            settingsBtn.setText("⚙   Settings  ▴");
+            settingsBtn.setText(LanguageManager.get("main.panel.settings.open"));
         } else {
             settingsBtn.getStyleClass().removeAll("panel-nav-btn-expanded");
             if (!settingsBtn.getStyleClass().contains("panel-nav-btn"))
                 settingsBtn.getStyleClass().add("panel-nav-btn");
-            settingsBtn.setText("⚙   Settings  ▾");
+            settingsBtn.setText(LanguageManager.get("main.panel.settings.closed"));
         }
     }
     @FXML
     private void handleLangEn() {
-        currentLang = "EN";
+        LanguageManager.setEnglish();
         updateLangButtons();
-        // TODO: apply locale change
+        applyLanguage();
+        refreshVisibleCardsLanguage();
     }
 
     @FXML
     private void handleLangVi() {
-        currentLang = "VI";
+        LanguageManager.setVietnamese();
         updateLangButtons();
-        // TODO: apply locale change
+        applyLanguage();
+        refreshVisibleCardsLanguage();
     }
 
     private void updateLangButtons() {
         if (langEnBtn == null || langViBtn == null) return;
-        setToggleActive(langEnBtn,  "toggle-btn-left",  "EN".equals(currentLang));
-        setToggleActive(langViBtn,  "toggle-btn-right", "VI".equals(currentLang));
+        setToggleActive(langEnBtn, "toggle-btn-left", !LanguageManager.isVietnamese());
+        setToggleActive(langViBtn, "toggle-btn-right", LanguageManager.isVietnamese());
+    }
+    private void applyLanguage() {
+        if (categoryButton != null) categoryButton.setText(LanguageManager.get("main.nav.categories"));
+        if (auctionButton != null) auctionButton.setText(LanguageManager.get("main.nav.auctions"));
+        if (introButton != null) introButton.setText(LanguageManager.get("main.nav.introduction"));
+        if (contactButton != null) contactButton.setText(LanguageManager.get("main.nav.contact"));
+
+        if (addItemBtn != null) addItemBtn.setText(LanguageManager.get("main.btn.add_item"));
+        if (searchField != null) searchField.setPromptText(LanguageManager.get("main.search.placeholder"));
+
+        if (upcomingTitleLabel != null) upcomingTitleLabel.setText(LanguageManager.get("main.section.upcoming"));
+        if (ongoingTitleLabel != null) ongoingTitleLabel.setText(LanguageManager.get("main.section.ongoing"));
+        if (viewAllUpcoming != null) viewAllUpcoming.setText(LanguageManager.get("main.btn.view_all"));
+        if (viewAllOngoing != null) viewAllOngoing.setText(LanguageManager.get("main.btn.view_all"));
+
+        if (myAccountLabel != null) myAccountLabel.setText(LanguageManager.get("main.panel.my_account"));
+        if (editProfileBtn != null) editProfileBtn.setText(LanguageManager.get("main.panel.edit_profile"));
+        if (accountSectionLabel != null) accountSectionLabel.setText(LanguageManager.get("main.panel.account"));
+        if (settingsBtn != null) {
+            settingsBtn.setText(settingsExpanded
+                    ? LanguageManager.get("main.panel.settings.open")
+                    : LanguageManager.get("main.panel.settings.closed"));
+        }
+        if (languageSettingLabel != null) languageSettingLabel.setText(LanguageManager.get("main.panel.language"));
+        if (themeSettingLabel != null) themeSettingLabel.setText(LanguageManager.get("main.panel.theme"));
+        if (logOutBtn != null) logOutBtn.setText(LanguageManager.get("main.panel.logout"));
+        if (backButton != null) backButton.setText(LanguageManager.get("main.btn.back"));
+
+        if (catArtBtn != null) catArtBtn.setText(LanguageManager.get("main.category.art"));
+        if (catElectronicsBtn != null) catElectronicsBtn.setText(LanguageManager.get("main.category.electronics"));
+        if (catEstateBtn != null) catEstateBtn.setText(LanguageManager.get("main.category.estate"));
+        if (catFashionsBtn != null) catFashionsBtn.setText(LanguageManager.get("main.category.fashions"));
+        if (catVehiclesBtn != null) catVehiclesBtn.setText(LanguageManager.get("main.category.vehicles"));
+        if (catOthersBtn != null) catOthersBtn.setText(LanguageManager.get("main.category.others"));
+
+        if (auctionUpcomingBtn != null) auctionUpcomingBtn.setText(LanguageManager.get("main.auction.upcoming"));
+        if (auctionOngoingBtn != null) auctionOngoingBtn.setText(LanguageManager.get("main.auction.ongoing"));
+    }
+    private void refreshVisibleCardsLanguage() {
+        refreshCardsInContainer(upcomingHbox);
+        refreshCardsInContainer(ongoingHbox);
+        refreshCardsInContainer(gridPane);
+    }
+
+    private void refreshCardsInContainer(Pane container) {
+        if (container == null) return;
+
+        for (Node node : container.getChildren()) {
+            Object ctrl = node.getProperties().get("controller");
+            if (ctrl instanceof ItemCardController card) {
+                card.refreshLanguage();
+            }
+        }
     }
 
     // ─── Theme toggles ──────────────────────────────────────────────────────
@@ -532,7 +609,7 @@ public class MainScreenController {
         AuctionClient.getInstance().requestSearchAuctions(keyword, items ->
                 Platform.runLater(() -> {
                     gridPane.getChildren().clear();
-                    if (items.isEmpty()) gridPane.getChildren().add(new Label("No results for: " + keyword));
+                    if (items.isEmpty()) gridPane.getChildren().add(new Label(LanguageManager.get("main.no_results") + " " + keyword));
                     for (String[] item : items)
                         gridPane.getChildren().add(buildCard(item, ItemCardController.CardMode.BID));
                 })
@@ -551,7 +628,7 @@ public class MainScreenController {
                 Platform.runLater(() -> {
                     gridPane.getChildren().clear();
                     if (items.isEmpty()) {
-                        gridPane.getChildren().add(new Label("No auctions in category: " + type));
+                        gridPane.getChildren().add(new Label(LanguageManager.get("main.no_category") + " " + type));
                         return;
                     }
                     for (String[] item : items) {
@@ -591,7 +668,7 @@ public class MainScreenController {
 
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/org/example/view/login.fxml"));
+                    getClass().getResource("/org/example/view/login.fxml"),LanguageManager.getBundle());
             javafx.scene.Parent root = loader.load();
 
             javafx.stage.Stage stage =

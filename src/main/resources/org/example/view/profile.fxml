@@ -25,7 +25,7 @@
                </graphic>
             </Button>
 
-            <Button text="← Quay lại"
+            <Button text="%common.back"
                     styleClass="nav-link"
                     onAction="#handleBack"
                     mnemonicParsing="false"/>
@@ -57,8 +57,8 @@
 
                   <!-- ── TIÊU ĐỀ TRANG ── -->
                   <VBox spacing="4">
-                     <Label text="Chỉnh sửa hồ sơ" styleClass="profile-page-title"/>
-                     <Label text="Quản lý thông tin cá nhân và bảo mật tài khoản"
+                     <Label text="%profile.edit" styleClass="profile-page-title"/>
+                     <Label text="%profile.subtitle"
                             styleClass="label-secondary"/>
                   </VBox>
 
@@ -87,19 +87,19 @@
                                   styleClass="panel-role-badge" maxWidth="80"/>
                            <HBox spacing="10" alignment="CENTER_LEFT">
                               <Button fx:id="chooseAvatarBtn"
-                                      text="📷  Chọn ảnh"
+                                      text="%profile.choose_photo"
                                       styleClass="button-secondary"
                                       onAction="#handleChooseAvatar"
                                       mnemonicParsing="false"/>
                               <Button fx:id="removeAvatarBtn"
-                                      text="✕  Xóa ảnh"
+                                      text="%profile.remove_photo"
                                       styleClass="btn-danger"
                                       onAction="#handleRemoveAvatar"
                                       mnemonicParsing="false"
                                       visible="false"
                                       managed="false"/>
                            </HBox>
-                           <Label text="PNG hoặc JPG. Kích thước tối đa 2MB."
+                           <Label text="%profile.photo_hint"
                                   styleClass="profile-hint-label"/>
                         </VBox>
                      </HBox>
@@ -107,34 +107,34 @@
 
                   <!-- ── CARD: THÔNG TIN CÁ NHÂN ── -->
                   <VBox spacing="16" styleClass="profile-card">
-                     <Label text="Thông tin cá nhân" styleClass="profile-card-title"/>
+                     <Label text="%profile.personal_info" styleClass="profile-card-title"/>
                      <Region styleClass="profile-divider"/>
 
                      <VBox spacing="6">
-                        <Label text="Họ và tên" styleClass="profile-field-label"/>
+                        <Label text="%profile.full_name" styleClass="profile-field-label"/>
                         <TextField fx:id="fullNameField"
-                                   promptText="Nhập họ và tên của bạn"
+                                   promptText="%profile.full_name.placeholder"
                                    styleClass="input_field, profile-field-input"
                                    maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Email" styleClass="profile-field-label"/>
+                        <Label text="%profile.email" styleClass="profile-field-label"/>
                         <TextField fx:id="emailField"
-                                   promptText="example@email.com"
+                                   promptText="%profile.email.placeholder"
                                    styleClass="input_field, profile-field-input"
                                    maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Số điện thoại" styleClass="profile-field-label"/>
+                        <Label text="%profile.phone" styleClass="profile-field-label"/>
                         <TextField fx:id="phoneField"
-                                   promptText="0xxxxxxxxx"
+                                   promptText="%profile.phone.placeholder"
                                    styleClass="input_field, profile-field-input"
                                    maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
-                     <Button text="💾  Lưu thay đổi"
+                     <Button text="%profile.save"
                              styleClass="button-login, profile-action-btn"
                              onAction="#handleSaveProfile"
                              mnemonicParsing="false"
@@ -143,38 +143,38 @@
 
                   <!-- ── CARD: ĐỔI MẬT KHẨU ── -->
                   <VBox spacing="16" styleClass="profile-card">
-                     <Label text="Đổi mật khẩu" styleClass="profile-card-title"/>
+                     <Label text="%profile.change_password" styleClass="profile-card-title"/>
                      <Region styleClass="profile-divider"/>
 
                      <VBox spacing="6">
-                        <Label text="Mật khẩu hiện tại" styleClass="profile-field-label"/>
+                        <Label text="%profile.current_password" styleClass="profile-field-label"/>
                         <PasswordField fx:id="oldPasswordField"
-                                       promptText="Nhập mật khẩu hiện tại"
+                                       promptText="%profile.current_password.placeholder"
                                        styleClass="input_field, profile-field-input"
                                        maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Mật khẩu mới" styleClass="profile-field-label"/>
+                        <Label text="%profile.new_password" styleClass="profile-field-label"/>
                         <PasswordField fx:id="newPasswordField"
-                                       promptText="Tối thiểu 6 ký tự, có chữ hoa, số và ký tự đặc biệt"
+                                       promptText="%profile.new_password.placeholder"
                                        styleClass="input_field, profile-field-input"
                                        maxWidth="1.7976931348623157E308"/>
                      </VBox>
 
                      <VBox spacing="6">
-                        <Label text="Xác nhận mật khẩu mới" styleClass="profile-field-label"/>
+                        <Label text="%profile.confirm_password" styleClass="profile-field-label"/>
                         <PasswordField fx:id="confirmPasswordField"
-                                       promptText="Nhập lại mật khẩu mới"
+                                       promptText="%profile.confirm_password.placeholder"
                                        styleClass="input_field, profile-field-input"
                                        maxWidth="1.7976931348623157E208"/>
                      </VBox>
 
-                     <Label text="⚠  Mật khẩu cần có ít nhất 6 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+                     <Label text="%profile.password_hint"
                             wrapText="true"
                             styleClass="profile-hint-label"/>
 
-                     <Button text="🔒  Đổi mật khẩu"
+                     <Button text="%profile.btn.change_password"
                              styleClass="button-login, profile-action-btn"
                              onAction="#handleChangePassword"
                              mnemonicParsing="false"

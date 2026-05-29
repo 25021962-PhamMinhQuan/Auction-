@@ -21,7 +21,8 @@ import java.io.IOException;
 import org.example.domain.user.User;
 import org.example.service.UserService;
 import org.example.factory.ServiceFactory;
-import org.example.util.SupabaseStorage; // Hoặc package chứa tiện ích upload của bạn
+import org.example.util.SupabaseStorage;
+import org.example.util.LanguageManager; // Hoặc package chứa tiện ích upload của bạn
 import org.example.util.ThemeManager;
 
 public class ProfileController {
@@ -124,13 +125,13 @@ public class ProfileController {
                     Platform.runLater(() -> {
                         if (url != null) {
                             currentUser.setAvatarUrl(url);
-                            showStatus("Ảnh đã tải lên. Nhấn Lưu thay đổi để xác nhận.", true);
+                            showStatus(LanguageManager.get("profile.photo_uploaded"), true);
                         } else {
-                            showStatus("Tải ảnh thất bại.", false);
+                            showStatus(LanguageManager.get("profile.photo_upload_failed"), false);
                         }
                     });
                 } catch (Exception e) {
-                    Platform.runLater(() -> showStatus("Lỗi: " + e.getMessage(), false));
+                    Platform.runLater(() -> showStatus(LanguageManager.get("profile.error.prefix") + " " + e.getMessage(), false));
                 }
             }).start();
         });
@@ -146,7 +147,7 @@ public class ProfileController {
         currentUser.setAvatarUrl(null);
         removeAvatarBtn.setVisible(false);
         removeAvatarBtn.setManaged(false);
-        showStatus("Đã xóa ảnh đại diện tạm thời. Nhấn Lưu thay đổi để xác nhận.", false);
+        showStatus(LanguageManager.get("profile.photo_removed"), false);
     }
 
     /**
@@ -177,12 +178,12 @@ public class ProfileController {
         String confirm = confirmPasswordField.getText();
 
         if (newPw.isEmpty() || oldPw.isEmpty() || confirm.isEmpty()) {
-            showStatus("Vui lòng điền đầy đủ các trường mật khẩu", false);
+            showStatus(LanguageManager.get("profile.fill_password_fields"), false);
             return;
         }
 
         if (!newPw.equals(confirm)) {
-            showStatus("Mật khẩu xác nhận không khớp", false);
+            showStatus(LanguageManager.get("profile.password_mismatch"), false);
             return;
         }
 
@@ -204,7 +205,7 @@ public class ProfileController {
     private void handleBack() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/org/example/view/mainscreen.fxml"));
+                    getClass().getResource("/org/example/view/mainscreen.fxml"),LanguageManager.getBundle());
             Parent root = loader.load();
 
             MainScreenController controller = loader.getController();

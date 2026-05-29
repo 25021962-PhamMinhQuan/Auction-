@@ -99,8 +99,8 @@
                      <Button fx:id="auctionButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Auctions ▾" />
                   </StackPane>
 
-                  <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Introduction" />
-                  <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Contact" />
+                  <Button fx:id="introButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Introduction" />
+                  <Button fx:id="contactButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Contact" />
 
                   <Region HBox.hgrow="ALWAYS" />
 
@@ -205,7 +205,7 @@
                         </padding>
 
                         <!-- Upcoming -->
-                        <Label styleClass="section-title" text="Upcoming Auction" />
+                        <Label fx:id="upcomingTitleLabel" styleClass="section-title" text="Upcoming Auction" />
 
                         <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
@@ -218,7 +218,7 @@
                         <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
 
                         <!-- Ongoing -->
-                        <Label styleClass="section-title"  text="Ongoing Auction" />
+                        <Label fx:id="ongoingTitleLabel" styleClass="section-title"  text="Ongoing Auction" />
 
                         <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
 
@@ -253,7 +253,7 @@
 
                   <!-- Panel Header with close button -->
                   <HBox alignment="CENTER_LEFT" styleClass="panel-header">
-                     <Label styleClass="panel-header-title" text="My Account" HBox.hgrow="ALWAYS" />
+                     <Label fx:id="myAccountLabel" styleClass="panel-header-title" text="My Account" HBox.hgrow="ALWAYS" />
                      <Region HBox.hgrow="ALWAYS" />
                      <Button mnemonicParsing="false" onAction="#handleCloseDashboard" styleClass="panel-close-btn" text="✕" />
                   </HBox>
@@ -290,7 +290,7 @@
                      <padding>
                         <Insets top="20" bottom="8" left="20" right="20" />
                      </padding>
-                     <Label styleClass="panel-section-label" text="ACCOUNT" />
+                     <Label fx:id="accountSectionLabel" styleClass="panel-section-label" text="ACCOUNT" />
                      <Region HBox.hgrow="ALWAYS" />
                   </HBox>
 
@@ -316,7 +316,7 @@
                            <padding>
                               <Insets top="10" bottom="10" left="12" right="12" />
                            </padding>
-                           <Label styleClass="settings-row-label" text="🌐  Language" HBox.hgrow="ALWAYS" />
+                           <Label fx:id="languageSettingLabel" styleClass="settings-row-label" text="🌐  Language" HBox.hgrow="ALWAYS" />
                            <Region HBox.hgrow="ALWAYS" />
                            <HBox styleClass="toggle-group-box" spacing="0">
                               <Button fx:id="langEnBtn" mnemonicParsing="false" onAction="#handleLangEn"
@@ -334,7 +334,7 @@
                            <padding>
                               <Insets top="10" bottom="10" left="12" right="12" />
                            </padding>
-                           <Label styleClass="settings-row-label" text="☀   Theme" HBox.hgrow="ALWAYS" />
+                           <Label fx:id="themeSettingLabel" styleClass="settings-row-label" text="☀   Theme" HBox.hgrow="ALWAYS" />
                            <Region HBox.hgrow="ALWAYS" />
                            <HBox styleClass="toggle-group-box" spacing="0">
                               <Button fx:id="themeLightBtn" mnemonicParsing="false" onAction="#handleThemeLight"
@@ -380,19 +380,19 @@
          <!-- Categories floating menu -->
          <VBox fx:id="categoryMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
                AnchorPane.topAnchor="62" AnchorPane.leftAnchor="160">
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="🎨  Art"         onAction="#handleCategory" userData="ART" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="💻  Electronics" onAction="#handleCategory" userData="ELECTRONICS" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="🏠  Estate"      onAction="#handleCategory" userData="ESTATE" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="👗  Fashions"    onAction="#handleCategory" userData="FASHIONS" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="🚗  Vehicles"    onAction="#handleCategory" userData="VEHICLES" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="📦  Others"      onAction="#handleCategory" userData="OTHERS" />
+            <Button fx:id="catArtBtn" mnemonicParsing="false" styleClass="dropdown-item" text="🎨  Art"         onAction="#handleCategory" userData="ART" />
+            <Button fx:id="catElectronicsBtn" mnemonicParsing="false" styleClass="dropdown-item" text="💻  Electronics" onAction="#handleCategory" userData="ELECTRONICS" />
+            <Button fx:id="catEstateBtn" mnemonicParsing="false" styleClass="dropdown-item" text="🏠  Estate"      onAction="#handleCategory" userData="ESTATE" />
+            <Button fx:id="catFashionsBtn" mnemonicParsing="false" styleClass="dropdown-item" text="👗  Fashions"    onAction="#handleCategory" userData="FASHIONS" />
+            <Button fx:id="catVehivlesBtn" mnemonicParsing="false" styleClass="dropdown-item" text="🚗  Vehicles"    onAction="#handleCategory" userData="VEHICLES" />
+            <Button fx:id="catOthersBtn" mnemonicParsing="false" styleClass="dropdown-item" text="📦  Others"      onAction="#handleCategory" userData="OTHERS" />
          </VBox>
 
          <!-- Auctions floating menu -->
          <VBox fx:id="auctionMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
                AnchorPane.topAnchor="62" AnchorPane.leftAnchor="290">
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="⏰  Upcoming" />
-            <Button mnemonicParsing="false" styleClass="dropdown-item" text="🔴  Ongoing" />
+            <Button fx:id="auctionUpcomingBtn" mnemonicParsing="false" styleClass="dropdown-item" text="⏰  Upcoming" onAction="#handleViewAllUpcoming" />
+            <Button fx:id="auctionOngoingBtn" mnemonicParsing="false" styleClass="dropdown-item" text="🔴  Ongoing" onAction="#handleViewAllOngoing" />
          </VBox>
 
          <!-- Suggestion box — position updated dynamically by controller -->

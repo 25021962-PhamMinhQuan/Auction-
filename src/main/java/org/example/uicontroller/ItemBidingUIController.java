@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import org.example.util.LanguageManager;
 
 
 public class ItemBidingUIController {
@@ -134,7 +135,7 @@ public class ItemBidingUIController {
         this.latestPrice = price;
         currentPrice.setText(formatVND(price));
 
-        if (highestBidder != null) highestBidder.setText("Highest: " + bidder);
+        if (highestBidder != null) highestBidder.setText(String.format(LanguageManager.get("itembid.highest"), bidder));
 
         // Reload lịch sử từ DB để tránh duplicate với realtime entry
         loadBidHistory();
@@ -153,7 +154,7 @@ public class ItemBidingUIController {
     private void handleBid() {
         String raw = bidInput.getText();
         if (raw.isEmpty()) {
-            showAlert("Empty field", "Please enter a bid amount.");
+            showAlert(LanguageManager.get("itembid.empty_field"), LanguageManager.get("itembid.empty_field.msg"));
             return;
         }
         try {
@@ -162,7 +163,7 @@ public class ItemBidingUIController {
             AuctionClient.getInstance().placeBid(auctionId, amount);
             bidInput.clear();
         } catch (NumberFormatException e) {
-            showAlert("Invalid bid", "Bid must be a positive number.");
+            showAlert(LanguageManager.get("itembid.invalid_bid"), LanguageManager.get("itembid.invalid_bid.msg"));
         }
     }
 
@@ -172,7 +173,7 @@ public class ItemBidingUIController {
         String rawInc = incrementInput.getText().trim();
 
         if (rawMax.isEmpty() || rawInc.isEmpty()) {
-            showAlert("Empty fields", "Please fill in both Max Price and Increment.");
+            showAlert(LanguageManager.get("itembid.empty_fields"), LanguageManager.get("itembid.empty_fields.msg"));
             return;
         }
 
@@ -181,7 +182,7 @@ public class ItemBidingUIController {
             double increment = Double.parseDouble(rawInc);
 
             if (max <= 0 || increment <= 0) {
-                showAlert("Invalid values", "Max price and increment must be positive.");
+                showAlert(LanguageManager.get("itembid.invalid_values"), LanguageManager.get("itembid.invalid_values.msg"));
                 return;
             }
 
@@ -190,7 +191,7 @@ public class ItemBidingUIController {
             incrementInput.clear();
 
         } catch (NumberFormatException e) {
-            showAlert("Invalid input", "Max price and increment must be valid numbers.");
+            showAlert(LanguageManager.get("itembid.invalid_input"), LanguageManager.get("itembid.invalid_input.msg"));
         }
     }
 
@@ -228,7 +229,7 @@ public class ItemBidingUIController {
         AuctionClient.getInstance().clearActiveBidController();
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/mainscreen.fxml"));
+                getClass().getResource("/org/example/view/mainscreen.fxml"),LanguageManager.getBundle());
         Parent root = loader.load();
         Stage stage = (Stage)((Node)e.getSource())
                 .getScene()
@@ -266,7 +267,7 @@ public class ItemBidingUIController {
 
         if (secondsLeft <= 0) {
             // ← SỬA: phân biệt readOnly hay không
-            timeLeft.setText(readOnly ? "Đang diễn ra" : "Hết giờ");
+            timeLeft.setText(readOnly ? LanguageManager.get("itembid.ongoing") : LanguageManager.get("itembid.time_up"));
             timeLeft.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
             stopCountdown();
             return;
@@ -277,7 +278,10 @@ public class ItemBidingUIController {
         long s = secondsLeft % 60;
 
         // ← SỬA: label khác nhau cho 2 chế độ
-        String label = readOnly ? "Bắt đầu sau: %02d:%02d:%02d" : "Thời gian còn lại: %02d:%02d:%02d";
+        String label = readOnly
+                ? LanguageManager.get("itembid.starts_in")
+                : LanguageManager.get("itembid.time_left");
+
         timeLeft.setText(String.format(label, h, m, s));
 
         if (!readOnly && secondsLeft < 30) {

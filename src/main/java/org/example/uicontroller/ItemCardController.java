@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.domain.item.Item;
+import org.example.util.LanguageManager;
 import org.example.util.ThemeManager;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class ItemCardController {
     @FXML private Label     timeopen;
     @FXML private ImageView itemImage;
     @FXML private Button    detailsbutton;
+    @FXML private Label     openTimeLabel;
 
     private Item currentItem;
     private CardMode mode = CardMode.DETAIL;
@@ -61,14 +63,14 @@ public class ItemCardController {
         // Hiển thị thời gian phù hợp theo mode
         if (mode == CardMode.BID) {
             // Ongoing: hiển thị thời gian kết thúc
-            timeopen.setText("Ends: " + formatTime(endTime));
-            detailsbutton.setText("Place Bid");
+            timeopen.setText(LanguageManager.get("itemcard.ends") + " " + formatTime(endTime));
+            detailsbutton.setText(LanguageManager.get("itemcard.btn.place_bid"));
             detailsbutton.getStyleClass().add("button-bid");
             startCardCountdown(endTime);
         } else {
             // Upcoming: hiển thị thời gian mở
-            timeopen.setText("Opens: " + formatTime(startTime));
-            detailsbutton.setText("View Detail");
+            timeopen.setText(LanguageManager.get("itemcard.opens") + " " + formatTime(startTime));
+            detailsbutton.setText(LanguageManager.get("itemcard.btn.view_detail"));
         }
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
@@ -97,11 +99,11 @@ public class ItemCardController {
             cardCountdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
                 long sec = ChronoUnit.SECONDS.between(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")), end);
                 if (sec <= 0) {
-                    timeopen.setText("Hết giờ");
+                    timeopen.setText(LanguageManager.get("itemcard.time_up"));
                     cardCountdown.stop();
                 } else {
                     long h = sec / 3600, m = (sec % 3600) / 60, s = sec % 60;
-                    timeopen.setText(String.format("Còn: %02d:%02d:%02d", h, m, s));
+                    timeopen.setText(String.format(LanguageManager.get("itemcard.time_left"), h, m, s));
                 }
             }));
             cardCountdown.setCycleCount(Animation.INDEFINITE);
@@ -121,7 +123,7 @@ public class ItemCardController {
     /** Ongoing → mở màn hình đấu giá */
     private void openBidScreen() throws IOException {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/itemdetail.fxml"));
+                getClass().getResource("/org/example/view/itemdetail.fxml"),LanguageManager.getBundle());
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
         ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description, imageUrl);
@@ -133,10 +135,10 @@ public class ItemCardController {
         stage.show();
     }
 
-    /** Upcoming → mở màn detail chỉ đọc (TODO: tạo riêng màn detail nếu cần) */
+    /** Upcoming → mở màn detail chỉ đọc */
     private void openDetailScreen() throws IOException {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/org/example/view/itemdetail.fxml"));
+                getClass().getResource("/org/example/view/itemdetail.fxml"),LanguageManager.getBundle());
         Parent root = loader.load();
         ItemBidingUIController ctrl = loader.getController();
         ctrl.setAuctionData(auctionId, auctionName, currentPrice, startTime, endTime, description, imageUrl);
@@ -160,6 +162,23 @@ public class ItemCardController {
             return LocalDateTime.parse(isoDateTime).format(DISPLAY_FMT);
         } catch (Exception e) {
             return isoDateTime;
+        }
+    }
+    public void refreshLanguage() {
+        if (openTimeLabel != null) {
+            openTimeLabel.setText(LanguageManager.get("itemcard.open_time"));
+        }
+        if (detailsbutton == null || timeopen == null) return;
+
+        if (mode == CardMode.BID) {
+            detailsbutton.setText(LanguageManager.get("itemcard.btn.place_bid"));
+
+            if (cardCountdown == null) {
+                timeopen.setText(LanguageManager.get("itemcard.ends") + " " + formatTime(endTime));
+            }
+        } else {
+            detailsbutton.setText(LanguageManager.get("itemcard.btn.view_detail"));
+            timeopen.setText(LanguageManager.get("itemcard.opens") + " " + formatTime(startTime));
         }
     }
 }
