@@ -173,9 +173,13 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         Auction a = coordinator.getAuction();
                         if (a.getCurrentPrice() < maxBid) {
                             coordinator.triggerAutoBid();
+                            // Lay highest bidder THUC SU sau khi autobid loop ket thuc
+                            String winner = a.getHighestBidder() != null
+                                    ? a.getHighestBidder().getUsername()
+                                    : currentUser.getUsername();
                             AuctionServer.broadCast("UPDATE|" + auctionId
                                     + "|" + a.getCurrentPrice()
-                                    + "|" + currentUser.getUsername()
+                                    + "|" + winner
                                     + "|" + a.getItem().getEndTime());
                         }
 
@@ -399,8 +403,9 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     List<String[]> history = getAuctionService().getBidHistory(auctionId);
                     sendMessage("BID_HISTORY_START|" + auctionId + "|" + history.size());
                     for (String[] row : history) {
-                        // row = [username, amount, time]
-                        sendMessage("BID_HISTORY_ITEM|" + row[0] + "|" + row[1] + "|" + row[2]);
+                        // row = [username, amount, time, type]
+                        String type = row.length > 3 && row[3] != null ? row[3] : "MANUAL";
+                        sendMessage("BID_HISTORY_ITEM|" + row[0] + "|" + row[1] + "|" + row[2] + "|" + type);
                     }
                     sendMessage("BID_HISTORY_END|" + auctionId);
                     break;
