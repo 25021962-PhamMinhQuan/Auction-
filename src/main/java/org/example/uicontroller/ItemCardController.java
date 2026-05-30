@@ -106,9 +106,9 @@ public class ItemCardController {
                 if (sec <= 0) {
                     timeopen.setText(LanguageManager.get("itemcard.time_up"));
                     cardCountdown.stop();
-                    detailsbutton.setDisable(true);  // ← không cho bid khi hết giờ
+                    detailsbutton.setDisable(true);
                 } else {
-                    detailsbutton.setDisable(false); // ← bật lại nếu anti-snipe extend
+                    detailsbutton.setDisable(false);
                     long h = sec / 3600, m = (sec % 3600) / 60, s = sec % 60;
                     timeopen.setText(String.format(LanguageManager.get("itemcard.time_left"), h, m, s));
                 }
@@ -116,7 +116,8 @@ public class ItemCardController {
             cardCountdown.setCycleCount(Animation.INDEFINITE);
             cardCountdown.play();
         } catch (Exception ignored) {}
-    } int getAuctionId() { return auctionId; }
+    }
+    public int getAuctionId() { return auctionId; }
 
     @FXML
     private void handleDetail() throws IOException {

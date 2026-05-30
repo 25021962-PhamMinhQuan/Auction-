@@ -68,7 +68,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
         String updateMessage = "UPDATE|" + auction.getId() + "|"
                 + bid.getAmount() + "|"
                 + bid.getBidder().getUsername() + "|"
-                + bid.getType();
+                + auction.getItem().getEndTime();
         sendMessage(updateMessage);
     }
 

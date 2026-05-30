@@ -7,6 +7,7 @@ import org.example.domain.user.Bidder;
 import org.example.observer.AuctionNotifier;
 import org.example.domain.auction.BidTransaction.BidType;
 import org.example.repository.AuctionRepository;
+import org.example.repository.impl.ItemDAO;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -37,14 +38,16 @@ public class BiddingCoordinator {
 
     private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
         LocalDateTime endTimeBefore = auction.getItem().getEndTime();
+        auction.AntiSniping();
         auction.validateBid(bidder,amount, type );
         BidTransaction bid = auction.recordBid(bidder,amount,type);
         if(onBidPerSisted!=null){
             onBidPerSisted.accept(bid);
         }
-        if (auctionRepository != null &&
-                auction.getItem().getEndTime().isAfter(endTimeBefore)) {
-            auctionRepository.updateEndTime(auction);
+        if (auction.getItem().getEndTime().isAfter(endTimeBefore)) {
+            // Persist endTime mới (anti-snipe) xuống DB
+            new ItemDAO().updateEndTime(auction.getItem());
+            if (auctionRepository != null) auctionRepository.updateEndTime(auction);
         }
         auctionNotifier.notifyObservers(bid);
 
