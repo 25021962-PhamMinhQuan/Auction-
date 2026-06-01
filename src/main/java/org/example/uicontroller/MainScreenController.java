@@ -104,6 +104,7 @@ public class MainScreenController {
 
 
 
+
     private String currentGridType; // "OPEN" hoặc "RUNNING" – để biết grid đang xem loại nào
     private static final String ITEM_CARD_FXML = "/org/example/view/itemcard.fxml";
     private static final int PREVIEW_COUNT = 7;
@@ -694,13 +695,13 @@ public class MainScreenController {
         AuctionClient.getInstance().disconnect();
 
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+            FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("/org/example/view/login.fxml"),LanguageManager.getBundle());
-            javafx.scene.Parent root = loader.load();
+            Parent root = loader.load();
 
-            javafx.stage.Stage stage =
-                    (javafx.stage.Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
-            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            Stage stage =
+                    (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
             ThemeManager.applyTheme(scene);
             stage.setScene(scene);
             stage.centerOnScreen();

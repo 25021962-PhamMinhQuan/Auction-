@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import org.example.domain.user.DepositRequest;
 import org.example.service.DepositService;
+import org.example.util.Theme;
+import org.example.util.ThemeManager;
 
 public class AdminScreenController {
     private final UserService userService = ServiceFactory.getInstance().getUserService();
@@ -156,6 +158,82 @@ public class AdminScreenController {
             colDepositAmount, colDepositNote,
             colDepositStatus, colDepositDate;
     @FXML private Label depositActionInfo;
+    @FXML private Button adminSettingsBtn;
+    @FXML private VBox   adminSettingsSubPanel;
+    @FXML private Button adminLangEnBtn;
+    @FXML private Button adminLangViBtn;
+    @FXML private Button adminThemeLightBtn;
+    @FXML private Button adminThemeDarkBtn;
+    @FXML private Label adminBadgeLabel;
+    @FXML private Label sidebarOverviewLabel;
+    @FXML private Label sidebarManagementLabel;
+    @FXML private Button sidebarLogoutBtn;
+
+    @FXML private Label dashboardHeadingLabel;
+    @FXML private Label dashboardSubtitleLabel;
+    @FXML private Label statTotalUsersLabel;
+    @FXML private Label statTotalItemsLabel;
+    @FXML private Label statActiveAuctionsLabel;
+    @FXML private Label statTotalRevenueLabel;
+    @FXML private Label recentActivityTitleLabel;
+    @FXML private Button viewAllActivityBtn;
+    @FXML private Label quickStatsTitleLabel;
+    @FXML private Label statBannedLabel;
+    @FXML private Label statUpcomingLabel;
+    @FXML private Label statPendingItemsLabel;
+    @FXML private Label statTodayBidsLabel;
+
+    @FXML private Label usersTitleLabel;
+    @FXML private Label usersSubtitleLabel;
+    @FXML private Button refreshUsersBtn;
+    @FXML private Button filterLockedUsersBtn;
+    @FXML private Button filterAllUsersBtn;
+
+    @FXML private Label itemsTitleLabel;
+    @FXML private Label itemsSubtitleLabel;
+    @FXML private Button refreshItemsBtn;
+    @FXML private Button filterPendingItemsBtn;
+    @FXML private Button filterActiveItemsBtn;
+    @FXML private Button filterAllItemsBtn;
+
+    @FXML private Label auctionsTitleLabel;
+    @FXML private Label auctionsSubtitleLabel;
+    @FXML private Button refreshAuctionsBtn;
+    @FXML private Button filterRunningAuctionsBtn;
+    @FXML private Button filterUpcomingAuctionsBtn;
+    @FXML private Button filterAllAuctionsBtn;
+
+    @FXML private Label depositsTitleLabel;
+    @FXML private Label depositsSubtitleLabel;
+    @FXML private Button refreshDepositsBtn;
+
+    @FXML private Label adminRoleLabel;
+    @FXML private Label adminLangLabel;
+    @FXML private Label adminThemeLabel;
+    @FXML private Button panelLogoutBtn;
+    @FXML private Button confirmCancelBtn;
+    @FXML private Button depositFilterAll;
+    @FXML private Button depositFilterPending;
+    @FXML private Button depositFilterApproved;
+    @FXML private Button depositFilterRejected;
+    @FXML private Button btnBanUser;
+    @FXML private Button btnUnbanUser;
+    @FXML private Button btnViewUserDetail;
+    @FXML private Button btnDeleteUser;
+    @FXML private Button btnApproveItem;
+    @FXML private Button btnViewItemDetail;
+    @FXML private Button btnDeleteItem;
+    @FXML private Button btnStopAuction;
+    @FXML private Button btnViewAuction;
+    @FXML private Button btnDeleteAuction;
+    @FXML private Button btnApproveDeposit;
+    @FXML private Button btnRejectDeposit;
+
+
+    private boolean adminSettingsExpanded = false;
+    private Theme currentTheme = ThemeManager.getCurrentTheme();
+
+    private Runnable pendingConfirmAction;
     private List<DepositRequest> currentDepositList;
 
 
@@ -163,8 +241,6 @@ public class AdminScreenController {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final NumberFormat VND_FORMAT =
             NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-
-    private Runnable pendingConfirmAction;
 
     // ═══════════════════════════════════════════
     //  INIT
@@ -176,9 +252,17 @@ public class AdminScreenController {
         setupSearchFields();
         showDashboard();
         loadDashboardStats();
+        updateAdminThemeButtons();
+        updateAdminLangButtons();
     }
 
     private void setupTables() {
+        // Loại bỏ cột trắng thừa cuối bảng
+        userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        itemTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        auctionTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        depositTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+
         colUserId.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getId()));
         colUsername.setCellValueFactory(data ->
@@ -659,7 +743,9 @@ public class AdminScreenController {
                         Parent root = loader.load();
 
                         Stage stage = (Stage) adminUsernameLabel.getScene().getWindow();
-                        stage.setScene(new Scene(root));
+                        Scene scene = new Scene(root);
+                        ThemeManager.applyTheme(scene);
+                        stage.setScene(scene);
                         stage.centerOnScreen();
                         stage.show();
                     } catch (Exception e) {
@@ -773,22 +859,26 @@ public class AdminScreenController {
     public void handleApproveDeposit() {
         DepositRequest selected = depositTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showInfo("Chưa chọn yêu cầu", "Vui lòng chọn một yêu cầu nạp tiền.");
+            showInfo(LanguageManager.get("admin.deposit.none_selected"),
+                    LanguageManager.get("admin.deposit.none_selected.msg"));
             return;
         }
-        if (selected.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
-            showInfo("Không hợp lệ", "Chỉ có thể duyệt yêu cầu đang chờ xử lý.");
+        if (selected.getStatus() != DepositRequest.Status.PENDING) {
+            showInfo(LanguageManager.get("admin.deposit.invalid"),
+                    LanguageManager.get("admin.deposit.only_pending_approve"));
             return;
         }
         java.text.NumberFormat fmt = java.text.NumberFormat.getInstance(new java.util.Locale("vi","VN"));
         showConfirm(
-                "Duyệt nạp tiền",
-                "Nạp " + fmt.format((long) selected.getAmount()) + " ₫ cho tài khoản \"" + selected.getUsername() + "\"?",
+                LanguageManager.get("admin.deposit.approve.title"),
+                String.format(LanguageManager.get("admin.deposit.approve.msg"),
+                        fmt.format((long) selected.getAmount()), selected.getUsername()),
                 () -> {
                     depositService.approve(selected.getId());
                     loadDeposits();
                     if (depositActionInfo != null)
-                        depositActionInfo.setText("✅ Đã duyệt #" + selected.getId());
+                        depositActionInfo.setText(
+                                String.format(LanguageManager.get("admin.deposit.approved_info"), selected.getId()));
                 }
         );
     }
@@ -797,25 +887,271 @@ public class AdminScreenController {
     public void handleRejectDeposit() {
         DepositRequest selected = depositTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showInfo("Chưa chọn yêu cầu", "Vui lòng chọn một yêu cầu nạp tiền.");
+            showInfo(LanguageManager.get("admin.deposit.none_selected"),
+                    LanguageManager.get("admin.deposit.none_selected.msg"));
             return;
         }
-        if (selected.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
-            showInfo("Không hợp lệ", "Chỉ có thể từ chối yêu cầu đang chờ xử lý.");
+        if (selected.getStatus() != DepositRequest.Status.PENDING) {
+            showInfo(LanguageManager.get("admin.deposit.invalid"),
+                    LanguageManager.get("admin.deposit.only_pending_reject"));
             return;
         }
         showConfirm(
-                "Từ chối yêu cầu",
-                "Từ chối yêu cầu nạp tiền của \"" + selected.getUsername() + "\"?",
+                LanguageManager.get("admin.deposit.reject.title"),
+                String.format(LanguageManager.get("admin.deposit.reject.msg"), selected.getUsername()),
                 () -> {
                     depositService.reject(selected.getId());
                     loadDeposits();
                     if (depositActionInfo != null)
-                        depositActionInfo.setText("❌ Đã từ chối #" + selected.getId());
+                        depositActionInfo.setText(
+                                String.format(LanguageManager.get("admin.deposit.rejected_info"), selected.getId()));
                 }
         );
     }
 
+    @FXML
+    public void handleToggleAdminSettings() {
+        adminSettingsExpanded = !adminSettingsExpanded;
+        adminSettingsSubPanel.setVisible(adminSettingsExpanded);
+        adminSettingsSubPanel.setManaged(adminSettingsExpanded);
+
+        if (adminSettingsExpanded) {
+            adminSettingsBtn.getStyleClass().removeAll("panel-nav-btn");
+            if (!adminSettingsBtn.getStyleClass().contains("panel-nav-btn-expanded"))
+                adminSettingsBtn.getStyleClass().add("panel-nav-btn-expanded");
+            adminSettingsBtn.setText(LanguageManager.get("main.panel.settings.open"));
+        } else {
+            adminSettingsBtn.getStyleClass().removeAll("panel-nav-btn-expanded");
+            if (!adminSettingsBtn.getStyleClass().contains("panel-nav-btn"))
+                adminSettingsBtn.getStyleClass().add("panel-nav-btn");
+            adminSettingsBtn.setText(LanguageManager.get("main.panel.settings.closed"));
+        }
+    }
+
+    @FXML
+    public void handleAdminLangEn() {
+        LanguageManager.setEnglish();
+        updateAdminLangButtons();
+        applyAdminLanguage();
+    }
+
+    @FXML
+    public void handleAdminLangVi() {
+        LanguageManager.setVietnamese();
+        updateAdminLangButtons();
+        applyAdminLanguage();
+    }
+
+    @FXML
+    public void handleAdminThemeLight() {
+        currentTheme = Theme.LIGHT;
+        ThemeManager.setTheme(currentTheme);
+        ThemeManager.applyTheme(adminThemeLightBtn.getScene());
+        updateAdminThemeButtons();
+    }
+
+    @FXML
+    public void handleAdminThemeDark() {
+        currentTheme = Theme.DARK;
+        ThemeManager.setTheme(currentTheme);
+        ThemeManager.applyTheme(adminThemeDarkBtn.getScene());
+        updateAdminThemeButtons();
+    }
+
+    private void updateAdminThemeButtons() {
+        if (adminThemeLightBtn == null || adminThemeDarkBtn == null) return;
+        setAdminToggleActive(adminThemeLightBtn, "toggle-btn-left",  currentTheme == Theme.LIGHT);
+        setAdminToggleActive(adminThemeDarkBtn,  "toggle-btn-right", currentTheme == Theme.DARK);
+    }
+
+    private void updateAdminLangButtons() {
+        if (adminLangEnBtn == null || adminLangViBtn == null) return;
+        setAdminToggleActive(adminLangEnBtn, "toggle-btn-left",  !LanguageManager.isVietnamese());
+        setAdminToggleActive(adminLangViBtn, "toggle-btn-right",  LanguageManager.isVietnamese());
+    }
+
+    private void setAdminToggleActive(Button btn, String baseClass, boolean active) {
+        btn.getStyleClass().removeAll("toggle-btn-active");
+        if (!btn.getStyleClass().contains(baseClass))
+            btn.getStyleClass().add(baseClass);
+        if (active)
+            btn.getStyleClass().add("toggle-btn-active");
+    }
+
+    /** Cập nhật lại text cho các label/button trong admin screen khi đổi ngôn ngữ */
+    /** Cập nhật lại text cho admin screen khi đổi ngôn ngữ */
+    private void applyAdminLanguage() {
+        // Top bar
+        setText(adminBadgeLabel, "admin.badge");
+
+        // Sidebar
+        setText(sidebarOverviewLabel, "admin.sidebar.overview");
+        setText(sidebarManagementLabel, "admin.sidebar.management");
+        setText(navDashboard, "admin.nav.dashboard");
+        setText(navUsers, "admin.nav.accounts");
+        setText(navItems, "admin.nav.items");
+        setText(navAuctions, "admin.nav.auctions");
+        setText(navDeposits, "admin.nav.deposits");
+        setText(sidebarLogoutBtn, "admin.nav.logout");
+
+        // Dashboard
+        setText(dashboardHeadingLabel, "admin.dashboard.heading");
+        setText(dashboardSubtitleLabel, "admin.dashboard.title");
+        setText(statTotalUsersLabel, "admin.stat.total_users");
+        setText(statTotalItemsLabel, "admin.stat.total_items");
+        setText(statActiveAuctionsLabel, "admin.stat.active_auctions");
+        setText(statTotalRevenueLabel, "admin.stat.total_revenue");
+        setText(recentActivityTitleLabel, "admin.recent_activity");
+        setText(viewAllActivityBtn, "admin.btn.view_all");
+        setText(quickStatsTitleLabel, "admin.quick_stats");
+        setText(statBannedLabel, "admin.stat.banned");
+        setText(statUpcomingLabel, "admin.stat.upcoming");
+        setText(statPendingItemsLabel, "admin.stat.pending_items");
+        setText(statTodayBidsLabel, "admin.stat.today_bids");
+
+        // Users section
+        setText(usersTitleLabel, "admin.users.title");
+        setText(usersSubtitleLabel, "admin.users.subtitle");
+        setText(refreshUsersBtn, "common.refresh");
+        setText(filterLockedUsersBtn, "admin.filter.locked");
+        setText(filterAllUsersBtn, "admin.filter.all");
+        if (userSearchField != null) userSearchField.setPromptText(LanguageManager.get("admin.users.search"));
+
+        setText(btnBanUser, "admin.user.lock");
+        setText(btnUnbanUser, "admin.user.unlock");
+        setText(btnViewUserDetail, "admin.btn.view_detail");
+        setText(btnDeleteUser, "admin.user.delete");
+
+        // Items section
+        setText(itemsTitleLabel, "admin.items.title");
+        setText(itemsSubtitleLabel, "admin.items.subtitle");
+        setText(refreshItemsBtn, "common.refresh");
+        setText(filterPendingItemsBtn, "admin.filter.pending");
+        setText(filterActiveItemsBtn, "admin.filter.active");
+        setText(filterAllItemsBtn, "admin.filter.all");
+        if (itemSearchField != null) itemSearchField.setPromptText(LanguageManager.get("admin.items.search"));
+
+        setText(btnApproveItem, "admin.item.approve");
+        setText(btnViewItemDetail, "admin.btn.view_detail");
+        setText(btnDeleteItem, "admin.item.delete");
+
+        // Auctions section
+        setText(auctionsTitleLabel, "admin.auction.title");
+        setText(auctionsSubtitleLabel, "admin.auction.subtitle");
+        setText(refreshAuctionsBtn, "common.refresh");
+        setText(filterRunningAuctionsBtn, "admin.filter.running");
+        setText(filterUpcomingAuctionsBtn, "admin.filter.upcoming");
+        setText(filterAllAuctionsBtn, "admin.filter.all");
+        if (auctionSearchField != null) auctionSearchField.setPromptText(LanguageManager.get("admin.auction.search"));
+
+        setText(btnStopAuction, "admin.auction.stop");
+        setText(btnViewAuction, "admin.btn.view_detail");
+        setText(btnDeleteAuction, "admin.auction.delete");
+
+        // Deposits section
+        setText(depositsTitleLabel, "admin.deposits.title");
+        setText(depositsSubtitleLabel, "admin.deposits.subtitle");
+        setText(refreshDepositsBtn, "common.refresh");
+        setText(depositFilterAll, "admin.filter.all");
+        setText(depositFilterPending, "admin.filter.pending");
+        setText(depositFilterApproved, "admin.filter.approved");
+        setText(depositFilterRejected, "admin.filter.rejected");
+
+        setText(btnApproveDeposit, "admin.deposit.approve");
+        setText(btnRejectDeposit, "admin.deposit.reject");
+
+        // Table columns
+        setText(colUserId, "admin.col.id");
+        setText(colUsername, "admin.col.username");
+        setText(colEmail, "admin.col.email");
+        setText(colRole, "admin.col.role");
+        setText(colUserStatus, "admin.col.status");
+        setText(colUserDate, "admin.col.created_at");
+
+        setText(colItemId, "admin.col.id");
+        setText(colItemName, "admin.col.item_name");
+        setText(colItemSeller, "admin.col.seller");
+        setText(colItemCategory, "admin.col.category");
+        setText(colItemPrice, "admin.col.start_price");
+        setText(colItemStatus, "admin.col.status");
+
+        setText(colAuctionId, "admin.col.id");
+        setText(colAuctionItem, "admin.col.item");
+        setText(colAuctionStart, "admin.col.start");
+        setText(colAuctionEnd, "admin.col.end");
+        setText(colAuctionPrice, "admin.col.current_price");
+        setText(colAuctionStatus, "admin.col.status");
+
+        setText(colDepositId, "admin.col.id");
+        setText(colDepositUser, "admin.col.user");
+        setText(colDepositAmount, "admin.col.amount");
+        setText(colDepositNote, "admin.col.note");
+        setText(colDepositStatus, "admin.col.status");
+        setText(colDepositDate, "admin.col.time");
+
+        // Admin panel
+        setText(adminRoleLabel, "admin.role");
+        setText(adminLangLabel, "main.panel.language");
+        setText(adminThemeLabel, "main.panel.theme");
+        setText(panelLogoutBtn, "main.panel.logout");
+
+        if (adminSettingsBtn != null) {
+            adminSettingsBtn.setText(adminSettingsExpanded
+                    ? LanguageManager.get("main.panel.settings.open")
+                    : LanguageManager.get("main.panel.settings.closed"));
+        }
+
+        // Confirm dialog
+        setText(confirmTitle, "common.confirm");
+        setText(confirmMessage, "admin.confirm.default_message");
+        setText(confirmCancelBtn, "common.cancel");
+        setText(confirmOkBtn, "common.confirm");
+
+        // Dynamic dashboard text
+        if (recentActivityList != null && !recentActivityList.getChildren().isEmpty()) {
+            recentActivityList.getChildren().clear();
+            recentActivityList.getChildren().add(new Label(LanguageManager.get("admin.dashboard.updated")));
+        }
+
+        updateAdminLangButtons();
+    }
+    private void setText(Labeled control, String key) {
+        if (control != null) {
+            control.setText(LanguageManager.get(key));
+        }
+    }
+
+    private void setText(TableColumn<?, ?> column, String key) {
+        if (column != null) {
+            column.setText(LanguageManager.get(key));
+        }
+    }
+    @FXML
+    public void filterAllAuctions() {
+        loadAuctions();
+    }
+
+    @FXML
+    public void filterRunningAuctions() {
+        List<Auction> auctions = auctionService.findAllAuctions().stream()
+                .filter(auction -> auction.getStatus() != null
+                        && auction.getStatus().name().equalsIgnoreCase("RUNNING"))
+                .toList();
+
+        auctionTable.setItems(FXCollections.observableArrayList(auctions));
+    }
+
+    @FXML
+    public void filterUpcomingAuctions() {
+        List<Auction> auctions = auctionService.findAllAuctions().stream()
+                .filter(auction -> auction.getItem() != null
+                        && auction.getItem().getStartTime() != null
+                        && java.time.LocalDateTime.now().isBefore(auction.getItem().getStartTime()))
+                .toList();
+
+        auctionTable.setItems(FXCollections.observableArrayList(auctions));
+    }
 }
+
 
 

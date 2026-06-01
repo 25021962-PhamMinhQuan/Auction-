@@ -1,34 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.AdminScreenController">
+<StackPane xmlns="http://javafx.com/javafx/25"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.uicontroller.AdminScreenController">
 
     <children>
         <BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="root">
-
             <top>
                 <HBox alignment="CENTER_LEFT" spacing="10" styleClass="navbar" BorderPane.alignment="CENTER_LEFT">
                     <padding>
                         <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
 
-                    <Button mnemonicParsing="false" styleClass="nav-button">
+                    <Button mnemonicParsing="false" styleClass="nav-logo-btn">
                         <graphic>
                             <ImageView fitHeight="43" fitWidth="93" pickOnBounds="true" preserveRatio="true">
                                 <image>
@@ -38,7 +28,7 @@
                         </graphic>
                     </Button>
 
-                    <Label styleClass="admin-badge" text="%admin.badge" />
+                    <Label fx:id="adminBadgeLabel" styleClass="admin-badge" text="%admin.badge" />
 
                     <Region HBox.hgrow="ALWAYS" />
 
@@ -62,16 +52,15 @@
 
             <center>
                 <HBox BorderPane.alignment="CENTER">
-
                     <VBox spacing="4" styleClass="admin-sidebar">
                         <padding>
                             <Insets bottom="24" left="0" right="0" top="24" />
                         </padding>
 
-                        <Label styleClass="sidebar-section-label" text="%admin.sidebar.overview" />
+                        <Label fx:id="sidebarOverviewLabel" styleClass="sidebar-section-label" text="%admin.sidebar.overview" />
                         <Button fx:id="navDashboard" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDashboard" styleClass="sidebar-btn" text="%admin.nav.dashboard" />
 
-                        <Label styleClass="sidebar-section-label" text="%admin.sidebar.management">
+                        <Label fx:id="sidebarManagementLabel" styleClass="sidebar-section-label" text="%admin.sidebar.management">
                             <VBox.margin>
                                 <Insets top="16" />
                             </VBox.margin>
@@ -79,14 +68,12 @@
                         <Button fx:id="navUsers" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showUserManagement" styleClass="sidebar-btn" text="%admin.nav.accounts" />
                         <Button fx:id="navItems" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showItemManagement" styleClass="sidebar-btn" text="%admin.nav.items" />
                         <Button fx:id="navAuctions" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showAuctionManagement" styleClass="sidebar-btn" text="%admin.nav.auctions" />
-                        <Button fx:id="navDeposits" maxWidth="1.7976931348623157E308"
-                                onAction="#showDepositManagement" styleClass="sidebar-btn" text="%admin.nav.deposits"/>
-
+                        <Button fx:id="navDeposits" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showDepositManagement" styleClass="sidebar-btn" text="%admin.nav.deposits" />
 
                         <Region VBox.vgrow="ALWAYS" />
 
                         <Separator />
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-btn-danger" text="%admin.nav.logout" />
+                        <Button fx:id="sidebarLogoutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="sidebar-btn-danger" text="%admin.nav.logout" />
                     </VBox>
 
                     <ScrollPane fitToWidth="true" styleClass="scroll-pane" HBox.hgrow="ALWAYS">
@@ -98,60 +85,60 @@
                                         <Insets bottom="28" left="28" right="28" top="28" />
                                     </padding>
 
-                                    <Label styleClass="admin-page-title" text="%admin.dashboard.heading" />
-                                    <Label styleClass="admin-page-subtitle" text="%admin.dashboard.title" />
+                                    <Label fx:id="dashboardHeadingLabel" styleClass="admin-page-title" text="%admin.dashboard.heading" />
+                                    <Label fx:id="dashboardSubtitleLabel" styleClass="admin-page-subtitle" text="%admin.dashboard.title" />
 
                                     <HBox spacing="16">
                                         <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
                                             <Label styleClass="stat-icon" text="👥" />
                                             <Label fx:id="statTotalUsers" styleClass="stat-number" text="0" />
-                                            <Label styleClass="stat-label" text="%admin.stat.total_users" />
+                                            <Label fx:id="statTotalUsersLabel" styleClass="stat-label" text="%admin.stat.total_users" />
                                         </VBox>
 
                                         <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
                                             <Label styleClass="stat-icon" text="🏷️" />
                                             <Label fx:id="statTotalItems" styleClass="stat-number" text="0" />
-                                            <Label styleClass="stat-label" text="%admin.stat.total_items" />
+                                            <Label fx:id="statTotalItemsLabel" styleClass="stat-label" text="%admin.stat.total_items" />
                                         </VBox>
 
                                         <VBox spacing="8" styleClass="stat-card" HBox.hgrow="ALWAYS">
                                             <Label styleClass="stat-icon" text="🔨" />
                                             <Label fx:id="statActiveAuctions" styleClass="stat-number" text="0" />
-                                            <Label styleClass="stat-label" text="%admin.stat.active_auctions" />
+                                            <Label fx:id="statActiveAuctionsLabel" styleClass="stat-label" text="%admin.stat.active_auctions" />
                                         </VBox>
 
                                         <VBox spacing="8" styleClass="stat-card stat-card-accent" HBox.hgrow="ALWAYS">
                                             <Label styleClass="stat-icon" text="💰" />
                                             <Label fx:id="statTotalRevenue" styleClass="stat-number-accent" text="0 ₫" />
-                                            <Label styleClass="stat-label" text="%admin.stat.total_revenue" />
+                                            <Label fx:id="statTotalRevenueLabel" styleClass="stat-label" text="%admin.stat.total_revenue" />
                                         </VBox>
                                     </HBox>
 
                                     <HBox spacing="16">
                                         <VBox spacing="12" styleClass="admin-card" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-card-title" text="%admin.recent_activity" />
+                                            <Label fx:id="recentActivityTitleLabel" styleClass="admin-card-title" text="%admin.recent_activity" />
                                             <Separator />
                                             <VBox fx:id="recentActivityList" spacing="8" />
-                                            <Button mnemonicParsing="false" styleClass="button-link" text="%admin.btn.view_all" />
+                                            <Button fx:id="viewAllActivityBtn" mnemonicParsing="false" styleClass="button-link" text="%admin.btn.view_all" />
                                         </VBox>
 
                                         <VBox prefWidth="280" spacing="12" styleClass="admin-card">
-                                            <Label styleClass="admin-card-title" text="%admin.quick_stats" />
+                                            <Label fx:id="quickStatsTitleLabel" styleClass="admin-card-title" text="%admin.quick_stats" />
                                             <Separator />
                                             <HBox styleClass="quick-stat-row">
-                                                <Label styleClass="quick-stat-label" text="%admin.stat.banned" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statBannedLabel" styleClass="quick-stat-label" text="%admin.stat.banned" HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="statBanned" styleClass="quick-stat-value-danger" text="0" />
                                             </HBox>
                                             <HBox styleClass="quick-stat-row">
-                                                <Label styleClass="quick-stat-label" text="%admin.stat.upcoming" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statUpcomingLabel" styleClass="quick-stat-label" text="%admin.stat.upcoming" HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="statUpcoming" styleClass="quick-stat-value" text="0" />
                                             </HBox>
                                             <HBox styleClass="quick-stat-row">
-                                                <Label styleClass="quick-stat-label" text="%admin.stat.pending_items" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statPendingItemsLabel" styleClass="quick-stat-label" text="%admin.stat.pending_items" HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="statPendingItems" styleClass="quick-stat-value-warn" text="0" />
                                             </HBox>
                                             <HBox styleClass="quick-stat-row">
-                                                <Label styleClass="quick-stat-label" text="%admin.stat.today_bids" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="statTodayBidsLabel" styleClass="quick-stat-label" text="%admin.stat.today_bids" HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="statTodayBids" styleClass="quick-stat-value" text="0" />
                                             </HBox>
                                         </VBox>
@@ -165,16 +152,16 @@
 
                                     <HBox alignment="CENTER_LEFT" spacing="12">
                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-page-title" text="%admin.users.title" />
-                                            <Label styleClass="admin-page-subtitle" text="%admin.users.subtitle" />
+                                            <Label fx:id="usersTitleLabel" styleClass="admin-page-title" text="%admin.users.title" />
+                                            <Label fx:id="usersSubtitleLabel" styleClass="admin-page-subtitle" text="%admin.users.subtitle" />
                                         </VBox>
-                                        <Button mnemonicParsing="false" onAction="#refreshUsers" styleClass="button-secondary" text="%common.refresh" />
+                                        <Button fx:id="refreshUsersBtn" mnemonicParsing="false" onAction="#refreshUsers" styleClass="button-secondary" text="%common.refresh" />
                                     </HBox>
 
                                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
                                         <TextField fx:id="userSearchField" promptText="%admin.users.search" styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" onAction="#filterLockedUsers" styleClass="filter-btn" text="%admin.filter.locked" />
-                                        <Button mnemonicParsing="false" onAction="#filterAllUsers" styleClass="filter-btn filter-btn-active" text="%admin.filter.all" />
+                                        <Button fx:id="filterLockedUsersBtn" mnemonicParsing="false" onAction="#filterLockedUsers" styleClass="filter-btn" text="%admin.filter.locked" />
+                                        <Button fx:id="filterAllUsersBtn" mnemonicParsing="false" onAction="#filterAllUsers" styleClass="filter-btn" text="%admin.filter.all" />
                                     </HBox>
 
                                     <TableView fx:id="userTable" styleClass="admin-table">
@@ -204,17 +191,17 @@
 
                                     <HBox alignment="CENTER_LEFT" spacing="12">
                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-page-title" text="%admin.items.title" />
-                                            <Label styleClass="admin-page-subtitle" text="%admin.items.subtitle" />
+                                            <Label fx:id="itemsTitleLabel" styleClass="admin-page-title" text="%admin.items.title" />
+                                            <Label fx:id="itemsSubtitleLabel" styleClass="admin-page-subtitle" text="%admin.items.subtitle" />
                                         </VBox>
-                                        <Button mnemonicParsing="false" onAction="#refreshItems" styleClass="button-secondary" text="%common.refresh" />
+                                        <Button fx:id="refreshItemsBtn" mnemonicParsing="false" onAction="#refreshItems" styleClass="button-secondary" text="%common.refresh" />
                                     </HBox>
 
                                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
                                         <TextField fx:id="itemSearchField" promptText="%admin.items.search" styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" onAction="#filterPendingItems" styleClass="filter-btn" text="%admin.filter.pending" />
-                                        <Button mnemonicParsing="false" onAction="#filterActiveItems" styleClass="filter-btn" text="%admin.filter.active" />
-                                        <Button mnemonicParsing="false" onAction="#filterAllItems" styleClass="filter-btn filter-btn-active" text="%admin.filter.all" />
+                                        <Button fx:id="filterPendingItemsBtn" mnemonicParsing="false" onAction="#filterPendingItems" styleClass="filter-btn" text="%admin.filter.pending" />
+                                        <Button fx:id="filterActiveItemsBtn" mnemonicParsing="false" onAction="#filterActiveItems" styleClass="filter-btn" text="%admin.filter.active" />
+                                        <Button fx:id="filterAllItemsBtn" mnemonicParsing="false" onAction="#filterAllItems" styleClass="filter-btn" text="%admin.filter.all" />
                                     </HBox>
 
                                     <TableView fx:id="itemTable" styleClass="admin-table">
@@ -243,17 +230,17 @@
 
                                     <HBox alignment="CENTER_LEFT" spacing="12">
                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-page-title" text="%admin.auction.title" />
-                                            <Label styleClass="admin-page-subtitle" text="%admin.auction.subtitle" />
+                                            <Label fx:id="auctionsTitleLabel" styleClass="admin-page-title" text="%admin.auction.title" />
+                                            <Label fx:id="auctionsSubtitleLabel" styleClass="admin-page-subtitle" text="%admin.auction.subtitle" />
                                         </VBox>
-                                        <Button mnemonicParsing="false" onAction="#refreshAuctions" styleClass="button-secondary" text="%common.refresh" />
+                                        <Button fx:id="refreshAuctionsBtn" mnemonicParsing="false" onAction="#refreshAuctions" styleClass="button-secondary" text="%common.refresh" />
                                     </HBox>
 
                                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
                                         <TextField fx:id="auctionSearchField" promptText="%admin.auction.search" styleClass="admin-search-field" HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" styleClass="filter-btn" text="%admin.filter.running" />
-                                        <Button mnemonicParsing="false" styleClass="filter-btn" text="%admin.filter.upcoming" />
-                                        <Button mnemonicParsing="false" styleClass="filter-btn filter-btn-active" text="%admin.filter.all" />
+                                        <Button fx:id="filterRunningAuctionsBtn" onAction="#filterRunningAuctions" mnemonicParsing="false" styleClass="filter-btn" text="%admin.filter.running" />
+                                        <Button fx:id="filterUpcomingAuctionsBtn" onAction="#filterUpcomingAuctions" mnemonicParsing="false" styleClass="filter-btn" text="%admin.filter.upcoming" />
+                                        <Button fx:id="filterAllAuctionsBtn" onAction="#filterAllAuctions" mnemonicParsing="false" styleClass="filter-btn" text="%admin.filter.all" />
                                     </HBox>
 
                                     <TableView fx:id="auctionTable" styleClass="admin-table">
@@ -282,40 +269,33 @@
 
                                     <HBox alignment="CENTER_LEFT" spacing="12">
                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="admin-page-title" text="%admin.deposits.title" />
-                                            <Label styleClass="admin-page-subtitle" text="%admin.deposits.subtitle" />
+                                            <Label fx:id="depositsTitleLabel" styleClass="admin-page-title" text="%admin.deposits.title" />
+                                            <Label fx:id="depositsSubtitleLabel" styleClass="admin-page-subtitle" text="%admin.deposits.subtitle" />
                                         </VBox>
-                                        <Button mnemonicParsing="false" onAction="#refreshDeposits" styleClass="button-secondary" text="%common.refresh" />
+                                        <Button fx:id="refreshDepositsBtn" mnemonicParsing="false" onAction="#refreshDeposits" styleClass="button-secondary" text="%common.refresh" />
                                     </HBox>
 
-                                    <!-- Filter buttons -->
                                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="toolbar-bar">
-                                        <Button fx:id="depositFilterAll" mnemonicParsing="false" onAction="#filterAllDeposits"
-                                                styleClass="filter-btn, filter-btn-active" text="%admin.filter.all" />
-                                        <Button fx:id="depositFilterPending" mnemonicParsing="false" onAction="#filterPendingDeposits"
-                                                styleClass="filter-btn" text="%admin.filter.pending" />
-                                        <Button fx:id="depositFilterApproved" mnemonicParsing="false" onAction="#filterApprovedDeposits"
-                                                styleClass="filter-btn" text="%admin.filter.approved" />
-                                        <Button fx:id="depositFilterRejected" mnemonicParsing="false" onAction="#filterRejectedDeposits"
-                                                styleClass="filter-btn" text="%admin.filter.rejected" />
+                                        <Button fx:id="depositFilterAll" mnemonicParsing="false" onAction="#filterAllDeposits" styleClass="filter-btn" text="%admin.filter.all" />
+                                        <Button fx:id="depositFilterPending" mnemonicParsing="false" onAction="#filterPendingDeposits" styleClass="filter-btn" text="%admin.filter.pending" />
+                                        <Button fx:id="depositFilterApproved" mnemonicParsing="false" onAction="#filterApprovedDeposits" styleClass="filter-btn" text="%admin.filter.approved" />
+                                        <Button fx:id="depositFilterRejected" mnemonicParsing="false" onAction="#filterRejectedDeposits" styleClass="filter-btn" text="%admin.filter.rejected" />
                                     </HBox>
 
                                     <TableView fx:id="depositTable" styleClass="admin-table">
                                         <columns>
-                                            <TableColumn fx:id="colDepositId"       prefWidth="55"  text="%admin.col.id" />
-                                            <TableColumn fx:id="colDepositUser"     prefWidth="130" text="%admin.col.user" />
-                                            <TableColumn fx:id="colDepositAmount"   prefWidth="140" text="%admin.col.amount" />
-                                            <TableColumn fx:id="colDepositNote"     prefWidth="180" text="%admin.col.note" />
-                                            <TableColumn fx:id="colDepositStatus"   prefWidth="100" text="%admin.col.status" />
-                                            <TableColumn fx:id="colDepositDate"     prefWidth="150" text="%admin.col.time" />
+                                            <TableColumn fx:id="colDepositId" prefWidth="55" text="%admin.col.id" />
+                                            <TableColumn fx:id="colDepositUser" prefWidth="130" text="%admin.col.user" />
+                                            <TableColumn fx:id="colDepositAmount" prefWidth="140" text="%admin.col.amount" />
+                                            <TableColumn fx:id="colDepositNote" prefWidth="180" text="%admin.col.note" />
+                                            <TableColumn fx:id="colDepositStatus" prefWidth="100" text="%admin.col.status" />
+                                            <TableColumn fx:id="colDepositDate" prefWidth="150" text="%admin.col.time" />
                                         </columns>
                                     </TableView>
 
                                     <HBox spacing="12">
-                                        <Button fx:id="btnApproveDeposit" mnemonicParsing="false" onAction="#handleApproveDeposit"
-                                                styleClass="btn-panel-primary" text="%admin.deposit.approve" />
-                                        <Button fx:id="btnRejectDeposit"  mnemonicParsing="false" onAction="#handleRejectDeposit"
-                                                styleClass="btn-warn" text="%admin.deposit.reject" />
+                                        <Button fx:id="btnApproveDeposit" mnemonicParsing="false" onAction="#handleApproveDeposit" styleClass="btn-panel-primary" text="%admin.deposit.approve" />
+                                        <Button fx:id="btnRejectDeposit" mnemonicParsing="false" onAction="#handleRejectDeposit" styleClass="btn-warn" text="%admin.deposit.reject" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="depositActionInfo" styleClass="label-secondary" text="" />
                                     </HBox>
@@ -324,7 +304,6 @@
                             </VBox>
                         </content>
                     </ScrollPane>
-
                 </HBox>
             </center>
         </BorderPane>
@@ -332,21 +311,66 @@
         <AnchorPane fx:id="overlayAdminPanel" managed="false" visible="false">
             <children>
                 <VBox fx:id="adminPanelContent" alignment="TOP_CENTER" layoutX="880" prefHeight="700.0" prefWidth="320.0" spacing="16" styleClass="dashboard-panel" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-
                     <HBox prefWidth="320">
                         <Region HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" onAction="#handleCloseAdminPanel" prefHeight="40" prefWidth="47" styleClass="nav-button" text="✕" />
+                        <Button mnemonicParsing="false" onAction="#handleCloseAdminPanel" prefHeight="40" prefWidth="47" styleClass="panel-nav-btn" text="✕" />
                     </HBox>
 
                     <Label styleClass="admin-avatar-icon" text="🛡" />
-                    <Label styleClass="label-secondary" text="%admin.role" />
+                    <Label fx:id="adminRoleLabel" styleClass="label-secondary" text="%admin.role" />
                     <Label fx:id="panelAdminName" styleClass="item-name" text="Admin" />
 
                     <Separator />
 
-                    <VBox spacing="12">
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="%admin.system_settings" />
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="nav-button" text="%admin.nav.logout" />
+                    <VBox spacing="4" styleClass="panel-nav-group">
+                        <padding>
+                            <Insets left="12" right="12" />
+                        </padding>
+                        <Button fx:id="adminSettingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleToggleAdminSettings" styleClass="panel-nav-btn" text="%main.panel.settings.closed" />
+
+                        <VBox fx:id="adminSettingsSubPanel" managed="false" visible="false" styleClass="settings-sub-panel" spacing="0">
+                            <padding>
+                                <Insets top="4" bottom="4" left="4" right="4" />
+                            </padding>
+                            <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
+                                <padding>
+                                    <Insets top="10" bottom="10" left="12" right="12" />
+                                </padding>
+                                <Label fx:id="adminLangLabel" styleClass="settings-row-label" text="%main.panel.language" HBox.hgrow="ALWAYS" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <HBox styleClass="toggle-group-box" spacing="0">
+                                    <Button fx:id="adminLangEnBtn" mnemonicParsing="false" onAction="#handleAdminLangEn" styleClass="toggle-btn-left" text="EN" />
+                                    <Button fx:id="adminLangViBtn" mnemonicParsing="false" onAction="#handleAdminLangVi" styleClass="toggle-btn-right" text="VI" />
+                                </HBox>
+                            </HBox>
+
+                            <Region styleClass="settings-row-divider" prefHeight="1" />
+
+                            <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
+                                <padding>
+                                    <Insets top="10" bottom="10" left="12" right="12" />
+                                </padding>
+                                <Label fx:id="adminThemeLabel" styleClass="settings-row-label" text="%main.panel.theme" HBox.hgrow="ALWAYS" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <HBox styleClass="toggle-group-box" spacing="0">
+                                    <Button fx:id="adminThemeLightBtn" mnemonicParsing="false" onAction="#handleAdminThemeLight" styleClass="toggle-btn-left" text="☀" />
+                                    <Button fx:id="adminThemeDarkBtn" mnemonicParsing="false" onAction="#handleAdminThemeDark" styleClass="toggle-btn-right" text="🌙" />
+                                </HBox>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <Separator styleClass="panel-separator">
+                        <VBox.margin>
+                            <Insets left="20" right="20" />
+                        </VBox.margin>
+                    </Separator>
+
+                    <VBox spacing="4" styleClass="panel-nav-group">
+                        <padding>
+                            <Insets top="12" left="12" right="12" bottom="24" />
+                        </padding>
+                        <Button fx:id="panelLogoutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="panel-logout-btn" text="%main.panel.logout" />
                     </VBox>
                 </VBox>
             </children>
@@ -362,6 +386,5 @@
                 </HBox>
             </VBox>
         </StackPane>
-
     </children>
 </StackPane>
