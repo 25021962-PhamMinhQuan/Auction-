@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AuctionClient {
-    private static final String HOST = "172.236.140.98";
+    private static final String HOST = "localhost";
     private static final int    PORT = 2501;
 
     private Socket         socket;
@@ -409,6 +409,19 @@ public class AuctionClient {
                 Consumer<List<String>> cb2 = suggestCallback;
                 suggestCallback = null;
                 if (cb2 != null) Platform.runLater(() -> cb2.accept(names));
+                break;
+            }
+            case "BALANCE_UPDATE": {
+                // "BALANCE_UPDATE|newBalance" — server gửi sau khi bid thành công
+                if (parts.length < 2) return;
+                double newBalance = Double.parseDouble(parts[1]);
+                if (currentUser != null) {
+                    currentUser.setBalance(newBalance);
+                }
+                Platform.runLater(() -> {
+                    MainScreenController ctrl = MainScreenController.getInstance();
+                    if (ctrl != null) ctrl.updateBalanceLabel(newBalance);
+                });
                 break;
             }
         }

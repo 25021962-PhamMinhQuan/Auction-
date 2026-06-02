@@ -57,25 +57,50 @@ public class Auction {
                     type == BidTransaction.BidType.MANUAL) {
                 throw new IllegalArgumentException("You are still the highest");
             }
-        }
-
-        public BidTransaction recordBid(Bidder bidder, double amount, BidTransaction.BidType type) {
-            bidLock.lock(); // thread safe
-            try {
-                item.setCurrentPrice(amount);
-                highestBidder = bidder;
-
-                BidTransaction bid = new BidTransaction(bidder, amount, type);
-                bids.add(bid);
-
-                // Anti-sniping
-                AntiSniping();
-
-                return bid;
-            } finally {
-                bidLock.unlock();
+            if (bidder.getBalance() < amount) {
+                throw new IllegalArgumentException("Insufficient balance: your balance is not enough");
             }
         }
+
+    public BidTransaction recordBid(Bidder bidder, double amount, BidTransaction.BidType type) {
+        bidLock.lock(); // thread safe
+        try {
+            if (highestBidder != null) {
+                if (!highestBidder.getId().equals(bidder.getId())) {
+                    // Người khác outbid → hoàn tiền cho highest bidder cũ
+                    double refund = item.getCurrentPrice();
+                    highestBidder.setBalance(highestBidder.getBalance() + refund);
+                    if (onBalanceChanged != null) onBalanceChanged.accept(highestBidder);
+                } else {
+                    // Cùng người tự tăng bid (autobid) → hoàn lại số cũ trước khi trừ số mới
+                    double refund = item.getCurrentPrice();
+                    bidder.setBalance(bidder.getBalance() + refund);
+                }
+            }
+
+            // Trừ balance của bidder mới
+            bidder.setBalance(bidder.getBalance() - amount);
+            if (onBalanceChanged != null) onBalanceChanged.accept(bidder);
+
+            item.setCurrentPrice(amount);
+            highestBidder = bidder;
+
+            BidTransaction bid = new BidTransaction(bidder, amount, type);
+            bids.add(bid);
+
+            // Anti-sniping
+            AntiSniping();
+
+            return bid;
+        } finally {
+            bidLock.unlock();
+        }
+    }
+    // Callback để persist balance thay đổi ra ngoài (set bởi BiddingCoordinator)
+    private java.util.function.Consumer<org.example.domain.user.User> onBalanceChanged;
+    public void setOnBalanceChanged(java.util.function.Consumer<org.example.domain.user.User> cb) {
+        this.onBalanceChanged = cb;
+    }
 
     private LocalDateTime lastExtensionTime = null;
 
@@ -124,11 +149,16 @@ public class Auction {
             }
         }
 
-        public void cancel(){
-            if(status == Status.OPEN || status == Status.RUNNING){
-                status = Status.CANCELED;
+    public void cancel(){
+        if(status == Status.OPEN || status == Status.RUNNING){
+            status = Status.CANCELED;
+            // Hoàn tiền cho highest bidder khi hủy phiên
+            if (highestBidder != null) {
+                highestBidder.setBalance(highestBidder.getBalance() + item.getCurrentPrice());
+                if (onBalanceChanged != null) onBalanceChanged.accept(highestBidder);
             }
         }
+    }
 
         public double getCurrentPrice() {
             return item.getCurrentPrice();

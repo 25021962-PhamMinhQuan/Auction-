@@ -145,6 +145,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         AuctionServer.broadCast("UPDATE|" + auctionId
                                 + "|" + a.getCurrentPrice()
                                 + "|" + highestName + "|" + a.getItem().getEndTime());
+                        // Gửi balance mới về cho client vừa bid
+                        sendMessage("BALANCE_UPDATE|" + currentUser.getBalance());
                     } catch (Exception e) {
                         sendMessage("ERROR|" + e.getMessage());
                     }

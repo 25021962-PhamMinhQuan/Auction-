@@ -7,7 +7,9 @@ import org.example.domain.user.Bidder;
 import org.example.observer.AuctionNotifier;
 import org.example.domain.auction.BidTransaction.BidType;
 import org.example.repository.AuctionRepository;
+import org.example.repository.UserRepository;
 import org.example.repository.impl.ItemDAO;
+import org.example.repository.impl.UserDAO;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -19,11 +21,23 @@ public class BiddingCoordinator {
     private AuctionNotifier auctionNotifier;
     private Consumer<BidTransaction> onBidPerSisted;
     private AuctionRepository auctionRepository;
+    private UserRepository userRepository;
+
 
     public BiddingCoordinator(Auction auction){
         this.auction = auction;
         this.autoBidManager = new AutoBidManager(auction);
         this.auctionNotifier = new AuctionNotifier(auction);
+        this.userRepository = new UserDAO();
+        wireBalanceCallback();
+    }
+    private void wireBalanceCallback() {
+        // Khi balance của user thay đổi (bid/hoàn tiền), persist xuống DB ngay
+        auction.setOnBalanceChanged(user -> {
+            if (userRepository != null) {
+                userRepository.updateBalance(user.getId(), user.getBalance());
+            }
+        });
     }
     public void setAuctionRepository(AuctionRepository auctionRepository) {
         this.auctionRepository = auctionRepository;
