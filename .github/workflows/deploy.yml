@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build and Deploy
 
 on:
   push:
@@ -19,18 +19,26 @@ jobs:
           distribution: 'temurin'
 
       - name: Build JAR
-        run: mvn package -DskipTests
+        run: mvn -B clean package -DskipTests
 
-      - name: Copy JAR lên VPS
+      # Build the Docker image on the CI runner, not on the VPS
+      - name: Build Docker image
+        run: docker build -t auction-server:latest .
+
+      - name: Save Docker image as tarball
+        run: docker save auction-server:latest | gzip > auction-server.tar.gz
+
+      # Ship the ready-made image, not raw build artifacts
+      - name: Copy image to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "target/auction-server.jar"
+          source: "auction-server.tar.gz"
           target: "/root/"
 
-      - name: Restart Docker container
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -39,10 +47,11 @@ jobs:
           script: |
             docker stop auction-server || true
             docker rm auction-server || true
-            docker build -t auction-server:latest /root/
+            docker load < /root/auction-server.tar.gz
             docker run -d \
               --name auction-server \
               --restart unless-stopped \
               -p 2501:2501 \
               auction-server:latest
+            rm /root/auction-server.tar.gz
             echo "Deploy xong!"

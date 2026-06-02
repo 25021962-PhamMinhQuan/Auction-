@@ -153,6 +153,20 @@ public class AuctionClient {
                     BiConsumer<Boolean, String> actionCb = auctionActionCallback;
                     auctionActionCallback = null;
                     Platform.runLater(() -> actionCb.accept(false, msg));
+                } else if (wonAuctionsCallback != null && msg.startsWith("Unknown command: WON_AUCTIONS")) {
+                    Consumer<List<String[]>> wonCb = wonAuctionsCallback;
+                    wonAuctionsCallback = null;
+                    synchronized (pendingWonAuctions) {
+                        pendingWonAuctions.clear();
+                    }
+                    Platform.runLater(() -> wonCb.accept(List.of()));
+                } else if (myItemsCallback != null && msg.startsWith("Unknown command: MY_ITEMS")) {
+                    Consumer<List<String[]>> myCb = myItemsCallback;
+                    myItemsCallback = null;
+                    synchronized (pendingMyItems) {
+                        pendingMyItems.clear();
+                    }
+                    Platform.runLater(() -> myCb.accept(List.of()));
                 } else {
                     Platform.runLater(() -> {
                         // Ưu tiên hiện trên màn hình bid nếu đang mở
