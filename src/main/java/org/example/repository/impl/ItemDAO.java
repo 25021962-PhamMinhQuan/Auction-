@@ -120,13 +120,24 @@ public class ItemDAO implements ItemRepository {
 
     @Override
     public void update(Item item) {
-        String sqlUPDATE = "update item set name=?, description=?, start_price=? where id=?";
+        String sqlUPDATE = "update item set name=?, description=?, start_price=?, start_time=?, end_time=?, image_url=? where id=?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sqlUPDATE)) {
             pstmt.setString(1, item.getName());
             pstmt.setString(2, item.getDescription());
             pstmt.setDouble(3, item.getStartPrice());
-            pstmt.setString(4, item.getId());
+            if (item.getStartTime() == null) {
+                pstmt.setNull(4, java.sql.Types.TIMESTAMP);
+            } else {
+                pstmt.setTimestamp(4, java.sql.Timestamp.from(item.getStartTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
+            }
+            if (item.getEndTime() == null) {
+                pstmt.setNull(5, java.sql.Types.TIMESTAMP);
+            } else {
+                pstmt.setTimestamp(5, java.sql.Timestamp.from(item.getEndTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
+            }
+            pstmt.setString(6, item.getImageUrl());
+            pstmt.setString(7, item.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

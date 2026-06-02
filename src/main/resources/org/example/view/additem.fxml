@@ -30,7 +30,7 @@
                <padding><Insets bottom="40" left="40" right="40" top="30" /></padding>
 
                <!-- ═══ LEFT: Form thêm item mới ═══ -->
-               <VBox prefWidth="420" spacing="14">
+               <VBox prefWidth="480" spacing="14">
                   <Label styleClass="datetime-label" text="%additem.image.label" />
                   <HBox alignment="CENTER_LEFT" spacing="8">
                      <Button mnemonicParsing="false" onAction="#handleChooseImage" styleClass="button-login" text="%additem.image.choose_button" />
@@ -76,17 +76,6 @@
                </VBox>
 
                <!-- ═══ RIGHT: Danh sách item của seller ═══ -->
-               <VBox prefWidth="420" spacing="12" VBox.vgrow="ALWAYS">
-                  <Label styleClass="section-title" text="%additem.my_items" />
-                  <ScrollPane fitToWidth="true" styleClass="scroll-pane" prefHeight="500" VBox.vgrow="ALWAYS">
-                     <content>
-                        <VBox fx:id="myItemsBox" spacing="10">
-                           <padding><Insets bottom="10" right="4" /></padding>
-                        </VBox>
-                     </content>
-                  </ScrollPane>
-               </VBox>
-
             </HBox>
          </content>
       </ScrollPane>

@@ -87,6 +87,15 @@ public abstract class Item extends Entity {
 
     public String getDescription() { return description; }
 
+    public void setName(String name) { this.name = name; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public void setStartPrice(double startPrice) {
+        this.startPrice = startPrice;
+        this.currentPrice = startPrice;
+    }
+
     public abstract String getType();
 
     public void setEndTime(LocalDateTime localDateTime) {

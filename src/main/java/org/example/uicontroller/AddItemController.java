@@ -79,12 +79,12 @@ public class AddItemController {
         startMinuteCombo.setValue("00");
         endHourCombo.setValue("21");
         endMinuteCombo.setValue("00");
-        loadMyItems();
     }
 
     // ─── Load danh sách item của seller ───
 
     private void loadMyItems() {
+        if (myItemsBox == null) return;
         myItemsBox.getChildren().clear();
         AuctionClient.getInstance().requestMyItems(items -> {
             Platform.runLater(() -> {
@@ -94,12 +94,13 @@ public class AddItemController {
                     return;
                 }
                 for (String[] p : items) {
-                    // p = ["MY_ITEM", id, name, startPrice, type, startTime, endTime]
-                    String id    = p.length > 1 ? p[1] : "";
-                    String name  = p.length > 2 ? p[2] : "";
-                    double price = p.length > 3 ? Double.parseDouble(p[3]) : 0;
-                    String type  = p.length > 4 ? p[4] : "";
-                    String startStr = p.length > 5 ? p[5] : "";
+                    // p = ["MY_ITEM", auctionId, itemId, name, currentPrice, type, startTime, endTime, status, ...]
+                    String id    = p.length > 2 ? p[2] : "";
+                    String name  = p.length > 3 ? p[3] : "";
+                    double price = p.length > 4 ? Double.parseDouble(p[4]) : 0;
+                    String type  = p.length > 5 ? p[5] : "";
+                    String startStr = p.length > 6 ? p[6] : "";
+                    String status = p.length > 8 ? p[8] : "";
                     LocalDateTime itemStartTime = null;
                     try {
                         if (!startStr.isEmpty() && !startStr.equals("null"))
@@ -116,13 +117,15 @@ public class AddItemController {
                     Label lInfo  = new Label(type + LanguageManager.get("additem.info.prefix")
                             + String.format("%,.0f VND", price));
                     lInfo.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
+                    Label statusLbl = new Label("Status: " + status);
+                    statusLbl.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
                     HBox btnRow = new HBox(8);
-                    if (itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")))) {
+                    if ("OPEN".equals(status) && itemStartTime != null && itemStartTime.isAfter(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")))) {
                         // Đã lên lịch, chưa đến giờ → không cho start thủ công
                         Label scheduledLbl = new Label(LanguageManager.get("additem.scheduled") + itemStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
                         scheduledLbl.setStyle("-fx-text-fill: #fd7e14; -fx-font-weight: bold;");
                         btnRow.getChildren().add(scheduledLbl);
-                    } else {
+                    } else if (!"RUNNING".equals(status) && !"FINISHED".equals(status) && !"PAID".equals(status) && !"CANCELED".equals(status)) {
                         Button startBtn = new Button(LanguageManager.get("additem.auction.start"));
                         startBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; "
                                 + "-fx-font-weight: bold; -fx-cursor: hand;");
@@ -134,7 +137,7 @@ public class AddItemController {
                     deleteBtn.setOnAction(e -> handleDeleteItem(id, name, card));
 
 
-                    card.getChildren().addAll(lName, lInfo, btnRow);
+                    card.getChildren().addAll(lName, lInfo, statusLbl, btnRow);
                     myItemsBox.getChildren().add(card);
                 }
             });
@@ -241,7 +244,6 @@ public class AddItemController {
                     if (success) {
                         showStatus(String.format(LanguageManager.get("additem.auction.started"), name), true);
                         clearForm();
-                        loadMyItems();
                     } else {
                         showStatus(LanguageManager.get("additem.error.prefix") + " " + msg, false);
                     }

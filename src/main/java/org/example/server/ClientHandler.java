@@ -310,20 +310,85 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     if (!currentUser.getRole().equals(org.example.domain.user.User.UserRole.SELLER.name())) {
                         sendMessage("ERROR|Chỉ Seller mới có item"); return;
                     }
-                    org.example.service.ItemService itemService =
-                            ServiceFactory.getInstance().getItemService();
-                    java.util.List<org.example.domain.item.Item> myItems =
-                            itemService.getItemsBySeller((org.example.domain.user.Seller) currentUser);
-                    sendMessage("MY_ITEMS_LIST|" + myItems.size());
-                    for (org.example.domain.item.Item it : myItems) {
-                        sendMessage("MY_ITEM|" + it.getId()
-                                + "|" + it.getName()
-                                + "|" + it.getStartPrice()
-                                + "|" + it.getType()
-                                + "|" + (it.getStartTime() != null ? it.getStartTime() : "")
-                                + "|" + (it.getEndTime()   != null ? it.getEndTime()   : ""));
+                    List<Auction> myAuctions = getAuctionService().findAuctionsBySeller(currentUser.getId());
+                    sendMessage("MY_ITEMS_LIST|" + myAuctions.size());
+                    for (Auction a : myAuctions) {
+                        sendAuctionPayload("MY_ITEM", a);
                     }
                     sendMessage("MY_ITEMS_END");
+                    break;
+                }
+
+                case "UPDATE_ITEM": {
+                    if (currentUser == null) { sendMessage("ERROR|ChÆ°a Ä‘Äƒng nháº­p"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.SELLER.name())) {
+                        sendMessage("ITEM_UPDATE_ERROR|Only seller can edit item");
+                        return;
+                    }
+                    if (parts.length < 7) { sendMessage("ITEM_UPDATE_ERROR|Missing item info"); return; }
+                    int auctionId = Integer.parseInt(parts[1]);
+                    Auction auction = getAuctionService().findbyId(auctionId);
+                    if (auction == null) { sendMessage("ITEM_UPDATE_ERROR|Auction not found"); return; }
+                    Item item = auction.getItem();
+                    item.setName(parts[2]);
+                    item.setDescription(parts[3]);
+                    item.setStartPrice(Double.parseDouble(parts[4]));
+                    item.setCurrentPrice(Double.parseDouble(parts[4]));
+                    item.setStartTime(java.time.LocalDateTime.parse(parts[5]));
+                    item.setEndTime(java.time.LocalDateTime.parse(parts[6]));
+                    getAuctionService().updateScheduledAuction(auction, currentUser);
+                    sendMessage("ITEM_UPDATED|" + auctionId);
+                    AuctionServer.broadCast("NEW_AUCTION|" + auctionId
+                            + "|" + item.getName()
+                            + "|" + auction.getCurrentPrice()
+                            + "|" + item.getEndTime()
+                            + "|" + item.getStartTime()
+                            + "|" + auction.getStatus().name());
+                    break;
+                }
+
+                case "CANCEL_AUCTION": {
+                    if (currentUser == null) { sendMessage("ERROR|ChÆ°a Ä‘Äƒng nháº­p"); return; }
+                    if (parts.length < 2) { sendMessage("AUCTION_ACTION_ERROR|Missing auctionId"); return; }
+                    int auctionId = Integer.parseInt(parts[1]);
+                    Auction auction = getAuctionService().findbyId(auctionId);
+                    if (auction == null) { sendMessage("AUCTION_ACTION_ERROR|Auction not found"); return; }
+                    getAuctionService().cancelAuction(auction, currentUser);
+                    sendMessage("AUCTION_CANCELLED|" + auctionId);
+                    AuctionServer.broadCast("NEW_AUCTION|" + auctionId
+                            + "|" + auction.getItem().getName()
+                            + "|" + auction.getCurrentPrice()
+                            + "|" + auction.getItem().getEndTime()
+                            + "|" + auction.getItem().getStartTime()
+                            + "|" + auction.getStatus().name());
+                    break;
+                }
+
+                case "CLOSE_AUCTION": {
+                    if (currentUser == null) { sendMessage("ERROR|ChÆ°a Ä‘Äƒng nháº­p"); return; }
+                    if (parts.length < 2) { sendMessage("AUCTION_ACTION_ERROR|Missing auctionId"); return; }
+                    int auctionId = Integer.parseInt(parts[1]);
+                    Auction auction = getAuctionService().findbyId(auctionId);
+                    if (auction == null) { sendMessage("AUCTION_ACTION_ERROR|Auction not found"); return; }
+                    getAuctionService().markPaid(auction, currentUser);
+                    sendMessage("AUCTION_CLOSED|" + auctionId);
+                    AuctionServer.broadCast("FINISHED|" + auctionId + "|"
+                            + (auction.getHighestBidder() != null ? auction.getHighestBidder().getUsername() : "")
+                            + "|" + auction.getCurrentPrice());
+                    break;
+                }
+
+                case "WON_AUCTIONS": {
+                    if (currentUser == null) { sendMessage("ERROR|ChÆ°a Ä‘Äƒng nháº­p"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.BIDDER.name())) {
+                        sendMessage("ERROR|Only bidder can view won auctions"); return;
+                    }
+                    List<Auction> wonAuctions = getAuctionService().findWonAuctions(currentUser.getId());
+                    sendMessage("WON_AUCTIONS_LIST|" + wonAuctions.size());
+                    for (Auction a : wonAuctions) {
+                        sendAuctionPayload("WON_AUCTION", a);
+                    }
+                    sendMessage("WON_AUCTIONS_END");
                     break;
                 }
 
@@ -430,6 +495,26 @@ public class ClientHandler implements Runnable, AuctionObserver {
         // FIX: truoc do chi in ra console, khong gui ve client
         out.println(msg);
         System.out.println("[→ client] " + msg);
+    }
+
+    private void sendAuctionPayload(String prefix, Auction auction) {
+        Item item = auction.getItem();
+        sendMessage(prefix + "|"
+                + auction.getId() + "|"
+                + item.getId() + "|"
+                + safe(item.getName()) + "|"
+                + auction.getCurrentPrice() + "|"
+                + safe(item.getType()) + "|"
+                + (item.getStartTime() != null ? item.getStartTime() : "") + "|"
+                + (item.getEndTime() != null ? item.getEndTime() : "") + "|"
+                + auction.getStatus().name() + "|"
+                + safe(item.getDescription()) + "|"
+                + safe(item.getImageUrl()) + "|"
+                + (auction.getHighestBidder() != null ? safe(auction.getHighestBidder().getUsername()) : ""));
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.replace("|", " ");
     }
 
     private void closeConnection() {

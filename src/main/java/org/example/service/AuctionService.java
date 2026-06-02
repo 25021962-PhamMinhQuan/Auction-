@@ -13,6 +13,7 @@ import org.example.repository.AuctionRepository;
 import org.example.repository.AutoBidRepository;
 import org.example.repository.BidRepository;
 import org.example.repository.ItemRepository;
+import org.example.repository.UserRepository;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class AuctionService {
     private final BidRepository bidDAO;
     private final ItemRepository itemDao;
     private final AutoBidRepository autoBidDao;
+    private final UserRepository userDao;
     private final Map<Integer, BiddingCoordinator> coordinators = new ConcurrentHashMap<>();
     private final Map<Integer, ScheduledExecutorService> schedulers = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
@@ -34,11 +36,13 @@ public class AuctionService {
     public AuctionService(AuctionRepository auctionDAO,
                           BidRepository bidDAO,
                           ItemRepository itemDao,
-                          AutoBidRepository autoBidDAO) {
+                          AutoBidRepository autoBidDAO,
+                          UserRepository userDAO) {
         this.itemDao = itemDao;
         this.auctionDAO = auctionDAO;
         this.bidDAO = bidDAO;
         this.autoBidDao = autoBidDAO;
+        this.userDao = userDAO;
         restoreSchedulers();
     }
 
@@ -216,6 +220,9 @@ public class AuctionService {
     }
 
     public void FinishAuction(Auction auction){
+        if (auction.getStatus() == Auction.Status.FINISHED || auction.getStatus() == Auction.Status.PAID) {
+            return;
+        }
         auction.finish();
         auctionDAO.update(auction, Auction.Status.FINISHED.name());
         autoBidDao.deactivateByAuction(auction.getId());
@@ -235,27 +242,62 @@ public class AuctionService {
             throw new IllegalStateException("Bidder have no right to cancel this auction");
         }
 
+        if (requester.getRole().equals(User.UserRole.SELLER.name())) {
+            String sellerId = itemDao.findSellerIdByItemId(auction.getItem().getId());
+            if (sellerId == null || !sellerId.equals(requester.getId())) {
+                throw new IllegalStateException("You can only cancel your own auction");
+            }
+        }
+
         if(requester.getRole().equals(User.UserRole.SELLER.name()) && auction.getStatus() != Auction.Status.OPEN){
             throw  new IllegalStateException("Auction can't be cancelled after started ");
         }
 
         auction.cancel();
         auctionDAO.updateStatus(auction, Auction.Status.CANCELED.name());
+        itemDao.updateStatus(auction.getItem(), "CANCELED");
         autoBidDao.deactivateByAuction(auction.getId());
         coordinators.remove(auction.getId());
+        cleanup(auction.getId());
     }
 
-    public void markPaid(Auction auction, User requester){
+    public synchronized void markPaid(Auction auction, User requester){
+        if (auction.getStatus() == Auction.Status.RUNNING && now().isAfter(auction.getItem().getEndTime())) {
+            FinishAuction(auction);
+            Auction refreshed = auctionDAO.findById(auction.getId());
+            if (refreshed != null) auction = refreshed;
+        }
+        if (auction.getStatus() != Auction.Status.FINISHED) {
+            throw new IllegalStateException("Auction must be finished before closing winner");
+        }
         if(auction.getHighestBidder() == null){
             throw new IllegalStateException("No bidder won this auction");
         }
 
-        boolean isWinner = auction.getWinner().getId().equals(requester.getId());
+        boolean isWinner = auction.getHighestBidder().getId().equals(requester.getId());
         boolean isAdmin = requester.getRole().equals(User.UserRole.ADMIN.name());
         boolean isSeller = requester.getRole().equals(User.UserRole.SELLER.name());
+        if (isSeller) {
+            String sellerId = itemDao.findSellerIdByItemId(auction.getItem().getId());
+            isSeller = sellerId != null && sellerId.equals(requester.getId());
+        }
 
-        if(!isAdmin && !isWinner){
+        if(!isAdmin && !isWinner && !isSeller){
             throw new IllegalStateException("Unable to paid");
+        }
+
+        User winner = userDao.findById(auction.getHighestBidder().getId());
+        if (winner == null) {
+            throw new IllegalStateException("Winner account not found");
+        }
+        double finalPrice = auction.getCurrentPrice();
+        if (winner.getBalance() < finalPrice) {
+            throw new IllegalStateException("Winner balance is not enough");
+        }
+        double newBalance = winner.getBalance() - finalPrice;
+        userDao.updateBalance(winner.getId(), newBalance);
+        if (requester.getId().equals(winner.getId())) {
+            requester.setBalance(newBalance);
         }
 
         auction.markPaid();
@@ -272,10 +314,10 @@ public class AuctionService {
     }
     public Auction findbyId(int id){
         BiddingCoordinator coord = coordinators.get(id);
-        if (coord==null){
-            return null;
+        if (coord != null){
+            return coord.getAuction();
         }
-        return coord.getAuction();
+        return auctionDAO.findById(id);
     }
 
     public List<String[]> getBidHistory(int auctionId) {
@@ -315,5 +357,32 @@ public class AuctionService {
 
     public long countOpenAuctions() {
         return auctionDAO.findByStatus(Auction.Status.OPEN.name()).size();
+    }
+
+    public Auction findByItemId(String itemId) {
+        return auctionDAO.findByItemId(itemId);
+    }
+
+    public List<Auction> findAuctionsBySeller(String sellerId) {
+        return auctionDAO.findBySellerId(sellerId);
+    }
+
+    public List<Auction> findWonAuctions(String bidderId) {
+        return auctionDAO.findWonByBidderId(bidderId);
+    }
+
+    public void updateScheduledAuction(Auction auction, User requester) {
+        if (!requester.getRole().equals(User.UserRole.SELLER.name())) {
+            throw new IllegalStateException("Only seller can edit scheduled auction");
+        }
+        String sellerId = itemDao.findSellerIdByItemId(auction.getItem().getId());
+        if (sellerId == null || !sellerId.equals(requester.getId())) {
+            throw new IllegalStateException("You can only edit your own auction");
+        }
+        if (auction.getStatus() != Auction.Status.OPEN) {
+            throw new IllegalStateException("Only scheduled auction can be edited");
+        }
+        itemDao.update(auction.getItem());
+        auctionDAO.updateScheduleAndPrice(auction);
     }
 }

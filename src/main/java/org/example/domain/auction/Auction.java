@@ -148,6 +148,10 @@ public class Auction {
             return highestBidder;
         }
 
+        public void setHighestBidder(Bidder highestBidder) {
+            this.highestBidder = highestBidder;
+        }
+
         public Item getItem() {
             return item;
         }

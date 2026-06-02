@@ -15,12 +15,20 @@ public interface AuctionRepository {
 
     void updateEndTime(Auction auction);
 
+    void updateScheduleAndPrice(Auction auction);
+
     List<Auction> findByName(String keyword);
 
     public List<Auction> findByType(String type);
     List<Auction> findAll();
 
     Auction findById(int id);
+
+    Auction findByItemId(String itemId);
+
+    List<Auction> findBySellerId(String sellerId);
+
+    List<Auction> findWonByBidderId(String bidderId);
 
     void delete(int id);
 }

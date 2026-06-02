@@ -100,6 +100,8 @@ public class MainScreenController {
     @FXML private Button depositSubmitBtn;
     @FXML private Label balanceTitleLabel;
     @FXML private Button depositBtn;
+    @FXML private Button sellerMyItemsBtn;
+    @FXML private Button bidderWonAuctionsBtn;
 
 
 
@@ -426,6 +428,8 @@ public class MainScreenController {
         if (depositSubmitBtn != null) depositSubmitBtn.setText(LanguageManager.get("deposit.submit"));
         if (balanceTitleLabel != null) balanceTitleLabel.setText(LanguageManager.get("main.panel.balance"));
         if (depositBtn != null) depositBtn.setText(LanguageManager.get("deposit.open"));
+        if (sellerMyItemsBtn != null) sellerMyItemsBtn.setText(LanguageManager.get("main.panel.my_items"));
+        if (bidderWonAuctionsBtn != null) bidderWonAuctionsBtn.setText(LanguageManager.get("main.panel.won_auctions"));
     }
     private void refreshVisibleCardsLanguage() {
         refreshCardsInContainer(upcomingHbox);
@@ -502,6 +506,7 @@ public class MainScreenController {
             if (panelRoleLabel != null)
                 panelRoleLabel.setText(user.getRole() != null ? user.getRole() : "BIDDER");
             updateBalanceLabel(user.getBalance());
+            updateRoleActions(user.getRole());
 
 // Hiện avatar ở cả navbar lẫn panel
             if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
@@ -539,6 +544,7 @@ public class MainScreenController {
             addItemBtn.setVisible(true);
             addItemBtn.setManaged(true);
         }
+        updateRoleActions(role);
         // Load đầy đủ User object để lấy avatar + full name
         User user = ServiceFactory.getInstance().getUserService().findUser(username);
         if (user != null) {
@@ -735,6 +741,272 @@ public class MainScreenController {
             balanceLabel.setText(fmt.format((long) balance) + " ₫");
         }
     }
+
+    private void updateRoleActions(String role) {
+        boolean isSeller = "SELLER".equals(role);
+        boolean isBidder = "BIDDER".equals(role);
+        if (addItemBtn != null) {
+            addItemBtn.setVisible(isSeller);
+            addItemBtn.setManaged(isSeller);
+        }
+        if (sellerMyItemsBtn != null) {
+            sellerMyItemsBtn.setVisible(isSeller);
+            sellerMyItemsBtn.setManaged(isSeller);
+        }
+        if (bidderWonAuctionsBtn != null) {
+            bidderWonAuctionsBtn.setVisible(isBidder);
+            bidderWonAuctionsBtn.setManaged(isBidder);
+        }
+    }
+
+    @FXML
+    private void handleMyItems() {
+        handleCloseDashboard();
+        currentGridType = "MY_ITEMS";
+        setGridVisible(true);
+        gridPane.getChildren().clear();
+        AuctionClient.getInstance().requestMyItems(items -> Platform.runLater(() -> {
+            gridPane.getChildren().clear();
+            if (items.isEmpty()) {
+                gridPane.getChildren().add(new Label(LanguageManager.get("main.my_items.empty")));
+                return;
+            }
+            for (String[] item : items) {
+                gridPane.getChildren().add(buildSellerAuctionCard(item));
+            }
+        }));
+    }
+
+    @FXML
+    private void handleWonAuctions() {
+        handleCloseDashboard();
+        currentGridType = "WON_AUCTIONS";
+        setGridVisible(true);
+        gridPane.getChildren().clear();
+        AuctionClient.getInstance().requestWonAuctions(items -> Platform.runLater(() -> {
+            gridPane.getChildren().clear();
+            if (items.isEmpty()) {
+                gridPane.getChildren().add(new Label(LanguageManager.get("main.won_auctions.empty")));
+                return;
+            }
+            for (String[] item : items) {
+                gridPane.getChildren().add(buildWonAuctionCard(item));
+            }
+        }));
+    }
+
+    private Node buildSellerAuctionCard(String[] p) {
+        AuctionRow row = parseAuctionRow(p);
+
+        VBox card = baseManagementCard(row);
+        Label descriptionLabel = new Label(row.description);
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.getStyleClass().add("item-time");
+        if (!row.description.isBlank()) {
+            card.getChildren().add(descriptionLabel);
+        }
+
+        HBox actions = new HBox(8);
+        if (!row.supportsActions) {
+            Label note = new Label(LanguageManager.get("main.my_items.server_old"));
+            note.setWrapText(true);
+            note.getStyleClass().add("item-time");
+            card.getChildren().add(note);
+        } else if ("OPEN".equals(row.status)) {
+            Button edit = new Button(LanguageManager.get("main.item.edit"));
+            edit.getStyleClass().add("button-login");
+            edit.setOnAction(e -> editScheduledItem(p));
+            Button cancel = new Button(LanguageManager.get("main.auction.cancel"));
+            cancel.getStyleClass().add("btn-cancel");
+            cancel.setOnAction(e -> cancelAuction(row.auctionId));
+            actions.getChildren().addAll(edit, cancel);
+        } else if ("FINISHED".equals(row.status)) {
+            Button close = new Button(LanguageManager.get("main.auction.close_winner"));
+            close.getStyleClass().add("button-login");
+            close.setOnAction(e -> closeAuction(row.auctionId));
+            actions.getChildren().add(close);
+        }
+        card.getChildren().add(actions);
+        return card;
+    }
+
+    private Node buildWonAuctionCard(String[] p) {
+        AuctionRow row = parseAuctionRow(p);
+        VBox card = baseManagementCard(row);
+        Label note = new Label("PAID".equals(row.status)
+                ? LanguageManager.get("main.won_auctions.paid")
+                : LanguageManager.get("main.won_auctions.waiting"));
+        note.getStyleClass().add("item-time");
+        card.getChildren().add(note);
+        return card;
+    }
+
+    private VBox baseManagementCard(AuctionRow row) {
+        VBox card = new VBox(8);
+        card.setPrefWidth(300);
+        card.getStyleClass().add("item-card");
+        card.setPadding(new javafx.geometry.Insets(14));
+        Label title = new Label(row.name);
+        title.getStyleClass().add("item-name");
+        title.setWrapText(true);
+
+        Label typeLabel = new Label(LanguageManager.get("main.item.type") + ": " + row.type);
+        typeLabel.getStyleClass().add("item-time");
+        Label priceLabel = new Label(LanguageManager.get("common.label.current_price") + " " + formatVND(row.price));
+        priceLabel.getStyleClass().add("item-price");
+        Label startLabel = new Label(LanguageManager.get("itemcard.opens") + " " + formatDateTime(row.startTime));
+        startLabel.getStyleClass().add("item-time");
+        Label endLabel = new Label(LanguageManager.get("itemcard.ends") + " " + formatDateTime(row.endTime));
+        endLabel.getStyleClass().add("item-time");
+        Label statusLabel = new Label(LanguageManager.get("main.auction.status") + ": " + statusLabel(row.status));
+        statusLabel.getStyleClass().add("panel-role-badge");
+        card.getChildren().addAll(title, typeLabel, priceLabel, startLabel, endLabel, statusLabel);
+        if (!row.winner.isBlank()) {
+            Label winnerLabel = new Label(LanguageManager.get("main.auction.winner") + ": " + row.winner);
+            winnerLabel.getStyleClass().add("item-time");
+            card.getChildren().add(winnerLabel);
+        }
+        return card;
+    }
+
+    private void editScheduledItem(String[] p) {
+        int auctionId = parseIntPart(p, 1);
+        String name = prompt(LanguageManager.get("main.item.edit_name"), part(p, 3));
+        if (name == null) return;
+        String desc = prompt(LanguageManager.get("main.item.edit_desc"), part(p, 9));
+        if (desc == null) return;
+        String priceText = prompt(LanguageManager.get("main.item.edit_price"), part(p, 4));
+        if (priceText == null) return;
+        String start = prompt(LanguageManager.get("main.item.edit_start"), part(p, 6));
+        if (start == null) return;
+        String end = prompt(LanguageManager.get("main.item.edit_end"), part(p, 7));
+        if (end == null) return;
+        try {
+            double price = Double.parseDouble(priceText.trim());
+            java.time.LocalDateTime.parse(start.trim());
+            java.time.LocalDateTime.parse(end.trim());
+            AuctionClient.getInstance().updateScheduledItem(auctionId, name.trim(), desc.trim(), price,
+                    start.trim(), end.trim(), (success, msg) -> {
+                        showInfo(success ? LanguageManager.get("main.item.updated") : msg);
+                        handleMyItems();
+                    });
+        } catch (Exception ex) {
+            showInfo(LanguageManager.get("main.item.invalid_update"));
+        }
+    }
+
+    private void cancelAuction(int auctionId) {
+        if (!confirm(LanguageManager.get("main.auction.cancel"), LanguageManager.get("main.auction.cancel_confirm"))) return;
+        AuctionClient.getInstance().cancelAuction(auctionId, (success, msg) -> {
+            showInfo(success ? LanguageManager.get("main.auction.cancelled") : msg);
+            handleMyItems();
+        });
+    }
+
+    private void closeAuction(int auctionId) {
+        if (!confirm(LanguageManager.get("main.auction.close_winner"), LanguageManager.get("main.auction.close_confirm"))) return;
+        AuctionClient.getInstance().closeAuction(auctionId, (success, msg) -> {
+            showInfo(success ? LanguageManager.get("main.auction.closed") : msg);
+            handleMyItems();
+        });
+    }
+
+    private String prompt(String title, String initial) {
+        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(initial);
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+        dialog.setContentText(title);
+        return dialog.showAndWait().orElse(null);
+    }
+
+    private boolean confirm(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        return alert.showAndWait().orElse(javafx.scene.control.ButtonType.CANCEL) == javafx.scene.control.ButtonType.OK;
+    }
+
+    private void showInfo(String message) {
+        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION, message).showAndWait();
+    }
+
+    private String part(String[] p, int index) {
+        return p.length > index && p[index] != null ? p[index] : "";
+    }
+
+    private int parseIntPart(String[] p, int index) {
+        try { return Integer.parseInt(part(p, index)); } catch (Exception ignored) { return 0; }
+    }
+
+    private double parseDoublePart(String[] p, int index) {
+        try { return Double.parseDouble(part(p, index)); } catch (Exception ignored) { return 0; }
+    }
+
+    private String formatVND(double amount) {
+        return String.format("%,.0f VND", amount);
+    }
+
+    private String formatDateTime(String iso) {
+        if (iso == null || iso.isBlank()) return "";
+        try {
+            return java.time.LocalDateTime.parse(iso).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        } catch (Exception ignored) {
+            return iso;
+        }
+    }
+
+    private String statusLabel(String status) {
+        return switch (status) {
+            case "OPEN" -> LanguageManager.get("main.auction.status.open");
+            case "RUNNING" -> LanguageManager.get("main.auction.status.running");
+            case "FINISHED" -> LanguageManager.get("main.auction.status.finished");
+            case "PAID" -> LanguageManager.get("main.auction.status.paid");
+            case "CANCELED" -> LanguageManager.get("main.auction.status.cancelled");
+            default -> status;
+        };
+    }
+
+    private AuctionRow parseAuctionRow(String[] p) {
+        boolean newFormat = p.length > 8 && isKnownAuctionStatus(part(p, 8));
+        if (newFormat) {
+            return new AuctionRow(
+                    parseIntPart(p, 1),
+                    part(p, 2),
+                    part(p, 3),
+                    parseDoublePart(p, 4),
+                    part(p, 5),
+                    part(p, 6),
+                    part(p, 7),
+                    part(p, 8),
+                    part(p, 9),
+                    part(p, 11),
+                    true
+            );
+        }
+        return new AuctionRow(
+                0,
+                part(p, 1),
+                part(p, 2),
+                parseDoublePart(p, 3),
+                part(p, 4),
+                part(p, 5),
+                part(p, 6),
+                "OPEN",
+                "",
+                "",
+                false
+        );
+    }
+
+    private boolean isKnownAuctionStatus(String status) {
+        return "OPEN".equals(status) || "RUNNING".equals(status) || "FINISHED".equals(status)
+                || "PAID".equals(status) || "CANCELED".equals(status);
+    }
+
+    private record AuctionRow(int auctionId, String itemId, String name, double price, String type,
+                              String startTime, String endTime, String status, String description,
+                              String winner, boolean supportsActions) {}
 
     @FXML private void handleOpenDeposit() {
         if (depositOverlay != null) {

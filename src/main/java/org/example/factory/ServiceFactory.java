@@ -34,7 +34,7 @@ public class ServiceFactory {
         this.depositRepositoryImpl = new DepositDAO();
 
 
-        this.auctionService = new AuctionService(AuctionRepositoryImpl, BidRepositoryImpl, ItemRepositoryImpl, AutoBidRepositoryImpl);
+        this.auctionService = new AuctionService(AuctionRepositoryImpl, BidRepositoryImpl, ItemRepositoryImpl, AutoBidRepositoryImpl, UserRepositoryImpl);
         this.itemService = new ItemService(ItemRepositoryImpl);
         this.userService = new UserService(UserRepositoryImpl);
         this.depositService = new DepositService(depositRepositoryImpl);

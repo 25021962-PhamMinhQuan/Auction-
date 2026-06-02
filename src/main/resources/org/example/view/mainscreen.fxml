@@ -302,6 +302,16 @@
                            </Button>
                         </VBox>
 
+                        <VBox spacing="8" styleClass="panel-nav-group">
+                           <padding><Insets left="12" right="12" top="4" bottom="4" /></padding>
+                           <Button fx:id="sellerMyItemsBtn" maxWidth="1.7976931348623157E308" managed="false"
+                                   mnemonicParsing="false" onAction="#handleMyItems"
+                                   styleClass="panel-nav-btn" text="%main.panel.my_items" visible="false" />
+                           <Button fx:id="bidderWonAuctionsBtn" maxWidth="1.7976931348623157E308" managed="false"
+                                   mnemonicParsing="false" onAction="#handleWonAuctions"
+                                   styleClass="panel-nav-btn" text="%main.panel.won_auctions" visible="false" />
+                        </VBox>
+
                         <!-- Settings -->
                         <VBox spacing="2" styleClass="panel-nav-group">
                            <padding><Insets left="12" right="12" /></padding>

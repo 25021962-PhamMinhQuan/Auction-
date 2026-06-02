@@ -31,9 +31,13 @@ public class AuctionClient {
     private Consumer<List<String[]>> openAuctionCallback;
     private Consumer<List<String[]>> runningAuctionCallback;
     private Consumer<List<String[]>>    myItemsCallback;
+    private Consumer<List<String[]>> wonAuctionsCallback;
     private Consumer<List<String[]>> searchAuctionCallback;
     private BiConsumer<Boolean, String> deleteItemCallback;
+    private BiConsumer<Boolean, String> itemUpdateCallback;
+    private BiConsumer<Boolean, String> auctionActionCallback;
     private final List<String[]> pendingMyItems  = new ArrayList<>();
+    private final List<String[]> pendingWonAuctions = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
     private Runnable newAuctionListener;
     private Consumer<List<String>> suggestCallback;
@@ -141,6 +145,14 @@ public class AuctionClient {
                 if (cb != null) {
                     loginCallback = null;
                     cb.accept(false, msg);
+                } else if (itemUpdateCallback != null) {
+                    BiConsumer<Boolean, String> actionCb = itemUpdateCallback;
+                    itemUpdateCallback = null;
+                    Platform.runLater(() -> actionCb.accept(false, msg));
+                } else if (auctionActionCallback != null) {
+                    BiConsumer<Boolean, String> actionCb = auctionActionCallback;
+                    auctionActionCallback = null;
+                    Platform.runLater(() -> actionCb.accept(false, msg));
                 } else {
                     Platform.runLater(() -> {
                         // Ưu tiên hiện trên màn hình bid nếu đang mở
@@ -250,6 +262,57 @@ public class AuctionClient {
                 Consumer<List<String[]>> cb = myItemsCallback;
                 myItemsCallback = null;
                 if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                break;
+            }
+            case "WON_AUCTIONS_LIST": {
+                synchronized (pendingWonAuctions) {
+                    pendingWonAuctions.clear();
+                }
+                break;
+            }
+            case "WON_AUCTION": {
+                if (parts.length < 2) return;
+                synchronized (pendingWonAuctions) {
+                    pendingWonAuctions.add(parts);
+                }
+                break;
+            }
+            case "WON_AUCTIONS_END": {
+                List<String[]> snapshot;
+                synchronized (pendingWonAuctions) {
+                    snapshot = new ArrayList<>(pendingWonAuctions);
+                    pendingWonAuctions.clear();
+                }
+                Consumer<List<String[]>> cb = wonAuctionsCallback;
+                wonAuctionsCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(snapshot));
+                break;
+            }
+            case "ITEM_UPDATED": {
+                BiConsumer<Boolean, String> cb = itemUpdateCallback;
+                itemUpdateCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "ITEM_UPDATE_ERROR": {
+                String reason = parts.length > 1 ? parts[1] : "Update failed";
+                BiConsumer<Boolean, String> cb = itemUpdateCallback;
+                itemUpdateCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(false, reason));
+                break;
+            }
+            case "AUCTION_CANCELLED":
+            case "AUCTION_CLOSED": {
+                BiConsumer<Boolean, String> cb = auctionActionCallback;
+                auctionActionCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "AUCTION_ACTION_ERROR": {
+                String reason = parts.length > 1 ? parts[1] : "Action failed";
+                BiConsumer<Boolean, String> cb = auctionActionCallback;
+                auctionActionCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(false, reason));
                 break;
             }
             case "AUCTION_LIST": {
@@ -431,10 +494,33 @@ public class AuctionClient {
         sendCommand("DELETE_ITEM|" + itemId);
     }
 
+    public void updateScheduledItem(int auctionId, String name, String description,
+                                    double startPrice, String startTime, String endTime,
+                                    BiConsumer<Boolean, String> callback) {
+        this.itemUpdateCallback = callback;
+        sendCommand("UPDATE_ITEM|" + auctionId + "|" + sanitize(name) + "|" + sanitize(description)
+                + "|" + startPrice + "|" + startTime + "|" + endTime);
+    }
+
+    public void cancelAuction(int auctionId, BiConsumer<Boolean, String> callback) {
+        this.auctionActionCallback = callback;
+        sendCommand("CANCEL_AUCTION|" + auctionId);
+    }
+
+    public void closeAuction(int auctionId, BiConsumer<Boolean, String> callback) {
+        this.auctionActionCallback = callback;
+        sendCommand("CLOSE_AUCTION|" + auctionId);
+    }
+
     /** Lấy danh sách item của seller đang đăng nhập */
     public void requestMyItems(Consumer<List<String[]>> callback) {
         this.myItemsCallback = callback;
         sendCommand("MY_ITEMS");
+    }
+
+    public void requestWonAuctions(Consumer<List<String[]>> callback) {
+        this.wonAuctionsCallback = callback;
+        sendCommand("WON_AUCTIONS");
     }
     /** Listener được gọi khi server broadcast NEW_AUCTION */
     public void setNewAuctionListener(Runnable listener) {
@@ -454,6 +540,10 @@ public class AuctionClient {
             out.println(command);
             System.out.println("[→ server] " + command);
         }
+    }
+
+    private String sanitize(String value) {
+        return value == null ? "" : value.replace("|", " ");
     }
 
     public String getCurrentUsername() { return currentUsername; }

@@ -30,6 +30,10 @@ public class ItemService {
         if (!seller.getRole().equals(User.UserRole.SELLER.name())) {
             throw new IllegalStateException("This item can only update by seller");
         }
+        String ownerId = ItemRepositoryImpl.findSellerIdByItemId(item.getId());
+        if (ownerId == null || !ownerId.equals(seller.getId())) {
+            throw new IllegalStateException("You can only update your own item");
+        }
         ItemRepositoryImpl.update(item);
     }
 
