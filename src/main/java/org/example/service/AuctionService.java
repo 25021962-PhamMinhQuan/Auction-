@@ -274,16 +274,11 @@ public class AuctionService {
             throw new IllegalStateException("No bidder won this auction");
         }
 
-        boolean isWinner = auction.getHighestBidder().getId().equals(requester.getId());
         boolean isAdmin = requester.getRole().equals(User.UserRole.ADMIN.name());
         boolean isSeller = requester.getRole().equals(User.UserRole.SELLER.name());
-        if (isSeller) {
-            String sellerId = itemDao.findSellerIdByItemId(auction.getItem().getId());
-            isSeller = sellerId != null && sellerId.equals(requester.getId());
-        }
 
-        if(!isAdmin && !isWinner && !isSeller){
-            throw new IllegalStateException("Unable to paid");
+        if(!isAdmin && !isSeller){
+            throw new IllegalStateException("Only seller or admin can close winner");
         }
 
         User winner = userDao.findById(auction.getHighestBidder().getId());

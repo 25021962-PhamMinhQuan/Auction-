@@ -2,14 +2,12 @@ package org.example.coordinator;
 
 import org.example.domain.auction.Auction;
 import org.example.domain.auction.BidTransaction;
-import org.example.manager.AutoBidManager;
-import org.example.domain.user.Bidder;
-import org.example.observer.AuctionNotifier;
 import org.example.domain.auction.BidTransaction.BidType;
+import org.example.domain.user.Bidder;
+import org.example.manager.AutoBidManager;
+import org.example.observer.AuctionNotifier;
 import org.example.repository.AuctionRepository;
-import org.example.repository.UserRepository;
 import org.example.repository.impl.ItemDAO;
-import org.example.repository.impl.UserDAO;
 import org.example.util.AutoBid;
 
 import java.time.LocalDateTime;
@@ -21,28 +19,18 @@ public class BiddingCoordinator {
     private AuctionNotifier auctionNotifier;
     private Consumer<BidTransaction> onBidPerSisted;
     private AuctionRepository auctionRepository;
-    private UserRepository userRepository;
 
-
-    public BiddingCoordinator(Auction auction){
+    public BiddingCoordinator(Auction auction) {
         this.auction = auction;
         this.autoBidManager = new AutoBidManager(auction);
         this.auctionNotifier = new AuctionNotifier(auction);
-        this.userRepository = new UserDAO();
-        wireBalanceCallback();
     }
-    private void wireBalanceCallback() {
-        // Khi balance của user thay đổi (bid/hoàn tiền), persist xuống DB ngay
-        auction.setOnBalanceChanged(user -> {
-            if (userRepository != null) {
-                userRepository.updateBalance(user.getId(), user.getBalance());
-            }
-        });
-    }
+
     public void setAuctionRepository(AuctionRepository auctionRepository) {
         this.auctionRepository = auctionRepository;
     }
-    public void setOnBidPersisted(Consumer<BidTransaction> logic){
+
+    public void setOnBidPersisted(Consumer<BidTransaction> logic) {
         this.onBidPerSisted = logic;
     }
 
@@ -53,31 +41,29 @@ public class BiddingCoordinator {
     private void placeBidInternal(Bidder bidder, double amount, boolean triggerAuto, BidTransaction.BidType type) {
         LocalDateTime endTimeBefore = auction.getItem().getEndTime();
         auction.AntiSniping();
-        auction.validateBid(bidder,amount, type );
-        BidTransaction bid = auction.recordBid(bidder,amount,type);
-        if(onBidPerSisted!=null){
+        auction.validateBid(bidder, amount, type);
+        BidTransaction bid = auction.recordBid(bidder, amount, type);
+        if (onBidPerSisted != null) {
             onBidPerSisted.accept(bid);
         }
         if (auction.getItem().getEndTime().isAfter(endTimeBefore)) {
-            // Persist endTime mới (anti-snipe) xuống DB
             new ItemDAO().updateEndTime(auction.getItem());
             if (auctionRepository != null) auctionRepository.updateEndTime(auction);
         }
         auctionNotifier.notifyObservers(bid);
 
-        if(triggerAuto){
+        if (triggerAuto) {
             processAutoBids();
         }
     }
 
-    private void processAutoBids(){
+    private void processAutoBids() {
         AutoBidManager.AutoBidResult result = autoBidManager.processAuto();
-        if(result != null){
+        if (result != null) {
             placeBidInternal(result.getBidder(), result.getAmount(), false, BidType.AUTO);
         }
     }
 
-    /** Gọi từ bên ngoài để trigger autobid ngay sau khi đăng ký */
     public synchronized void triggerAutoBid() {
         processAutoBids();
     }
@@ -94,9 +80,7 @@ public class BiddingCoordinator {
         return autoBidManager;
     }
 
-    public  Auction getAuction(){
+    public Auction getAuction() {
         return auction;
     }
-
-
 }
