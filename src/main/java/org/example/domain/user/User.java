@@ -19,6 +19,7 @@ public abstract class User extends Entity {
     protected String phone;
     protected String avatarUrl;
     protected double balance;
+    protected String status;
 
 
     public User(String username, String password, String role) {
@@ -27,6 +28,7 @@ public abstract class User extends Entity {
         this.password = password;
         this.role = role;
         this.balance = 1_000_000_000.0;
+        this.status = "ACTIVE";
 
     }
 
@@ -36,6 +38,7 @@ public abstract class User extends Entity {
         this.password = password;
         this.role = role;
         this.balance = 1_000_000_000.0;
+        this.status = "ACTIVE";
 
     }
 
@@ -50,6 +53,7 @@ public abstract class User extends Entity {
         this.phone     = phone;
         this.avatarUrl = avatarUrl;
         this.balance = 1_000_000_000.0;
+        this.status = "ACTIVE";
 
     }
 
@@ -59,6 +63,7 @@ public abstract class User extends Entity {
         this.username = username; this.password = password; this.role = role;
         this.fullName = fullName; this.email = email; this.phone = phone;
         this.avatarUrl = avatarUrl; this.balance = balance;
+        this.status = "ACTIVE";
     }
 
     public abstract User cloneWithNewPassword(User user, String newPassword);
@@ -87,6 +92,8 @@ public abstract class User extends Entity {
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
     public double getBalance()             { return balance; }
     public void setBalance(double balance) { this.balance = balance; }
+    public String getStatus() { return status == null ? "ACTIVE" : status; }
+    public void setStatus(String status) { this.status = status == null || status.isBlank() ? "ACTIVE" : status; }
 
 }
 

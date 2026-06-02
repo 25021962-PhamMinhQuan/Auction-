@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -16,6 +17,20 @@ import java.util.List;
 import static org.example.repository.impl.DBConnection.getConnection;
 
 public class ItemDAO implements ItemRepository {
+
+    public ItemDAO() {
+        ensureStatusColumn();
+    }
+
+    private void ensureStatusColumn() {
+        String sql = "ALTER TABLE item ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'APPROVED'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            System.err.println("Could not ensure item.status column: " + e.getMessage());
+        }
+    }
 
     private Item buildItem(ResultSet rs) throws SQLException {
         String type = rs.getString("type");
@@ -30,12 +45,18 @@ public class ItemDAO implements ItemRepository {
         LocalDateTime startTime = startTs != null ? startTs.toInstant().atZone(hcm).toLocalDateTime() : null;
         LocalDateTime endTime   = endTs   != null ? endTs.toInstant().atZone(hcm).toLocalDateTime()   : null;
 
-        return ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime,imageUrl);
+        Item item = ItemFactory.createItemFromDAO(type, id, name, description, startPrice, startTime, endTime,imageUrl);
+        try {
+            item.setStatus(rs.getString("status"));
+        } catch (SQLException e) {
+            item.setStatus("APPROVED");
+        }
+        return item;
     }
 
     @Override
     public void save(Item item,String seller_id){
-        String sqlINSERT = "INSERT INTO item (id, name, description, start_price, type, " + "seller_id, start_time, end_time, image_url) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sqlINSERT = "INSERT INTO item (id, name, description, start_price, type, " + "seller_id, start_time, end_time, image_url, status) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try(Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sqlINSERT);){
             pstmt.setString(1,item.getId());
@@ -47,6 +68,7 @@ public class ItemDAO implements ItemRepository {
             pstmt.setTimestamp(7, java.sql.Timestamp.from(item.getStartTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
             pstmt.setTimestamp(8, java.sql.Timestamp.from(item.getEndTime().atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
             pstmt.setString(9, item.getImageUrl());
+            pstmt.setString(10, item.getStatus());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

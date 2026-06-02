@@ -20,6 +20,7 @@ public class ItemService {
             throw new IllegalStateException("Only seller can add item");
         }
         Item item = ItemFactory.createItem(type,name,description,price,start,end,imageUrl);
+        item.setStatus("PENDING");
 
         ItemRepositoryImpl.save(item,seller.getId());
 
@@ -56,6 +57,24 @@ public class ItemService {
     }
     public List<Item> findAllItems() {
         return ItemRepositoryImpl.findAll();
+    }
+
+    public void approveItem(String itemId, User requester) {
+        if (requester == null || !requester.getRole().equals(User.UserRole.ADMIN.name())) {
+            throw new IllegalStateException("Only admin can approve item");
+        }
+        Item item = ItemRepositoryImpl.findById(itemId);
+        if (item == null) {
+            throw new IllegalArgumentException("Item not found");
+        }
+        ItemRepositoryImpl.updateStatus(item, "APPROVED");
+        item.setStatus("APPROVED");
+    }
+
+    public long countPendingItems() {
+        return ItemRepositoryImpl.findAll().stream()
+                .filter(item -> "PENDING".equalsIgnoreCase(item.getStatus()))
+                .count();
     }
 
     public long countAllItems() {

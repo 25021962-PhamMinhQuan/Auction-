@@ -13,5 +13,6 @@ public interface UserRepository {
     List<User> findAll();
     void delete(String id);
     void updateBalance(String userId, double newBalance);
+    void updateStatus(String userId, String status);
 
 }

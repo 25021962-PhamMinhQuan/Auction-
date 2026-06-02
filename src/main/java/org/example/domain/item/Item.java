@@ -14,6 +14,7 @@ public abstract class Item extends Entity {
     protected LocalDateTime startTime;
     protected LocalDateTime endTime;
     protected String imageUrl;
+    protected String status;
 
 
 
@@ -36,6 +37,7 @@ public abstract class Item extends Entity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.imageUrl = imageUrl;
+        this.status = "PENDING";
     }
 
     // constuctor này để lấy dữ liệu từ database khi id đã có sẵn
@@ -54,10 +56,13 @@ public abstract class Item extends Entity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.imageUrl = imageUrl;
+        this.status = "PENDING";
 
     }
 
     public String getImageUrl() { return imageUrl; }
+    public String getStatus() { return status == null ? "PENDING" : status; }
+    public void setStatus(String status) { this.status = status == null || status.isBlank() ? "PENDING" : status; }
 
     public double getStartPrice() {
         return startPrice;
