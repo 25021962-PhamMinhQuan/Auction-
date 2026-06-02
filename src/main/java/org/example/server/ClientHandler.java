@@ -91,6 +91,8 @@ public class ClientHandler implements Runnable, AuctionObserver {
                         sendMessage("ERROR|Không tìm thấy tài khoản");
                     } else if (!BCrypt.checkpw(password, user.getPassword())) {
                         sendMessage("ERROR|Sai mật khẩu");
+                    } else if (userService.isLocked(user)) {
+                        sendMessage("ERROR|Tài khoản đã bị khóa");
                     } else if (!AuctionServer.loggedInUsers.add(user.getUsername())) {
                         sendMessage("ERROR|Tài khoản đã đăng nhập ở nơi khác");
                     } else {
@@ -228,19 +230,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     org.example.domain.item.Item item = itemService.CreateItem(
                             type, name, description, startPrice, startTime, endTime, imageUrl,
                             (org.example.domain.user.Seller) currentUser);
-                    org.example.domain.auction.Auction auction =
-                            new org.example.domain.auction.Auction(item);
-                    getAuctionService().StartAuction(auction);
-                    for (ClientHandler client : AuctionServer.connectClient) {
-                        getAuctionService().addObserverToAuction(auction, client);
-                    }
                     sendMessage("ITEM_ADDED|" + item.getId() + "|" + item.getName());
-                    AuctionServer.broadCast("NEW_AUCTION|" + auction.getId()
-                            + "|" + item.getName()
-                            + "|" + item.getCurrentPrice()
-                            + "|" + item.getEndTime()
-                            + "|" + item.getStartTime()
-                            + "|" + auction.getStatus().name());
                     break;
                 }
                 case "START_AUCTION": {
@@ -263,6 +253,10 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     }
                     if (item.getEndTime().isBefore(AuctionService.now())) {
                         sendMessage("ERROR|Thời gian kết thúc đã qua");
+                        return;
+                    }
+                    if (!"APPROVED".equalsIgnoreCase(item.getStatus())) {
+                        sendMessage("ERROR|Item đang chờ Admin duyệt");
                         return;
                     }
 

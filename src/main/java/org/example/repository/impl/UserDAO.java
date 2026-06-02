@@ -13,6 +13,20 @@ import static org.example.repository.impl.DBConnection.getConnection;
 
 public class UserDAO implements UserRepository {
 
+    public UserDAO() {
+        ensureStatusColumn();
+    }
+
+    private void ensureStatusColumn() {
+        String sql = "ALTER TABLE account ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'ACTIVE'";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            System.err.println("Could not ensure account.status column: " + e.getMessage());
+        }
+    }
+
     private User mapUser(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         String username = rs.getString("username");
@@ -22,6 +36,8 @@ public class UserDAO implements UserRepository {
         String email = rs.getString("email");
         String phone = rs.getString("phone");
         String avatarUrl = rs.getString("avatar_url");
+        String status;
+        try { status = rs.getString("status"); } catch (SQLException e) { status = "ACTIVE"; }
         double balance;
         try { balance = rs.getDouble("balance"); } catch (SQLException e) { balance = 1_000_000_000.0; }
 
@@ -32,6 +48,7 @@ public class UserDAO implements UserRepository {
         };
 
         user.setBalance(balance);
+        user.setStatus(status);
         return user;
     }
 
@@ -58,6 +75,18 @@ public class UserDAO implements UserRepository {
             stmt.setDouble(1, newBalance); stmt.setString(2, userId);
             stmt.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    @Override
+    public void updateStatus(String userId, String status) {
+        String sql = "UPDATE account SET status=? WHERE id=?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

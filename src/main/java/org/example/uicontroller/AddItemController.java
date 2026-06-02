@@ -242,7 +242,7 @@ public class AddItemController {
                 (success, msg) -> {
                     submitBtn.setDisable(false);
                     if (success) {
-                        showStatus(String.format(LanguageManager.get("additem.auction.started"), name), true);
+                        showStatus(String.format(LanguageManager.get("additem.submitted"), name), true);
                         clearForm();
                     } else {
                         showStatus(LanguageManager.get("additem.error.prefix") + " " + msg, false);

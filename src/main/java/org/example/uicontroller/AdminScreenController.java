@@ -272,7 +272,7 @@ public class AdminScreenController {
         colRole.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getRole()));
         colUserStatus.setCellValueFactory(data ->
-                new SimpleStringProperty("ACTIVE"));
+                new SimpleStringProperty(data.getValue().getStatus()));
         colUserDate.setCellValueFactory(data ->
                 new SimpleStringProperty("—"));
 
@@ -401,8 +401,8 @@ public class AdminScreenController {
         statUpcoming.setText(String.valueOf(upcomingAuctions));
 
         statTotalRevenue.setText("0 ₫");
-        statBanned.setText("0");
-        statPendingItems.setText("0");
+        statBanned.setText(String.valueOf(userService.countLockedUsers()));
+        statPendingItems.setText(String.valueOf(itemService.countPendingItems()));
         statTodayBids.setText("0");
 
         recentActivityList.getChildren().clear();
@@ -446,8 +446,10 @@ public class AdminScreenController {
 
     @FXML
     public void filterLockedUsers() {
-        userTable.setItems(FXCollections.observableArrayList());
-        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.filter_note"));
+        List<User> users = userService.findAllUsers().stream()
+                .filter(userService::isLocked)
+                .toList();
+        userTable.setItems(FXCollections.observableArrayList(users));
     }
 
     @FXML
@@ -457,8 +459,18 @@ public class AdminScreenController {
             showInfo(LanguageManager.get("admin.account.none_selected"), LanguageManager.get("admin.account.none_selected.msg"));
             return;
         }
+        if (User.UserRole.ADMIN.name().equals(selectedUser.getRole())) {
+            showInfo(LanguageManager.get("admin.notice"), "Admin account cannot be locked.");
+            return;
+        }
 
-        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.lock_note"));
+        showConfirm(LanguageManager.get("admin.account.lock.title"),
+                String.format(LanguageManager.get("admin.account.lock.msg"), selectedUser.getUsername()),
+                () -> {
+                    userService.lockUser(selectedUser.getId());
+                    loadUsers();
+                    loadDashboardStats();
+                });
     }
 
     @FXML
@@ -469,7 +481,13 @@ public class AdminScreenController {
             return;
         }
 
-        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.account.unlock_note"));
+        showConfirm(LanguageManager.get("admin.account.unlock.title"),
+                String.format(LanguageManager.get("admin.account.unlock.msg"), selectedUser.getUsername()),
+                () -> {
+                    userService.unlockUser(selectedUser.getId());
+                    loadUsers();
+                    loadDashboardStats();
+                });
     }
 
     @FXML
@@ -483,6 +501,7 @@ public class AdminScreenController {
                 "ID: " + selectedUser.getId()
                         + "\nUsername: " + selectedUser.getUsername()
                         + "\nRole: " + selectedUser.getRole()
+                        + "\nStatus: " + selectedUser.getStatus()
                         + "\nEmail: " + nullToDash(selectedUser.getEmail())
                         + "\nPhone: " + nullToDash(selectedUser.getPhone()));
     }
@@ -540,8 +559,7 @@ public class AdminScreenController {
     @FXML
     public void filterPendingItems() {
         List<Item> items = itemService.findAllItems().stream()
-                .filter(item -> item.getStartTime() != null
-                        && item.getStartTime().isAfter(java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"))))
+                .filter(item -> "PENDING".equalsIgnoreCase(item.getStatus()))
                 .toList();
         itemTable.setItems(FXCollections.observableArrayList(items));
     }
@@ -565,7 +583,20 @@ public class AdminScreenController {
             return;
         }
 
-        showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.item.approve_note"));
+        if ("APPROVED".equalsIgnoreCase(selectedItem.getStatus())) {
+            showInfo(LanguageManager.get("admin.notice"), LanguageManager.get("admin.item.already_approved"));
+            return;
+        }
+
+        showConfirm(LanguageManager.get("admin.item.approve.title"),
+                String.format(LanguageManager.get("admin.item.approve.msg"), selectedItem.getName()),
+                () -> {
+                    itemService.approveItem(selectedItem.getId(), currentAdmin);
+                    Item approvedItem = itemService.getItemById(selectedItem.getId());
+                    auctionService.activateApprovedItem(approvedItem);
+                    loadItems();
+                    loadDashboardStats();
+                });
     }
 
     @FXML
@@ -579,6 +610,7 @@ public class AdminScreenController {
                 "ID: " + selectedItem.getId()
                         + "\nTên: " + selectedItem.getName()
                         + "\nLoại: " + selectedItem.getType()
+                        + "\nTrạng thái: " + selectedItem.getStatus()
                         + "\nGiá hiện tại: " + formatMoney(selectedItem.getCurrentPrice())
                         + "\nBắt đầu: " + formatDateTime(selectedItem.getStartTime())
                         + "\nKết thúc: " + formatDateTime(selectedItem.getEndTime())
@@ -714,7 +746,11 @@ public class AdminScreenController {
         confirmOverlay.setVisible(false);
         confirmOverlay.setManaged(false);
         if (pendingConfirmAction != null) {
-            pendingConfirmAction.run();
+            try {
+                pendingConfirmAction.run();
+            } catch (Exception e) {
+                showInfo(LanguageManager.get("common.error"), e.getMessage());
+            }
             pendingConfirmAction = null;
         }
     }
@@ -772,6 +808,9 @@ public class AdminScreenController {
     }
 
     private String resolveItemStatus(Item item) {
+        if (item.getStatus() != null && !"APPROVED".equalsIgnoreCase(item.getStatus())) {
+            return item.getStatus();
+        }
         if (item.getStartTime() == null || item.getEndTime() == null) {
             return "UNKNOWN";
         }

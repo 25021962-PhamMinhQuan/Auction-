@@ -60,6 +60,9 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
+        if (isLocked(user)) {
+            throw new RuntimeException("Account is locked");
+        }
         // nếu password lấy ra từ object user ko = các password được nhập thì sai
         if (!BCrypt.checkpw(password,user.getPassword())) {
             throw new RuntimeException("Wrong password");
@@ -100,8 +103,37 @@ public class UserService {
         UserRepositoryImpl.delete(userId);
     }
 
+    public void lockUser(String userId) {
+        User user = UserRepositoryImpl.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+        if (User.UserRole.ADMIN.name().equals(user.getRole())) {
+            throw new IllegalStateException("Admin account cannot be locked");
+        }
+        UserRepositoryImpl.updateStatus(userId, "LOCKED");
+    }
+
+    public void unlockUser(String userId) {
+        User user = UserRepositoryImpl.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+        UserRepositoryImpl.updateStatus(userId, "ACTIVE");
+    }
+
+    public boolean isLocked(User user) {
+        return user != null && "LOCKED".equalsIgnoreCase(user.getStatus());
+    }
+
     public long countAllUsers() {
         return UserRepositoryImpl.findAll().size();
+    }
+
+    public long countLockedUsers() {
+        return UserRepositoryImpl.findAll().stream()
+                .filter(this::isLocked)
+                .count();
     }
 }
 

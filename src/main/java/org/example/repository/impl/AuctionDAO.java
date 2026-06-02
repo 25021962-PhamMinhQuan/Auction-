@@ -77,11 +77,11 @@ public class AuctionDAO implements AuctionRepository {
     @Override
     public List<Auction> findByStatus(String status) {
         String sql = "select a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "from auction a join item i on a.item_id = i.id " +
                 "left join account hb on a.highest_bidder_id = hb.id " +
-                "where a.status = ?";
+                "where a.status = ? AND i.status = 'APPROVED'";
         List<Auction> result = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -127,11 +127,11 @@ public class AuctionDAO implements AuctionRepository {
     public List<Auction> findByType(String type) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
-                "WHERE UPPER(i.type) = ?";
+                "WHERE UPPER(i.type) = ? AND i.status = 'APPROVED'";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, type.toUpperCase());
@@ -147,11 +147,11 @@ public class AuctionDAO implements AuctionRepository {
         List<Auction> result = new ArrayList<>();
         String sql =
                         "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                        "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                        "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                         "i.start_time, i.end_time " +
                         "FROM auction a JOIN item i ON a.item_id = i.id " +
                         "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
-                        "WHERE i.name ILIKE ?";
+                        "WHERE i.name ILIKE ? AND i.status = 'APPROVED'";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
@@ -169,7 +169,7 @@ public class AuctionDAO implements AuctionRepository {
     public List<Auction> findAll() {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
@@ -190,7 +190,7 @@ public class AuctionDAO implements AuctionRepository {
     @Override
     public Auction findById(int id) {
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
@@ -213,7 +213,7 @@ public class AuctionDAO implements AuctionRepository {
     @Override
     public Auction findByItemId(String itemId) {
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
@@ -233,7 +233,7 @@ public class AuctionDAO implements AuctionRepository {
     public List<Auction> findBySellerId(String sellerId) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
@@ -253,7 +253,7 @@ public class AuctionDAO implements AuctionRepository {
     public List<Auction> findWonByBidderId(String bidderId) {
         List<Auction> result = new ArrayList<>();
         String sql = "SELECT a.id, a.current_price, a.status, a.highest_bidder_id, hb.username as highest_bidder_username, " +
-                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, " +
+                "i.id as item_id, i.name, i.description, i.start_price, i.type, i.image_url, i.status as item_status, " +
                 "i.start_time, i.end_time " +
                 "FROM auction a JOIN item i ON a.item_id = i.id " +
                 "LEFT JOIN account hb ON a.highest_bidder_id = hb.id " +
@@ -301,6 +301,11 @@ public class AuctionDAO implements AuctionRepository {
                 endTime,
                 rs.getString("image_url")
         );
+        try {
+            item.setStatus(rs.getString("item_status"));
+        } catch (SQLException e) {
+            item.setStatus("APPROVED");
+        }
 
         item.setCurrentPrice(rs.getDouble("current_price"));
 

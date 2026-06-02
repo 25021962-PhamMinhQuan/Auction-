@@ -1,0 +1,138 @@
+[33med93831[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Thêm My items cho Seller, Won Auctions cho Bidder
+[33m58ae0e4[m Sua lai GUI Admin
+[33ma3b3a44[m fix java version to 21
+[33m24b3122[m add CI/CD workflow
+[33mc4b162c[m remove wrong folder
+[33mb028601[m add CI/CD workflow
+[33m4393a66[m cập nhật endtime cho ui
+[33m798877b[m fix antisnipe
+[33mbe0cb74[m Tối ưu GUI login/register,Cập nhật Eng/Vie cho phần Currency,Admin
+[33md321224[m Chỉnh sửa GUI Login/Logout
+[33m0999e1b[m Thêm vào balance.
+[33m588e252[m Thêm chức năng đổi ngôn ngữ En/Vi
+[33m6c36003[m fix thời gian
+[33m376c266[m Sửa lại 1 lần nữa lỗi hiển thị người bid highest
+[33md3e4ac7[m Sửa lỗi autobid hiện giá người bid cao nhất nhưng tên của người bid hiện tại
+[33m1e95cc5[m Thêm login cho Admin
+[33mbc302c9[m Merge branch 'Test_Admin'
+[33mc219c31[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33mcdd7678[m[33m ([m[1;31morigin/Test_Admin[m[33m)[m Update xem seller item
+[33m581e3db[m sửa antisnipe
+[33mfde9be2[m Sửa lại max bid và sửa chart theo theme.
+[33m2392dbb[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33me359d1e[m quên sửa host
+[33m2c1cb22[m sửa anti snipe
+[33m48ab57b[m Thêm Chỉnh theme Light/Dark
+[33mbc3b85e[m Thêm Chỉnh theme Light/Dark
+[33mb39030b[m Thêm biểu đồ giá
+[33mbe80871[m Sửa lại server host
+[33m0e55ffb[m Update GUI Admin
+[33m29ae1e3[m Sửa lại lỗi không hiển thị lịch sử Bid và sửa lại Autobid + lỗi duplicate lần bid
+[33m3ea6f1a[m Hoàn thiện edit profile
+[33m2c650bc[m Sửa lại History
+[33m4b76eab[m fix
+[33m2ee4ac1[m fix real
+[33m2a2152a[m fix lệch múi giờ
+[33m6a2f022[m Thêm chỉnh sửa thông tin cá nhân
+[33md05eece[m Thêm chỉnh sửa thông tin cá nhân
+[33m787070f[m remove CI/CD
+[33mede4a3d[m fix: skip tests in build
+[33mc7f6d2a[m fix: use ed25519 key directly
+[33m9ce42fe[m fix: use base64 decoded key
+[33m342930c[m fix: use password auth
+[33mce29a4b[m fix: use password auth for SSH
+[33m6d951a1[m add CI/CD workflow
+[33m936c884[m Update thanh search
+[33m75ef9ce[m sửa lỗi ch update giá real-time
+[33m8ba59b5[m A
+[33m85880f2[m Update Side-panel, Nav-bar
+[33m68653dd[m sửa lỗi acution bị kẹt trên up coming
+[33m0a04d79[m Sửa server
+[33ma25b708[m Them Logout
+[33mfa00651[m Thêm xử lí categories ở màn hình chính
+[33mf42f54a[m Chỉnh sửa Search
+[33mc8730db[m deploy
+[33m00d86aa[m Update lại Input Thời gian
+[33m1c1438d[m fix lỗi tk đăng nhập 2 nơi 1 lúc
+[33m808dcb0[m Update load các Upcoming Item ở màn hình chính
+[33m21aa5d8[m Thêm ảnh và Screen và Thêm lưu trữ ảnh ở bucket trên SupaBase
+[33me37f8f8[m Sửa lại logic Gui add item
+[33m5f33bb4[m Them thanh serach
+[33mb613d20[m Sửa lại cái strategy
+[33mb871b2a[m Thêm countdown cho mainscreen và & bid
+[33mdcc4e91[m Update logic GUI Add item & Tối ưu nút đăng nhập
+[33m34134e0[m Đã đấu giá được và sửa lại DAO
+[33m0ebfc38[m JUnit test case
+[33m10b0d40[m Update lại GUI Add item, Tối ưu lại login, thêm khung Dashboard cho Profile
+[33m5cc2a07[m Code moi nhat chuan bi ghi de
+[33mb5a5f8e[m Ẩn các overlay
+[33mc6c9d45[m Sửa lại mainScreen ko phóng to đc
+[33m8f777f0[m fix lỗi đăng kí và đăng nhập
+[33m1e8355c[m bỏ cmt trog loginctrller
+[33mbc37d36[m Fix lỗi kiểm tra mật khẩu
+[33m98129e4[m fix register
+[33mae95c82[m sửa handler
+[33m25d4559[m hoàn thiện socket
+[33m7b3cb19[m Fix các lỗi nhỏ
+[33me9265d2[m Thêm loại sản phẩm.
+[33m2788f9f[m Them chon role seller/bidder tu khi dang ki
+[33m792a0fb[m Cap nhat UI
+[33mec68954[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33m07de7d2[m Refactor lại toàn bộ dự án.
+[33m00ec861[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33md400673[m Đảm bảo race condition
+[33mec351b1[m Sửa lại clientHandler của phương
+[33m2329265[m Update GUI
+[33m9c9ea50[m Sửa lại tên cho antiSniping.
+[33m108f185[m sửa Item DAO để ko tự tạo ra object.
+[33m807bf60[m Update Detail&Mainscreen
+[33m2e1468e[m Thay đổi String thành enum để không code smell. Nhưng chx xong còn từ ITEMDAO lên trên nx
+[33ma74acd9[m Update Biding UI
+[33ma0b055f[m Thay đổi database local lên cloud, thay mysql thành PostgreSQL, thêm connection pool
+[33m1d199f6[m Update GUI Mainscreen
+[33mb56ec9d[m Update Login
+[33m1238578[m Update handle login
+[33m2937c43[m auctionclient và bổ sung thêm 1 số method cần trong login và mainscreen
+[33m1ea264e[m them server va clienthandler
+[33me2a78f5[m auction server va client handle(chua xong dau nhe quan)
+[33m3290000[m Tách Controller
+[33mb5ad7d2[m Thêm checkStyle trong pom
+[33mb5b917c[m Thêm generator ID
+[33m5a76181[m "tach controller"
+[33m50fd404[m Thêm generator ID
+[33m81cef2f[m Update lại các class Service đang vi phạm DIP do phụ thuộc trực tiếp vào các lớp DAO. Đồng thời thêm vào 1 class để quản lí các service
+[33ma148768[m Merge remote-tracking branch 'origin/main'
+[33madd615d[m Update giao dien Login & Register
+[33m746ee58[m sửa lại ItemFactory theo hướng strategy pattern
+[33m2460652[m update mainscreen xiu
+[33m9fd6b7f[m Giảm tải nhiệm vụ cho auction = cách chia ra thành BiddingCoordinate, AuctionNotifier và AutoBidManager
+[33m50110c6[m update mainscreen
+[33m09617d9[m doi cho view
+[33m7486eac[m thay anh icon
+[33m59d7f4d[m Thêm vào các kiểm tra cho tên tài khoản và giá tiền của item
+[33mb2f18d2[m Chỉnh sửa lại Connection vơi dataBase qua confid và thêm itemDAO
+[33mdd72b2f[m Merge remote-tracking branch 'origin/main'
+[33m71cd6d0[m Chỉnh sử các truy cập dataBase. không truy cập trực tiếp nữa mà giờ là qua config
+[33mf479b4f[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33m9a8cbca[m doi directory
+[33m7363013[m Cập nhập thêm status cancel và paid
+[33m139ed33[m Cập nhật thêm safety thread ở observer và thêm cái tự check thời gian để kết thúc.
+[33m9966284[m update gui dki, dangnhap
+[33mcf03a8e[m Merge branch 'main' of https://github.com/25021962-PhamMinhQuan/Auction-
+[33mf0437e6[m Merge remote-tracking branch 'origin/main'
+[33m44f7aa8[m Thêm ktra thời gian
+[33m0b07915[m fix
+[33m4f9872d[m test
+[33me948332[m sua xiu
+[33m5b3310e[m sua xiu
+[33ma6fbb30[m Thêm dataBase cho autoBid
+[33mab90a21[m CHỈNH SỬA LẠI DATABASE CHO RÕ RÀNG HƠN
+[33ma5f0304[m Chỉnh sửa lại tên class auction -> Auction
+[33m459a865[m init project
+[33m98fd851[m thêm gui dki
+[33m1fe8bc8[m thêm gui đăng nhập
+[33mf27c986[m init project
+[33m0eec9d8[m init project
+[33ma01038a[m Remove .idea folder and add to gitignore
+[33maf4427e[m .gitignore
+[33mbe15fde[m init project

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import org.example.domain.auction.Auction;
 import org.example.coordinator.BiddingCoordinator;
+import org.example.domain.item.Item;
 import org.example.domain.user.Bidder;
 import org.example.domain.user.User;
 import org.example.observer.AuctionObserver;
@@ -79,6 +80,9 @@ public class AuctionService {
     }
 
     private void registerScheduler(Auction auction) {
+        if (schedulers.containsKey(auction.getId())) {
+            return;
+        }
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         schedulers.put(auction.getId(), scheduler);
         scheduler.scheduleAtFixedRate(() -> {
@@ -183,6 +187,34 @@ public class AuctionService {
                 cleanup(auction.getId());
             }
         }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public void activateApprovedItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item not found");
+        }
+        if (!"APPROVED".equalsIgnoreCase(item.getStatus())) {
+            throw new IllegalStateException("Item must be approved before auction is activated");
+        }
+
+        Auction auction = auctionDAO.findByItemId(item.getId());
+        if (auction == null) {
+            StartAuction(new Auction(item));
+            return;
+        }
+
+        if (auction.getStatus() == Auction.Status.OPEN || auction.getStatus() == Auction.Status.RUNNING) {
+            registerScheduler(auction);
+            if (auction.getStatus() == Auction.Status.RUNNING && !coordinators.containsKey(auction.getId())) {
+                BiddingCoordinator coordinator = new BiddingCoordinator(auction);
+                coordinator.setAuctionRepository(auctionDAO);
+                coordinator.setOnBidPersisted(bid -> {
+                    auctionDAO.update(auction, Auction.Status.RUNNING.name());
+                    bidDAO.save(bid, auction.getId());
+                });
+                coordinators.put(auction.getId(), coordinator);
+            }
+        }
     }
 
     //searcj
