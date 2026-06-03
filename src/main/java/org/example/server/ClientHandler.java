@@ -474,6 +474,85 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     sendMessage("BID_HISTORY_END|" + auctionId);
                     break;
                 }
+                case "APPROVE_DEPOSIT": {
+                    // "APPROVE_DEPOSIT|requestId"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                        sendMessage("ERROR|Chỉ Admin mới được duyệt nạp tiền"); return;
+                    }
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu requestId"); return; }
+
+                    int depositReqId = Integer.parseInt(parts[1]);
+                    org.example.service.DepositService depositSvc =
+                            ServiceFactory.getInstance().getDepositService();
+
+                    // Lấy thông tin request để biết userId và amount trước khi approve
+                    org.example.domain.user.DepositRequest depositReq =
+                            depositSvc.getAllRequests().stream()
+                                    .filter(r -> r.getId() == depositReqId)
+                                    .findFirst().orElse(null);
+
+                    if (depositReq == null) { sendMessage("ERROR|Không tìm thấy yêu cầu nạp tiền"); return; }
+                    if (depositReq.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
+                        sendMessage("ERROR|Yêu cầu không ở trạng thái chờ duyệt"); return;
+                    }
+
+                    depositSvc.approve(depositReqId);
+                    sendMessage("DEPOSIT_APPROVED|" + depositReqId);
+
+                    // Lấy balance mới từ DB rồi push BALANCE_UPDATE về đúng client của user đó
+                    UserService depositUserSvc = ServiceFactory.getInstance().getUserService();
+                    User depositTargetUser = depositUserSvc.findUserById(depositReq.getUserId());
+                    if (depositTargetUser != null) {
+                        double newBalance = depositTargetUser.getBalance();
+                        for (ClientHandler client : AuctionServer.connectClient) {
+                            if (client.currentUser != null
+                                    && client.currentUser.getId().equals(depositReq.getUserId())) {
+                                client.currentUser.setBalance(newBalance);
+                                client.sendMessage("BALANCE_UPDATE|" + newBalance);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "REJECT_DEPOSIT": {
+                    // "REJECT_DEPOSIT|requestId"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                        sendMessage("ERROR|Chỉ Admin mới được từ chối nạp tiền"); return;
+                    }
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu requestId"); return; }
+
+                    int rejectReqId = Integer.parseInt(parts[1]);
+                    org.example.service.DepositService rejectDepositSvc =
+                            ServiceFactory.getInstance().getDepositService();
+
+                    org.example.domain.user.DepositRequest rejectReq =
+                            rejectDepositSvc.getAllRequests().stream()
+                                    .filter(r -> r.getId() == rejectReqId)
+                                    .findFirst().orElse(null);
+
+                    if (rejectReq == null) { sendMessage("ERROR|Không tìm thấy yêu cầu nạp tiền"); return; }
+                    if (rejectReq.getStatus() != org.example.domain.user.DepositRequest.Status.PENDING) {
+                        sendMessage("ERROR|Yêu cầu không ở trạng thái chờ duyệt"); return;
+                    }
+
+                    rejectDepositSvc.reject(rejectReqId);
+                    sendMessage("DEPOSIT_REJECTED|" + rejectReqId);
+
+                    // Notify user bị từ chối (tuỳ chọn — client có thể dùng để hiển thị thông báo)
+                    for (ClientHandler client : AuctionServer.connectClient) {
+                        if (client.currentUser != null
+                                && client.currentUser.getId().equals(rejectReq.getUserId())) {
+                            client.sendMessage("DEPOSIT_REQUEST_REJECTED|" + rejectReqId);
+                            break;
+                        }
+                    }
+                    break;
+                }
+
                 case "APPROVE_ITEM": {
                     // "APPROVE_ITEM|itemId"
                     if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }

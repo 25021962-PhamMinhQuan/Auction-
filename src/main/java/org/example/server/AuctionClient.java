@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class AuctionClient {
-    private static final String HOST = "172.236.140.98";
+    private static final String HOST = "localhost";
     private static final int    PORT = 2501;
 
     private Socket         socket;
@@ -37,6 +37,8 @@ public class AuctionClient {
     private BiConsumer<Boolean, String> itemUpdateCallback;
     private BiConsumer<Boolean, String> auctionActionCallback;
     private BiConsumer<Boolean, String> approveItemCallback;
+    private BiConsumer<Boolean, String> approveDepositCallback;
+    private BiConsumer<Boolean, String> rejectDepositCallback;
     private final List<String[]> pendingMyItems  = new ArrayList<>();
     private final List<String[]> pendingWonAuctions = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
@@ -259,6 +261,28 @@ public class AuctionClient {
                 BiConsumer<Boolean, String> cb = approveItemCallback;
                 approveItemCallback = null;
                 if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "DEPOSIT_APPROVED": {
+                // Server đã approve thành công, gọi callback cho Admin UI
+                BiConsumer<Boolean, String> cb = approveDepositCallback;
+                approveDepositCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "DEPOSIT_REJECTED": {
+                // Server đã reject thành công, gọi callback cho Admin UI
+                BiConsumer<Boolean, String> cb = rejectDepositCallback;
+                rejectDepositCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
+                break;
+            }
+            case "DEPOSIT_REQUEST_REJECTED": {
+                // Thông báo cho user biết yêu cầu nạp tiền bị từ chối
+                Platform.runLater(() -> {
+                    MainScreenController ctrl = MainScreenController.getInstance();
+                    if (ctrl != null) ctrl.showDepositRejectedNotification();
+                });
                 break;
             }
             case "MY_ITEMS_LIST": {
@@ -531,6 +555,18 @@ public class AuctionClient {
     public void approveItem(String itemId, BiConsumer<Boolean, String> callback) {
         this.approveItemCallback = callback;
         sendCommand("APPROVE_ITEM|" + itemId);
+    }
+
+    /** Admin duyệt yêu cầu nạp tiền — server sẽ cộng balance và push BALANCE_UPDATE về client */
+    public void approveDeposit(int requestId, BiConsumer<Boolean, String> callback) {
+        this.approveDepositCallback = callback;
+        sendCommand("APPROVE_DEPOSIT|" + requestId);
+    }
+
+    /** Admin từ chối yêu cầu nạp tiền */
+    public void rejectDeposit(int requestId, BiConsumer<Boolean, String> callback) {
+        this.rejectDepositCallback = callback;
+        sendCommand("REJECT_DEPOSIT|" + requestId);
     }
 
     public void updateScheduledItem(int auctionId, String name, String description,

@@ -334,8 +334,8 @@ public class MainScreenController {
         return false;
     }
 
-        private void setGridVisible(boolean show) {
-            mainContent.setVisible(!show);
+    private void setGridVisible(boolean show) {
+        mainContent.setVisible(!show);
         mainContent.setManaged(!show);
         gridScroll.setVisible(show);
         gridScroll.setManaged(show);
@@ -740,6 +740,16 @@ public class MainScreenController {
             java.text.NumberFormat fmt = java.text.NumberFormat.getInstance(new java.util.Locale("vi","VN"));
             balanceLabel.setText(fmt.format((long) balance) + " ₫");
         }
+    }
+
+    /** Hiển thị thông báo khi yêu cầu nạp tiền bị Admin từ chối */
+    public void showDepositRejectedNotification() {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.WARNING);
+        alert.setTitle("Nạp tiền bị từ chối");
+        alert.setHeaderText(null);
+        alert.setContentText("Yêu cầu nạp tiền của bạn đã bị Admin từ chối.");
+        alert.showAndWait();
     }
 
     private void updateRoleActions(String role) {
