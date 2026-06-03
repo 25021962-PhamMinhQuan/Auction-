@@ -7,9 +7,6 @@ on:
     branches: [ main ]
 
 jobs:
-  # ─────────────────────────────────────────
-  # JOB 1: Chạy toàn bộ unit test
-  # ─────────────────────────────────────────
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -25,6 +22,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Create config.properties
+        run: echo "${{ secrets.CONFIG_PROPERTIES }}" > src/main/resources/config.properties
+
       - name: Run tests
         run: mvn -B test
 
@@ -36,9 +36,6 @@ jobs:
           path: target/surefire-reports/
           retention-days: 7
 
-  # ─────────────────────────────────────────
-  # JOB 2: Build và deploy
-  # ─────────────────────────────────────────
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
@@ -55,6 +52,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+
+      - name: Create config.properties
+        run: echo "${{ secrets.CONFIG_PROPERTIES }}" > src/main/resources/config.properties
 
       - name: Build JAR
         run: mvn -B clean package -DskipTests
@@ -85,11 +85,9 @@ jobs:
 
             docker load < /root/auction-server.tar.gz
 
-            # Dừng và xóa container cũ nếu tồn tại (bất kể trạng thái)
             docker stop auction-server --time=5 2>/dev/null || true
             docker rm -f auction-server 2>/dev/null || true
 
-            # Đợi port 2501 được giải phóng hẳn
             for i in $(seq 1 10); do
               if ! ss -tlnp | grep -q ':2501'; then
                 echo "Port 2501 đã sẵn sàng"
@@ -99,19 +97,17 @@ jobs:
               sleep 1
             done
 
-            # Tạo và start container mới
             docker run -d \
               --name auction-server \
               --restart unless-stopped \
               -p 2501:2501 \
               auction-server:latest
 
-            # Xác nhận container đang chạy
             sleep 2
             if docker ps | grep -q auction-server; then
               echo "Deploy thành công! Container đang chạy."
             else
-              echo "Deploy thất bại! Container không start được."
+              echo "Deploy thất bại!"
               docker logs auction-server --tail=20
               exit 1
             fi
