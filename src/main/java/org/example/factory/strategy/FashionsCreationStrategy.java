@@ -24,7 +24,7 @@ public class FashionsCreationStrategy implements ItemCreationStrategy{
             LocalDateTime start,
             LocalDateTime end,
             String imageUrl){
-        return new Fashions(name, describe, price, start, end, imageUrl);
+        return new Fashions(id,name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){

@@ -89,7 +89,6 @@ public class RegisterController implements Initializable {
         stage.show();
     }
 
-    // ──────── xử lý đăng ký ────────
 
     @FXML
     public void handleRegister(ActionEvent e) {
@@ -98,8 +97,6 @@ public class RegisterController implements Initializable {
         String confirm  = cfpasswordfield.isVisible() ? cfpasswordfield.getText() : cfpassTextfield.getText();
         String roleStr  = (sellerRadio != null && sellerRadio.isSelected()) ? "SELLER" : "BIDDER";
 
-        // FIX 1: UI-level check — KHÔNG disable button ở đây, chỉ hiện lỗi và return
-        // Button chỉ bị disable khi thực sự gửi lên server
         if (username.isEmpty()) { warning.setText(LanguageManager.get("login.no_username")); return; }
         if (password.isEmpty()) { warning.setText(LanguageManager.get("login.no_password")); return; }
         if (!password.equals(confirm)) { warning.setText(LanguageManager.get("register.password_mismatch")); return; }
@@ -110,8 +107,6 @@ public class RegisterController implements Initializable {
 
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 
-        // FIX 2: connect tới server trước khi gửi REGISTER
-        // (LoginController gọi connect() nhưng nếu user vào thẳng Register thì chưa connect)
         try {
             AuctionClient.getInstance().connect(stage);
         } catch (IOException ex) {

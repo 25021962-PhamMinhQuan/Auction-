@@ -24,7 +24,7 @@ public class VehiclesCreationStrategy implements ItemCreationStrategy{
             LocalDateTime start,
             LocalDateTime end,
             String imageUrl){
-        return new Vehicles(name, describe, price, start, end, imageUrl);
+        return new Vehicles(id,name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){

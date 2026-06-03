@@ -14,10 +14,6 @@ public class ItemFactoryTest {
     private final LocalDateTime START = LocalDateTime.now().plusMinutes(5);
     private final LocalDateTime END = START.plusHours(1);
 
-    // ============================================================
-    // CREATE ITEM - HAPPY PATH
-    // ============================================================
-
     @Test
     @DisplayName("Tạo item ELECTRONICS thành công")
     void testCreateElectronics() {
@@ -138,10 +134,6 @@ public class ItemFactoryTest {
                 () -> ItemFactory.createItem("UNKNOWN_TYPE", "Phone", "desc", 1_000_000, START, END, "img.jpg"));
     }
 
-    // ============================================================
-    // CREATE FROM DAO (with existing ID)
-    // ============================================================
-
     @Test
     @DisplayName("createItemFromDAO() tạo item với ID đã có sẵn")
     void testCreateItemFromDAO() {
@@ -158,10 +150,6 @@ public class ItemFactoryTest {
         assertThrows(IllegalArgumentException.class,
                 () -> ItemFactory.createItemFromDAO("INVALID", "id-1", "Name", "desc", 1_000_000, START, END, "img.jpg"));
     }
-
-    // ============================================================
-    // AVAILABLE TYPES
-    // ============================================================
 
     @Test
     @DisplayName("getAvailableTypes() trả về đủ 6 loại item")

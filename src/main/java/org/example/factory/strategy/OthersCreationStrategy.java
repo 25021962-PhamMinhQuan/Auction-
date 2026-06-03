@@ -24,7 +24,7 @@ public class OthersCreationStrategy implements ItemCreationStrategy{
             LocalDateTime start,
             LocalDateTime end,
             String imageUrl){
-        return new Others(name, describe, price, start, end, imageUrl);
+        return new Others(id,name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){

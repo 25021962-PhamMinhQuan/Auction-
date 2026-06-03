@@ -24,7 +24,7 @@ public class EstateCreationStrategy implements ItemCreationStrategy{
             LocalDateTime start,
             LocalDateTime end,
             String imageUrl){
-        return new Estate(name, describe, price, start, end, imageUrl);
+        return new Estate(id,name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){

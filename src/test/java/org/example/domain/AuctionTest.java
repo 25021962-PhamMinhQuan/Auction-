@@ -31,10 +31,6 @@ public class AuctionTest {
         bidder2 = new Bidder("USER_002", "bob", "pass");
     }
 
-    // ============================================================
-    // STATUS TRANSITIONS
-    // ============================================================
-
     @Test
     @DisplayName("Auction khởi tạo phải có trạng thái OPEN")
     void testInitialStatusIsOpen() {
@@ -102,9 +98,6 @@ public class AuctionTest {
         assertEquals(Auction.Status.RUNNING, auction.getStatus());
     }
 
-    // ============================================================
-    // VALIDATE BID
-    // ============================================================
 
     @Test
     @DisplayName("validateBid() ném lỗi nếu bidder là null")
@@ -162,10 +155,6 @@ public class AuctionTest {
         assertDoesNotThrow(() -> auction.validateBid(bidder1, validBid, BidTransaction.BidType.MANUAL));
     }
 
-    // ============================================================
-    // RECORD BID
-    // ============================================================
-
     @Test
     @DisplayName("recordBid() cập nhật giá hiện tại và highest bidder")
     void testRecordBidUpdatesState() {
@@ -212,10 +201,6 @@ public class AuctionTest {
         assertNotNull(tx.getTime());
     }
 
-    // ============================================================
-    // WINNER & MIN INCREMENT
-    // ============================================================
-
     @Test
     @DisplayName("getWinner() trả về null khi chưa FINISHED")
     void testGetWinnerNotFinished() {
@@ -246,9 +231,6 @@ public class AuctionTest {
         assertEquals(expected, auction.getMinIncrement(), 0.001);
     }
 
-    // ============================================================
-    // ANTI-SNIPING
-    // ============================================================
 
     @Test
     @DisplayName("AntiSniping() gia hạn thời gian khi trong 30s cuối")
@@ -269,9 +251,6 @@ public class AuctionTest {
         assertEquals(before, item.getEndTime());
     }
 
-    // ============================================================
-    // GETTERS / SETTERS
-    // ============================================================
 
     @Test
     @DisplayName("setId() và getId() hoạt động đúng")

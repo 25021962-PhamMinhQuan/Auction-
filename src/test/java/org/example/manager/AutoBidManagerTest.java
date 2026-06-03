@@ -32,9 +32,6 @@ public class AutoBidManagerTest {
         bidder2 = new Bidder("USER_B02", "bob", "pass");
     }
 
-    // ============================================================
-    // processAuto() - KHÔNG CÓ AUTO BID
-    // ============================================================
 
     @Test
     @DisplayName("processAuto() trả về null khi không có auto bid nào")
@@ -43,9 +40,7 @@ public class AutoBidManagerTest {
         assertNull(result);
     }
 
-    // ============================================================
-    // processAuto() - MỘT AUTO BID
-    // ============================================================
+
 
     @Test
     @DisplayName("processAuto() với 1 auto bid hợp lệ -> đặt giá thành công")
@@ -83,10 +78,6 @@ public class AutoBidManagerTest {
         assertNull(result);
     }
 
-    // ============================================================
-    // processAuto() - HAI AUTO BID
-    // ============================================================
-
     @Test
     @DisplayName("processAuto() với 2 bidder: bidder maxBid cao hơn thắng")
     void testProcessAutoTwoBidders_HigherMaxBidWins() {
@@ -117,9 +108,7 @@ public class AutoBidManagerTest {
         assertEquals(12_000_000, result.getAmount(), 0.001);
     }
 
-    // ============================================================
-    // PRIORITY QUEUE - THỨ TỰ ƯU TIÊN
-    // ============================================================
+
 
     @Test
     @DisplayName("AutoBid có maxBid cao hơn được ưu tiên hơn")
@@ -134,9 +123,6 @@ public class AutoBidManagerTest {
         assertEquals(bidder1, result.getBidder()); // bidder1 maxBid=15M thắng
     }
 
-    // ============================================================
-    // AutoBidResult GETTERS
-    // ============================================================
 
     @Test
     @DisplayName("AutoBidResult.getBidder() và getAmount() trả về đúng")
@@ -149,9 +135,6 @@ public class AutoBidManagerTest {
         assertTrue(result.getAmount() > 0);
     }
 
-    // ============================================================
-    // THREAD SAFETY - addAutoBid
-    // ============================================================
 
     @Test
     @DisplayName("addAutoBid() và processAuto() hoạt động đúng sau nhiều lần thêm")

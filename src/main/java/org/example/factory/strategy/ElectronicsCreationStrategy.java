@@ -24,7 +24,7 @@ public class ElectronicsCreationStrategy implements ItemCreationStrategy {
             LocalDateTime start,
             LocalDateTime end,
             String imageUrl){
-        return new Electronics(name, describe, price, start, end, imageUrl);
+        return new Electronics(id,name, describe, price, start, end, imageUrl);
     }
 
     public String getType(){
