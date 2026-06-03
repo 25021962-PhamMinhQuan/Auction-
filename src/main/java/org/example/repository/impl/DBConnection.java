@@ -26,11 +26,13 @@ public class DBConnection {
 
             config.setMaximumPoolSize(3); // Giữ sẵn 10 kết nối luôn mở
             config.setConnectionTimeout(30000); // Đợi tối đa 30s
-            config.setIdleTimeout(600000);
+            config.setMinimumIdle(0);
+            config.setIdleTimeout(10000);
 
             ds = new HikariDataSource(config);
             System.out.println("Connection Pool initialization successful!");
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Connection Pool Configuration Error", e);
         }
     }

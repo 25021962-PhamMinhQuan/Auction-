@@ -82,7 +82,7 @@ src/main/resources/config.properties
 Sau đó copy toàn bộ nội dung sau vào file (đây là credentials kết nối database và storage của dự án):
 
 ```properties
-db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
 db.username=postgres.affpxxlcjinbsbtatwjd
 db.password=m4ch4_|3r0wnj3
 db.driver=org.postgresql.Driver
@@ -99,8 +99,8 @@ supabase.bucket.avatar=Avatar-imange
 > ```bash
 > cat > src/main/resources/config.properties << 'EOF'
 > db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
-> db.username=postgres.affpxxlcjinbsbtatwjd
-> db.password=m4ch4_|3r0wnj3
+> db.username=username
+> db.password=password
 > db.driver=org.postgresql.Driver
 >
 > supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
@@ -148,7 +148,7 @@ Sau khi build thành công, hai artifact được tạo ra trong thư mục `tar
 
 ##  Hướng dẫn chạy Server & Client
 
-### Bước 1 — Chạy Server
+### Bước 1 — Chạy Server (Nếu chạy localhost còn nếu dùng server chung thì skip sang bước 2)
 
 > Server cần khởi động trước khi mở bất kỳ client nào.
 
@@ -192,7 +192,7 @@ mvn exec:java "-Dexec.mainClass=org.example.server.AuctionServer"
 
 ```bash
 # Linux / macOS / Windows — chạy JavaFX GUI qua Maven plugin
-mvn javafx:run
+mvn compile exec:java -Dexec.mainClass="org.example.uicontroller.Launcher"
 ```
 
 Nếu muốn truyền tham số JVM thủ công (ví dụ khi không dùng Maven plugin):
