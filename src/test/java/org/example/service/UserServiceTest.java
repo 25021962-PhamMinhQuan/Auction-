@@ -19,31 +19,64 @@ public class UserServiceTest {
     // ---- Mock UserRepository (không cần Mockito) ----
     private static class MockUserRepository implements UserRepository {
         private final java.util.Map<String, User> byUsername = new java.util.HashMap<>();
-        private final java.util.Map<String, User> byId       = new java.util.HashMap<>();
+        private final java.util.Map<String, User> byId = new java.util.HashMap<>();
 
-        @Override public void save(User user) {
+        @Override
+        public void save(User user) {
             byUsername.put(user.getUsername(), user);
             byId.put(user.getId(), user);
         }
-        @Override public User findByUsername(String username) { return byUsername.get(username); }
-        @Override public User findById(String id)             { return byId.get(id); }
-        @Override public List<User> findAll()                 { return new java.util.ArrayList<>(byId.values()); }
-        @Override public void delete(String id)               { User u = byId.remove(id); if(u!=null) byUsername.remove(u.getUsername()); }
-        @Override public void updateProfile(User user)        { save(user); }
-        @Override public void updatePassword(String id, String hashed) {
+
+        @Override
+        public User findByUsername(String username) {
+            return byUsername.get(username);
+        }
+
+        @Override
+        public User findById(String id) {
+            return byId.get(id);
+        }
+
+        @Override
+        public List<User> findAll() {
+            return new java.util.ArrayList<>(byId.values());
+        }
+
+        @Override
+        public void delete(String id) {
+            User u = byId.remove(id);
+            if (u != null) byUsername.remove(u.getUsername());
+        }
+
+        @Override
+        public void updateProfile(User user) {
+            save(user);
+        }
+
+        @Override
+        public void updatePassword(String id, String hashed) {
             User u = byId.get(id);
             if (u != null) {
                 User updated = u.cloneWithNewPassword(u, hashed);
                 save(updated);
             }
         }
-        @Override public void updateBalance(String id, double balance) {
+
+        @Override
+        public void updateBalance(String id, double balance) {
             User u = byId.get(id);
             if (u != null) u.setBalance(balance);
         }
-    }
 
-    private MockUserRepository repo;
+        @Override
+        public void updateStatus(String userId, String status) {
+            User u = byId.get(userId);
+            if (u != null) u.setStatus(status);
+        }
+        }
+
+
+        private MockUserRepository repo;
     private UserService service;
 
     // Mật khẩu đủ mạnh: chữ hoa, chữ thường, số, ký tự đặc biệt
