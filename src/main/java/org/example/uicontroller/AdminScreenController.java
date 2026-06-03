@@ -916,14 +916,10 @@ public class AdminScreenController {
                         fmt.format((long) selected.getAmount()), selected.getUsername()),
                 () -> AuctionClient.getInstance().approveDeposit(selected.getId(), (ok, msg) ->
                         javafx.application.Platform.runLater(() -> {
-                            if (ok) {
-                                loadDeposits();
-                                if (depositActionInfo != null)
-                                    depositActionInfo.setText(
-                                            String.format(LanguageManager.get("admin.deposit.approved_info"), selected.getId()));
-                            } else {
-                                showInfo(LanguageManager.get("common.error"), msg);
-                            }
+                            loadDeposits();
+                            if (depositActionInfo != null)
+                                depositActionInfo.setText(
+                                        String.format(LanguageManager.get("admin.deposit.approved_info"), selected.getId()));
                         }))
         );
     }
@@ -946,18 +942,13 @@ public class AdminScreenController {
                 String.format(LanguageManager.get("admin.deposit.reject.msg"), selected.getUsername()),
                 () -> AuctionClient.getInstance().rejectDeposit(selected.getId(), (ok, msg) ->
                         javafx.application.Platform.runLater(() -> {
-                            if (ok) {
-                                loadDeposits();
-                                if (depositActionInfo != null)
-                                    depositActionInfo.setText(
-                                            String.format(LanguageManager.get("admin.deposit.rejected_info"), selected.getId()));
-                            } else {
-                                showInfo(LanguageManager.get("common.error"), msg);
-                            }
+                            loadDeposits();
+                            if (depositActionInfo != null)
+                                depositActionInfo.setText(
+                                        String.format(LanguageManager.get("admin.deposit.rejected_info"), selected.getId()));
                         }))
         );
     }
-
 
     @FXML
     public void handleToggleAdminSettings() {

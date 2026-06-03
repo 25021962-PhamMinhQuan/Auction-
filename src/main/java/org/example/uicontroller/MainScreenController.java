@@ -577,9 +577,36 @@ public class MainScreenController {
     public void onAuctionFinished(int auctionId, String winner, double finalPrice) {
         System.out.printf("Auction #%d finished — Winner: %s, Final: %,.0f VND%n",
                 auctionId, winner, finalPrice);
-        // Reload cả hai hàng để đồng bộ trạng thái
         loadUpcoming();
         loadOngoing();
+        // Nếu seller đang xem MY_ITEMS → reload để hiện nút "Chốt winner"
+        if ("MY_ITEMS".equals(currentGridType)) {
+            handleMyItems();
+        }
+        // Nếu bidder đang xem WON_AUCTIONS → reload để cập nhật trạng thái
+        if ("WON_AUCTIONS".equals(currentGridType)) {
+            handleWonAuctions();
+        }
+    }
+
+    public void onAuctionPaid(int auctionId, String winner, double finalPrice) {
+        System.out.printf("Auction #%d PAID — Winner: %s, Final: %,.0f VND%n",
+                auctionId, winner, finalPrice);
+        loadUpcoming();
+        loadOngoing();
+        // Seller đang xem MY_ITEMS → reload để ẩn nút "Chốt winner", hiện trạng thái PAID
+        if ("MY_ITEMS".equals(currentGridType)) {
+            handleMyItems();
+        }
+        // Bidder đang xem WON_AUCTIONS → reload để đổi label "Chờ xác nhận" → "Đã thanh toán"
+        if ("WON_AUCTIONS".equals(currentGridType)) {
+            handleWonAuctions();
+        }
+        // Nếu user hiện tại là winner → cập nhật số dư trên label
+        User me = AuctionClient.getInstance().getCurrentUser();
+        if (me != null && me.getUsername().equals(winner)) {
+            updateBalanceLabel(me.getBalance());
+        }
     }
 
 

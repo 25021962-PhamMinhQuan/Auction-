@@ -343,6 +343,27 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     break;
                 }
 
+                case "STOP_AUCTION": {
+                    // "STOP_AUCTION|auctionId" -- Admin dung phien (ca OPEN lan RUNNING)
+                    if (currentUser == null) { sendMessage("ERROR|Chua dang nhap"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                        sendMessage("AUCTION_ACTION_ERROR|Chi Admin moi duoc dung dau gia"); return;
+                    }
+                    if (parts.length < 2) { sendMessage("AUCTION_ACTION_ERROR|Missing auctionId"); return; }
+                    int stopAuctionId = Integer.parseInt(parts[1]);
+                    Auction stopAuction = getAuctionService().findbyId(stopAuctionId);
+                    if (stopAuction == null) { sendMessage("AUCTION_ACTION_ERROR|Auction not found"); return; }
+                    getAuctionService().stopAuction(stopAuctionId, currentUser);
+                    sendMessage("AUCTION_STOPPED|" + stopAuctionId);
+                    AuctionServer.broadCast("NEW_AUCTION|" + stopAuctionId
+                            + "|" + stopAuction.getItem().getName()
+                            + "|" + stopAuction.getCurrentPrice()
+                            + "|" + stopAuction.getItem().getEndTime()
+                            + "|" + stopAuction.getItem().getStartTime()
+                            + "|CANCELED");
+                    break;
+                }
+
                 case "CANCEL_AUCTION": {
                     if (currentUser == null) { sendMessage("ERROR|ChÆ°a Ä‘Äƒng nháº­p"); return; }
                     if (parts.length < 2) { sendMessage("AUCTION_ACTION_ERROR|Missing auctionId"); return; }
@@ -366,11 +387,33 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     int auctionId = Integer.parseInt(parts[1]);
                     Auction auction = getAuctionService().findbyId(auctionId);
                     if (auction == null) { sendMessage("AUCTION_ACTION_ERROR|Auction not found"); return; }
+
+                    // Lấu thông tin winner trước khi markPaid (sau markPaid balance đã bị trừtrong DB)
+                    String winnerId = auction.getHighestBidder() != null
+                            ? auction.getHighestBidder().getId() : null;
+
                     getAuctionService().markPaid(auction, currentUser);
                     sendMessage("AUCTION_CLOSED|" + auctionId);
-                    AuctionServer.broadCast("FINISHED|" + auctionId + "|"
+                    AuctionServer.broadCast("PAID|" + auctionId + "|"
                             + (auction.getHighestBidder() != null ? auction.getHighestBidder().getUsername() : "")
                             + "|" + auction.getCurrentPrice());
+
+                    // Push BALANCE_UPDATE về đúng client của winner đẳ UI cập nhật realtime
+                    if (winnerId != null) {
+                        UserService winnerSvc = ServiceFactory.getInstance().getUserService();
+                        User winnerUser = winnerSvc.findUserById(winnerId);
+                        if (winnerUser != null) {
+                            double newBalance = winnerUser.getBalance();
+                            for (ClientHandler client : AuctionServer.connectClient) {
+                                if (client.currentUser != null
+                                        && client.currentUser.getId().equals(winnerId)) {
+                                    client.currentUser.setBalance(newBalance);
+                                    client.sendMessage("BALANCE_UPDATE|" + newBalance);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
 

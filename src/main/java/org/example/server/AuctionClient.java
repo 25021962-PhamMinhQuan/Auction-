@@ -218,6 +218,17 @@ public class AuctionClient {
                 });
                 break;
             }
+            case "PAID": {
+                if (parts.length < 4) return;
+                int auctionId = Integer.parseInt(parts[1]);
+                String winner = parts[2];
+                double finalPrice = Double.parseDouble(parts[3]);
+                Platform.runLater(() -> {
+                    MainScreenController ctrl = MainScreenController.getInstance();
+                    if (ctrl != null) ctrl.onAuctionPaid(auctionId, winner, finalPrice);
+                });
+                break;
+            }
             case "ITEM_ADDED": {
                 // "ITEM_ADDED|itemId|itemName"
                 String itemId = parts.length > 1 ? parts[1] : "";
@@ -347,6 +358,7 @@ public class AuctionClient {
                 break;
             }
             case "AUCTION_CANCELLED":
+            case "AUCTION_STOPPED":
             case "AUCTION_CLOSED": {
                 BiConsumer<Boolean, String> cb = auctionActionCallback;
                 auctionActionCallback = null;
@@ -585,6 +597,12 @@ public class AuctionClient {
     public void closeAuction(int auctionId, BiConsumer<Boolean, String> callback) {
         this.auctionActionCallback = callback;
         sendCommand("CLOSE_AUCTION|" + auctionId);
+    }
+
+    /** Admin dừng phiên đấu giá (cả OPEN lẫn RUNNING) qua socket */
+    public void stopAuction(int auctionId, BiConsumer<Boolean, String> callback) {
+        this.auctionActionCallback = callback;
+        sendCommand("STOP_AUCTION|" + auctionId);
     }
 
     /** Lấy danh sách item của seller đang đăng nhập */
