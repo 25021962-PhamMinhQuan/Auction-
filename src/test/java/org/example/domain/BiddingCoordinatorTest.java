@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +28,11 @@ public class BiddingCoordinatorTest {
 
     @BeforeEach
     void setUp() {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         Electronics item = new Electronics("Tesla Model 3", "EV car", 50_000_000,
-                LocalDateTime.now().minusMinutes(5),
-                LocalDateTime.now().plusHours(1), "car.jpg");
+                now.minusMinutes(5),
+                now.plusHours(1), "car.jpg");
+        auction = new Auction(item);
         auction = new Auction(item);
         auction.start();
         auction.setId(1);
@@ -38,9 +41,9 @@ public class BiddingCoordinatorTest {
         bidder2 = new Bidder("USER_B", "bob",   "pass");
     }
 
-    // ================================================================
+
     // placeBid() - MANUAL
-    // ================================================================
+
 
     @Test
     @DisplayName("placeBid() thành công cập nhật giá và highest bidder")
@@ -109,9 +112,9 @@ public class BiddingCoordinatorTest {
         assertEquals(bidder2, auction.getHighestBidder());
     }
 
-    // ================================================================
+
     // registerAutoBid() + triggerAutoBid()
-    // ================================================================
+
 
     @Test
     @DisplayName("triggerAutoBid() tạo ít nhất 1 AUTO bid khi có auto-bid hợp lệ")
@@ -147,10 +150,7 @@ public class BiddingCoordinatorTest {
         coordinator.triggerAutoBid();
         assertTrue(auction.getBids().isEmpty());
     }
-
-    // ================================================================
     // OBSERVER PATTERN
-    // ================================================================
 
     @Test
     @DisplayName("Observer được notify khi có bid mới")
@@ -210,9 +210,9 @@ public class BiddingCoordinatorTest {
         assertFalse(notif2.isEmpty());
     }
 
-    // ================================================================
+
     // GETTERS
-    // ================================================================
+
 
     @Test
     @DisplayName("getAuction() trả về đúng auction")
