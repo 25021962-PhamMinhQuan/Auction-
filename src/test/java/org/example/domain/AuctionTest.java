@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,8 +23,8 @@ public class AuctionTest {
 
     @BeforeEach
     void setUp() {
-        LocalDateTime start = LocalDateTime.now().minusMinutes(5);
-        LocalDateTime end = LocalDateTime.now().plusHours(1);
+        LocalDateTime start = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).minusMinutes(5);
+        LocalDateTime end = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusHours(1);
         item = new Electronics("iPhone 15", "Brand new", 1_000_000, start, end, "img.jpg");
         auction = new Auction(item);
         auction.start();
@@ -235,7 +236,7 @@ public class AuctionTest {
     @Test
     @DisplayName("AntiSniping() gia hạn thời gian khi trong 30s cuối")
     void testAntiSnipingExtendsTime() {
-        item.setEndTime(LocalDateTime.now().plusSeconds(10));
+        item.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusSeconds(10));
         LocalDateTime before = item.getEndTime();
         auction.AntiSniping();
         assertTrue(item.getEndTime().isAfter(before),
@@ -245,7 +246,7 @@ public class AuctionTest {
     @Test
     @DisplayName("AntiSniping() không gia hạn khi còn nhiều thời gian")
     void testAntiSnipingNoExtensionWhenTimeRemaining() {
-        item.setEndTime(LocalDateTime.now().plusHours(2));
+        item.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusHours(2));
         LocalDateTime before = item.getEndTime();
         auction.AntiSniping();
         assertEquals(before, item.getEndTime());
