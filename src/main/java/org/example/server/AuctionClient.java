@@ -36,6 +36,7 @@ public class AuctionClient {
     private BiConsumer<Boolean, String> deleteItemCallback;
     private BiConsumer<Boolean, String> itemUpdateCallback;
     private BiConsumer<Boolean, String> auctionActionCallback;
+    private BiConsumer<Boolean, String> approveItemCallback;
     private final List<String[]> pendingMyItems  = new ArrayList<>();
     private final List<String[]> pendingWonAuctions = new ArrayList<>();
     private org.example.uicontroller.ItemBidingUIController activeBidController;
@@ -252,6 +253,12 @@ public class AuctionClient {
                 BiConsumer<Boolean, String> cb = deleteItemCallback;
                 deleteItemCallback = null;
                 if (cb != null) Platform.runLater(() -> cb.accept(false, reason));
+                break;
+            }
+            case "ITEM_APPROVED": {
+                BiConsumer<Boolean, String> cb = approveItemCallback;
+                approveItemCallback = null;
+                if (cb != null) Platform.runLater(() -> cb.accept(true, parts.length > 1 ? parts[1] : ""));
                 break;
             }
             case "MY_ITEMS_LIST": {
@@ -519,6 +526,11 @@ public class AuctionClient {
     public void deleteItem(String itemId, BiConsumer<Boolean, String> callback) {
         this.deleteItemCallback = callback;
         sendCommand("DELETE_ITEM|" + itemId);
+    }
+
+    public void approveItem(String itemId, BiConsumer<Boolean, String> callback) {
+        this.approveItemCallback = callback;
+        sendCommand("APPROVE_ITEM|" + itemId);
     }
 
     public void updateScheduledItem(int auctionId, String name, String description,

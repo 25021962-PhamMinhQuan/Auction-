@@ -474,6 +474,34 @@ public class ClientHandler implements Runnable, AuctionObserver {
                     sendMessage("BID_HISTORY_END|" + auctionId);
                     break;
                 }
+                case "APPROVE_ITEM": {
+                    // "APPROVE_ITEM|itemId"
+                    if (currentUser == null) { sendMessage("ERROR|Chưa đăng nhập"); return; }
+                    if (!currentUser.getRole().equals(User.UserRole.ADMIN.name())) {
+                        sendMessage("ERROR|Chỉ Admin mới được duyệt item"); return;
+                    }
+                    if (parts.length < 2) { sendMessage("ERROR|Thiếu itemId"); return; }
+
+                    String itemId = parts[1];
+                    ItemService itemSvc = ServiceFactory.getInstance().getItemService();
+                    itemSvc.approveItem(itemId, currentUser);
+
+                    Item approvedItem = itemSvc.getItemById(itemId);
+                    getAuctionService().activateApprovedItem(approvedItem);
+
+                    sendMessage("ITEM_APPROVED|" + itemId);
+                    // Broadcast để các client khác biết có auction mới/sắp tới
+                    Auction newAuction = getAuctionService().findByItemId(itemId);
+                    if (newAuction != null) {
+                        AuctionServer.broadCast("NEW_AUCTION|" + newAuction.getId()
+                                + "|" + approvedItem.getName()
+                                + "|" + newAuction.getCurrentPrice()
+                                + "|" + approvedItem.getEndTime()
+                                + "|" + approvedItem.getStartTime()
+                                + "|" + newAuction.getStatus().name());
+                    }
+                    break;
+                }
 
                 default:
                     sendMessage("ERROR|Unknown command: " + command);
@@ -483,6 +511,7 @@ public class ClientHandler implements Runnable, AuctionObserver {
             e.printStackTrace();
             sendMessage("ERROR|" + e.getMessage());
         }
+
     }
 
 

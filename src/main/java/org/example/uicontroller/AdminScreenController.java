@@ -590,13 +590,15 @@ public class AdminScreenController {
 
         showConfirm(LanguageManager.get("admin.item.approve.title"),
                 String.format(LanguageManager.get("admin.item.approve.msg"), selectedItem.getName()),
-                () -> {
-                    itemService.approveItem(selectedItem.getId(), currentAdmin);
-                    Item approvedItem = itemService.getItemById(selectedItem.getId());
-                    auctionService.activateApprovedItem(approvedItem);
-                    loadItems();
-                    loadDashboardStats();
-                });
+                () -> AuctionClient.getInstance().approveItem(selectedItem.getId(), (ok, msg) ->
+                        javafx.application.Platform.runLater(() -> {
+                            if (ok) {
+                                loadItems();
+                                loadDashboardStats();
+                            } else {
+                                showInfo(LanguageManager.get("common.error"), msg);
+                            }
+                        })));
     }
 
     @FXML
@@ -1191,6 +1193,3 @@ public class AdminScreenController {
         auctionTable.setItems(FXCollections.observableArrayList(auctions));
     }
 }
-
-
-
