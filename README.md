@@ -83,8 +83,8 @@ Sau đó copy toàn bộ nội dung sau vào file (đây là credentials kết n
 
 ```properties
 db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
-db.username=postgres.affpxxlcjinbsbtatwjd
-db.password=m4ch4_|3r0wnj3
+db.username=username
+db.password=password
 db.driver=org.postgresql.Driver
 
 supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
@@ -114,8 +114,8 @@ supabase.bucket.avatar=Avatar-imange
 > ```powershell
 > @"
 > db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
-> db.username=postgres.affpxxlcjinbsbtatwjd
-> db.password=m4ch4_|3r0wnj3
+> db.username=username
+> db.password=password
 > db.driver=org.postgresql.Driver
 >
 > supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
