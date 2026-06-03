@@ -271,6 +271,9 @@ java --module-path "C:\path\to\javafx-sdk\lib" `
 |---------------------|---|
 | Báo cáo PDF/Video Demo | `https://drive.google.com/drive/folders/1ALsKwwGGeHWdnbVTiTglqe8gwkGA6LHp?usp=drive_link` |
 
+![Database](https://img.shields.io/badge/Database-Connected-green?style=flat-square&logo=postgresql)
+![Build](https://img.shields.io/badge/Build-Success-brightgreen?style=flat-square&logo=github-actions)
+
 
 ---
 
