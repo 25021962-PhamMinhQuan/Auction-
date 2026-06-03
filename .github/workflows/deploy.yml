@@ -28,7 +28,6 @@ jobs:
       - name: Run tests
         run: mvn -B test
 
-      # Upload kết quả test để xem trên GitHub Actions UI
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -38,9 +37,7 @@ jobs:
           retention-days: 7
 
   # ─────────────────────────────────────────
-  # JOB 2: Build và deploy — chỉ chạy khi:
-  #   • test pass
-  #   • đang ở nhánh main (không chạy cho PR)
+  # JOB 2: Build và deploy
   # ─────────────────────────────────────────
   deploy:
     name: Build and Deploy
@@ -59,7 +56,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build JAR (skip tests — đã chạy ở job trước)
+      - name: Build JAR
         run: mvn -B clean package -DskipTests
 
       - name: Build Docker image
@@ -77,33 +74,48 @@ jobs:
           source: "auction-server.tar.gz"
           target: "/root/"
 
-      - name: Deploy on VPS (zero-downtime)
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
+
             docker load < /root/auction-server.tar.gz
 
+            # Dừng và xóa container cũ nếu tồn tại (bất kể trạng thái)
+            docker stop auction-server --time=5 2>/dev/null || true
+            docker rm -f auction-server 2>/dev/null || true
+
+            # Đợi port 2501 được giải phóng hẳn
+            for i in $(seq 1 10); do
+              if ! ss -tlnp | grep -q ':2501'; then
+                echo "Port 2501 đã sẵn sàng"
+                break
+              fi
+              echo "Chờ port 2501 giải phóng... ($i/10)"
+              sleep 1
+            done
+
+            # Tạo và start container mới
             docker run -d \
-              --name auction-server-new \
+              --name auction-server \
               --restart unless-stopped \
               -p 2501:2501 \
               auction-server:latest
 
-            for i in $(seq 1 15); do
-              if docker exec auction-server-new echo ok > /dev/null 2>&1; then
-                echo "Container mới sẵn sàng"
-                break
-              fi
-              sleep 1
-            done
-
-            docker stop auction-server --time=5 || true
-            docker rm auction-server || true
-            docker rename auction-server-new auction-server
+            # Xác nhận container đang chạy
+            sleep 2
+            if docker ps | grep -q auction-server; then
+              echo "Deploy thành công! Container đang chạy."
+            else
+              echo "Deploy thất bại! Container không start được."
+              docker logs auction-server --tail=20
+              exit 1
+            fi
 
             rm /root/auction-server.tar.gz
             docker image prune -f
-            echo "Deploy xong!"
+            echo "Done!"
