@@ -79,7 +79,7 @@ File này không được commit lên Git. Sau khi clone repo về, tạo thủ 
 src/main/resources/config.properties
 ```
 
-Sau đó copy toàn bộ nội dung sau vào file (đây là credentials kết nối database và storage của dự án):
+Sau đó copy toàn bộ nội dung sau vào file (vui lòng liên hệ nhóm để nhận credentials kết nối database và storage của dự án):
 
 ```properties
 db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
