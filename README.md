@@ -16,7 +16,7 @@
 | Lưu trữ ảnh       | Supabase Storage (REST API qua OkHttp) |
 | Bảo mật mật khẩu  | jBCrypt |
 | Logging           | SLF4J + Logback |
-| UI bổ sung        | ControlsFX, Ikonli, BootstrapFX |
+| UI bổ sung        | JavaFX 21.0.6 + FXML|
 | Triển khai server | Docker + GitHub Actions CI/CD lên VPS |
 
 ### Yêu cầu cài đặt
@@ -69,32 +69,61 @@ Auction-/
 
 ---
 
-## Cấu hình trước khi chạy
+##  Cấu hình trước khi chạy
 
-Kiểm tra file `src/main/resources/config.properties`:
+### Tạo file config.properties
+
+File này không được commit lên Git. Sau khi clone repo về, tạo thủ công file tại đường dẫn:
+
+```
+src/main/resources/config.properties
+```
+
+Sau đó copy toàn bộ nội dung sau vào file (đây là credentials kết nối database và storage của dự án):
 
 ```properties
-db.url=jdbc:postgresql://<host>:5432/postgres?sslmode=require
-db.username=<username>
-db.password=<password>
+db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+db.username=postgres.affpxxlcjinbsbtatwjd
+db.password=m4ch4_|3r0wnj3
 db.driver=org.postgresql.Driver
 
-supabase.url=https://<project>.supabase.co
-supabase.key=<anon_key>
+supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
+supabase.key=sb_publishable_uZ14G8N_9fNvfeCkINjO5A_pwHVSMh3
 supabase.bucket=item-images
 supabase.bucket.avatar=Avatar-imange
 ```
 
-> Dự án đã có sẵn cấu hình kết nối Supabase. Nếu cần dùng database riêng, hãy cập nhật file này.
-
-Địa chỉ server mặc định trong `AuctionClient.java`:
-```java
-private static final String HOST = "172.236.140.98";  // IP VPS đang chạy server
-private static final int    PORT = 2501;
-```
-Nếu chạy server cục bộ, đổi `HOST` thành `"localhost"` trước khi build client.
-
----
+> Hoặc tạo nhanh bằng lệnh terminal:
+>
+> **Linux / macOS**
+> ```bash
+> cat > src/main/resources/config.properties << 'EOF'
+> db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+> db.username=postgres.affpxxlcjinbsbtatwjd
+> db.password=m4ch4_|3r0wnj3
+> db.driver=org.postgresql.Driver
+>
+> supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
+> supabase.key=sb_publishable_uZ14G8N_9fNvfeCkINjO5A_pwHVSMh3
+> supabase.bucket=item-images
+> supabase.bucket.avatar=Avatar-imange
+> EOF
+> ```
+>
+> **Windows (PowerShell)**
+> ```powershell
+> @"
+> db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+> db.username=postgres.affpxxlcjinbsbtatwjd
+> db.password=m4ch4_|3r0wnj3
+> db.driver=org.postgresql.Driver
+>
+> supabase.url=https://affpxxlcjinbsbtatwjd.supabase.co
+> supabase.key=sb_publishable_uZ14G8N_9fNvfeCkINjO5A_pwHVSMh3
+> supabase.bucket=item-images
+> supabase.bucket.avatar=Avatar-imange
+> "@ | Out-File -FilePath src\main\resources\config.properties -Encoding utf8
+> ```
 
 ##  Câu lệnh chạy chương trình
 
@@ -238,10 +267,10 @@ java --module-path "C:\path\to\javafx-sdk\lib" `
 
 ##  Tài liệu & Demo
 
-| Tài liệu    | Liên kết |
-|-------------|---|
-| Báo cáo PDF | `[Chèn link báo cáo PDF tại đây]` |
-| Video demo  | `[Chèn link video demo tại đây]` |
+| Tài liệu            | Liên kết |
+|---------------------|---|
+| Báo cáo PDF/Video Demo | `https://drive.google.com/drive/folders/1ALsKwwGGeHWdnbVTiTglqe8gwkGA6LHp?usp=drive_link` |
+
 
 ---
 

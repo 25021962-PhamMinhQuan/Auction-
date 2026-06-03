@@ -1,13 +1,17 @@
 package org.example.uicontroller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -15,7 +19,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.domain.user.User;
 import org.example.factory.ServiceFactory;
 import org.example.server.AuctionClient;
@@ -159,13 +165,17 @@ public class MainScreenController {
 
     /** Ongoing = status RUNNING → card mở màn hình bid */
     private void loadOngoing() {
+        boolean isSeller = currentUser != null && "SELLER".equals(currentUser.getRole());
+        ItemCardController.CardMode ongoingMode = isSeller
+                ? ItemCardController.CardMode.DETAIL
+                : ItemCardController.CardMode.BID;
         AuctionClient.getInstance().requestAuctions("RUNNING", items ->
                 Platform.runLater(() -> {
                     ongoingHbox.getChildren().clear();
                     int count = Math.min(items.size(), PREVIEW_COUNT);
                     for (int i = 0; i < count; i++) {
                         ongoingHbox.getChildren().add(
-                                buildCard(items.get(i), ItemCardController.CardMode.BID));
+                                buildCard(items.get(i), ongoingMode));
                     }
                 })
         );
@@ -206,12 +216,16 @@ public class MainScreenController {
         currentGridType = "RUNNING";
         gridPane.getChildren().clear();
         setGridVisible(true);
+        boolean isSeller = currentUser != null && "SELLER".equals(currentUser.getRole());
+        ItemCardController.CardMode ongoingMode = isSeller
+                ? ItemCardController.CardMode.DETAIL
+                : ItemCardController.CardMode.BID;
         AuctionClient.getInstance().requestAuctions("RUNNING", items ->
                 Platform.runLater(() -> {
                     gridPane.getChildren().clear();
                     for (String[] item : items) {
                         gridPane.getChildren().add(
-                                buildCard(item, ItemCardController.CardMode.BID));
+                                buildCard(item, ongoingMode));
                     }
                 })
         );
@@ -507,7 +521,7 @@ public class MainScreenController {
                 panelRoleLabel.setText(user.getRole() != null ? user.getRole() : "BIDDER");
             updateBalanceLabel(user.getBalance());
             updateRoleActions(user.getRole());
-
+            loadOngoing();
 // Hiện avatar ở cả navbar lẫn panel
             if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
                 Image avatar = new Image(user.getAvatarUrl(), true);
@@ -908,28 +922,194 @@ public class MainScreenController {
 
     private void editScheduledItem(String[] p) {
         int auctionId = parseIntPart(p, 1);
-        String name = prompt(LanguageManager.get("main.item.edit_name"), part(p, 3));
-        if (name == null) return;
-        String desc = prompt(LanguageManager.get("main.item.edit_desc"), part(p, 9));
-        if (desc == null) return;
-        String priceText = prompt(LanguageManager.get("main.item.edit_price"), part(p, 4));
-        if (priceText == null) return;
-        String start = prompt(LanguageManager.get("main.item.edit_start"), part(p, 6));
-        if (start == null) return;
-        String end = prompt(LanguageManager.get("main.item.edit_end"), part(p, 7));
-        if (end == null) return;
+
+        // ── Parse current values ──────────────────────────────────────────────
+        String curName  = part(p, 3);
+        String curDesc  = part(p, 9);
+        String curPrice = part(p, 4);
+        String curStart = part(p, 6); // ISO "yyyy-MM-ddTHH:mm"
+        String curEnd   = part(p, 7);
+
+        javafx.collections.ObservableList<String> hours = FXCollections.observableArrayList();
+        for (int h = 0; h < 24; h++) hours.add(String.format("%02d", h));
+        javafx.collections.ObservableList<String> minutes = FXCollections.observableArrayList();
+        for (int m = 0; m < 60; m += 5) minutes.add(String.format("%02d", m));
+
+        TextField nameField  = new TextField(curName);
+        nameField.getStyleClass().add("input_field");
+        nameField.setPromptText(LanguageManager.get("additem.name.placeholder"));
+
+        TextField descField  = new TextField(curDesc);
+        descField.getStyleClass().add("input_field");
+        descField.setPromptText(LanguageManager.get("additem.description.placeholder"));
+
+        TextField priceField = new TextField(curPrice);
+        priceField.getStyleClass().add("input_field");
+        priceField.setPromptText(LanguageManager.get("additem.price.placeholder"));
+
+        DatePicker startDate = new DatePicker();
+        startDate.setPrefWidth(185);
+        ComboBox<String> startHour   = new ComboBox<>(hours);
+        startHour.setPrefWidth(72); startHour.getStyleClass().add("time-combo");
+        ComboBox<String> startMinute = new ComboBox<>(minutes);
+        startMinute.setPrefWidth(72); startMinute.getStyleClass().add("time-combo");
+
+        // End datetime
+        DatePicker endDate = new DatePicker();
+        endDate.setPrefWidth(185);
+        ComboBox<String> endHour   = new ComboBox<>(hours);
+        endHour.setPrefWidth(72); endHour.getStyleClass().add("time-combo");
+        ComboBox<String> endMinute = new ComboBox<>(minutes);
+        endMinute.setPrefWidth(72); endMinute.getStyleClass().add("time-combo");
+
         try {
-            double price = Double.parseDouble(priceText.trim());
-            java.time.LocalDateTime.parse(start.trim());
-            java.time.LocalDateTime.parse(end.trim());
-            AuctionClient.getInstance().updateScheduledItem(auctionId, name.trim(), desc.trim(), price,
-                    start.trim(), end.trim(), (success, msg) -> {
-                        showInfo(success ? LanguageManager.get("main.item.updated") : msg);
-                        handleMyItems();
-                    });
-        } catch (Exception ex) {
-            showInfo(LanguageManager.get("main.item.invalid_update"));
+            java.time.LocalDateTime lStart = java.time.LocalDateTime.parse(curStart);
+            startDate.setValue(lStart.toLocalDate());
+            startHour.setValue(String.format("%02d", lStart.getHour()));
+            startMinute.setValue(String.format("%02d", (lStart.getMinute() / 5) * 5));
+        } catch (Exception ignored) {
+            startDate.setValue(java.time.LocalDate.now());
+            startHour.setValue("09"); startMinute.setValue("00");
         }
+        try {
+            java.time.LocalDateTime lEnd = java.time.LocalDateTime.parse(curEnd);
+            endDate.setValue(lEnd.toLocalDate());
+            endHour.setValue(String.format("%02d", lEnd.getHour()));
+            endMinute.setValue(String.format("%02d", (lEnd.getMinute() / 5) * 5));
+        } catch (Exception ignored) {
+            endDate.setValue(java.time.LocalDate.now());
+            endHour.setValue("21"); endMinute.setValue("00");
+        }
+
+        Label statusLabel = new Label();
+        statusLabel.setWrapText(true);
+
+        Button saveBtn   = new Button(LanguageManager.get("main.item.edit"));
+        saveBtn.getStyleClass().add("button-login");
+        saveBtn.setMaxWidth(Double.MAX_VALUE);
+
+        Button cancelBtn = new Button(LanguageManager.get("common.back"));
+        cancelBtn.getStyleClass().add("button-secondary");
+        cancelBtn.setMaxWidth(Double.MAX_VALUE);
+
+        Label titleLabel = new Label(LanguageManager.get("main.item.edit"));
+        titleLabel.getStyleClass().add("section-title");
+
+        // Header bar
+        HBox header = new HBox(12);
+        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        header.getStyleClass().add("navbar");
+        header.setPadding(new Insets(10, 16, 10, 16));
+        header.getChildren().add(titleLabel);
+
+        // Start time row
+        HBox startRow = new HBox(8);
+        startRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        Label startSep = new Label(":"); startSep.getStyleClass().add("time-separator");
+        startRow.getChildren().addAll(startDate, startHour, startSep, startMinute);
+
+        // End time row
+        HBox endRow = new HBox(8);
+        endRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        Label endSep = new Label(":"); endSep.getStyleClass().add("time-separator");
+        endRow.getChildren().addAll(endDate, endHour, endSep, endMinute);
+
+        // Button row
+        HBox btnRow = new HBox(10);
+        btnRow.getChildren().addAll(saveBtn, cancelBtn);
+        HBox.setHgrow(saveBtn,   Priority.ALWAYS);
+        HBox.setHgrow(cancelBtn, Priority.ALWAYS);
+
+        VBox form = new VBox(14);
+        form.setPrefWidth(460);
+        form.setPadding(new Insets(30, 40, 30, 40));
+        form.getStyleClass().add("root");
+        form.getChildren().addAll(
+                editLabel("additem.name"),        nameField,
+                editLabel("additem.description"), descField,
+                editLabel("additem.start_price"), priceField,
+                editLabel("additem.start_time"),  startRow,
+                editLabel("additem.end_time"),    endRow,
+                btnRow,
+                statusLabel
+        );
+
+        BorderPane root = new BorderPane();
+        root.setTop(header);
+        ScrollPane scroll = new ScrollPane(form);
+        scroll.setFitToWidth(true);
+        scroll.getStyleClass().add("scroll-pane");
+        root.setCenter(scroll);
+        root.getStyleClass().add("root");
+
+        Scene scene = new Scene(root, 540, 560);
+        ThemeManager.applyTheme(scene);
+
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.DECORATED);
+        dialog.setTitle(LanguageManager.get("main.item.edit"));
+        dialog.setScene(scene);
+        dialog.setResizable(false);
+
+        // ── Button actions ────────────────────────────────────────────────────
+        cancelBtn.setOnAction(e -> dialog.close());
+
+        saveBtn.setOnAction(e -> {
+            String name     = nameField.getText().trim();
+            String desc     = descField.getText().trim();
+            String priceStr = priceField.getText().trim();
+
+            if (name.isEmpty() || priceStr.isEmpty()
+                    || startDate.getValue() == null || endDate.getValue() == null
+                    || startHour.getValue() == null || startMinute.getValue() == null
+                    || endHour.getValue()   == null || endMinute.getValue()   == null) {
+                statusLabel.setText(LanguageManager.get("main.item.invalid_update"));
+                statusLabel.setStyle("-fx-text-fill: #ef4444;");
+                return;
+            }
+            try {
+                double price = Double.parseDouble(priceStr);
+                java.time.LocalDateTime startDt = java.time.LocalDateTime.of(
+                        startDate.getValue(),
+                        java.time.LocalTime.of(Integer.parseInt(startHour.getValue()),
+                                Integer.parseInt(startMinute.getValue())));
+                java.time.LocalDateTime endDt = java.time.LocalDateTime.of(
+                        endDate.getValue(),
+                        java.time.LocalTime.of(Integer.parseInt(endHour.getValue()),
+                                Integer.parseInt(endMinute.getValue())));
+                if (!endDt.isAfter(startDt)) {
+                    statusLabel.setText(LanguageManager.get("additem.error.end_before_start"));
+                    statusLabel.setStyle("-fx-text-fill: #ef4444;");
+                    return;
+                }
+                AuctionClient.getInstance().updateScheduledItem(
+                        auctionId, name, desc, price,
+                        startDt.toString(), endDt.toString(),
+                        (success, msg) -> Platform.runLater(() -> {
+                            if (success) {
+                                dialog.close();
+                                showInfo(LanguageManager.get("main.item.updated"));
+                                handleMyItems();
+                            } else {
+                                statusLabel.setText(msg);
+                                statusLabel.setStyle("-fx-text-fill: #ef4444;");
+                            }
+                        }));
+            } catch (NumberFormatException ex) {
+                statusLabel.setText(LanguageManager.get("main.item.invalid_update"));
+                statusLabel.setStyle("-fx-text-fill: #ef4444;");
+            }
+        });
+
+        dialog.showAndWait();
+    }
+
+    /** Tạo Label nhỏ cho từng field, dùng i18n key của additem */
+    private Label editLabel(String i18nKey) {
+        Label l = new Label(LanguageManager.get(i18nKey));
+        l.getStyleClass().add("datetime-label");
+        return l;
     }
 
     private void cancelAuction(int auctionId) {

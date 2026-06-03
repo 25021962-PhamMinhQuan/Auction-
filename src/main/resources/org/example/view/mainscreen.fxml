@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,9 +16,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
 <StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.uicontroller.MainScreenController">
 
    <children>
@@ -99,9 +97,6 @@
                      <Button fx:id="auctionButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Auctions ▾" />
                   </StackPane>
 
-                  <Button fx:id="introButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Introduction" />
-                  <Button fx:id="contactButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-link" text="Contact" />
-
                   <Region HBox.hgrow="ALWAYS" />
 
                   <!-- Right Side -->
@@ -111,27 +106,17 @@
                      </padding>
 
                      <!-- Add Item Button -->
-                     <Button fx:id="addItemBtn"
-                             managed="false"
-                             mnemonicParsing="false"
-                             onAction="#handleAddItem"
-                             styleClass="btn-add-item"
-                             text="+ Add Item"
-                             visible="false"/>
+                     <Button fx:id="addItemBtn" managed="false" mnemonicParsing="false" onAction="#handleAddItem" styleClass="btn-add-item" text="+ Add Item" visible="false" />
 
                      <!-- Search Bar -->
                      <StackPane fx:id="searchContainer" styleClass="search-container">
                         <HBox alignment="CENTER_LEFT" spacing="0" styleClass="search-box">
-                           <ImageView fitWidth="16" fitHeight="16" pickOnBounds="true" styleClass="search-icon">
+                           <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" styleClass="search-icon">
                               <image>
                                  <Image url="@../../../find_icon.png" />
                               </image>
                            </ImageView>
-                           <TextField fx:id="searchField"
-                                      promptText="Search auctions..."
-                                      prefWidth="200"
-                                      onAction="#handleSearch"
-                                      styleClass="search-field" />
+                           <TextField fx:id="searchField" onAction="#handleSearch" prefWidth="200" promptText="Search auctions..." styleClass="search-field" />
                            <HBox.margin>
                               <Insets left="8" />
                            </HBox.margin>
@@ -142,17 +127,13 @@
                      <Button mnemonicParsing="false" onAction="#handleDashboard" styleClass="nav-avatar-btn">
                         <graphic>
                            <HBox alignment="CENTER" spacing="8">
-                              <StackPane fx:id="navAvatarPane" styleClass="avatar-circle"
-                                         minWidth="26" minHeight="26" maxWidth="26" maxHeight="26">
-                                 <ImageView fx:id="navAvatarView"
-                                            fitHeight="26" fitWidth="26"
-                                            preserveRatio="false" visible="false"/>
-                                 <ImageView fx:id="navDefaultIcon"
-                                            fitHeight="20" fitWidth="20" preserveRatio="true">
-                                    <image><Image url="@../../../icon_user.png"/></image>
+                              <StackPane fx:id="navAvatarPane" maxHeight="26" maxWidth="26" minHeight="26" minWidth="26" styleClass="avatar-circle">
+                                 <ImageView fx:id="navAvatarView" fitHeight="26" fitWidth="26" preserveRatio="false" visible="false" />
+                                 <ImageView fx:id="navDefaultIcon" fitHeight="20" fitWidth="20" preserveRatio="true">
+                                    <image><Image url="@../../../icon_user.png" /></image>
                                  </ImageView>
                               </StackPane>
-                              <Label fx:id="usernameLabel" styleClass="nav-username" text="Guest" mouseTransparent="true" />
+                              <Label fx:id="usernameLabel" mouseTransparent="true" styleClass="nav-username" text="Guest" />
                            </HBox>
                         </graphic>
                      </Button>
@@ -162,7 +143,7 @@
                </HBox>
 
                <!-- Accent bottom line -->
-               <Region styleClass="navbar-accent-line" prefHeight="3" />
+               <Region prefHeight="3" styleClass="navbar-accent-line" />
 
             </VBox>
 
@@ -187,7 +168,7 @@
                      </Button>
 
                      <!-- Grid -->
-                     <ScrollPane fx:id="gridScroll" styleClass="scroll-pane" fitToWidth="true" managed="false" visible="false">
+                     <ScrollPane fx:id="gridScroll" fitToWidth="true" managed="false" styleClass="scroll-pane" visible="false">
 
                         <content>
 
@@ -198,7 +179,7 @@
                      </ScrollPane>
 
                      <!-- Main Content -->
-                     <VBox fx:id="mainContent" styleClass="main-content-wrapper" alignment="TOP_CENTER" spacing="20">
+                     <VBox fx:id="mainContent" alignment="TOP_CENTER" spacing="20" styleClass="main-content-wrapper">
 
                         <padding>
                            <Insets top="40" />
@@ -207,10 +188,10 @@
                         <!-- Upcoming -->
                         <Label fx:id="upcomingTitleLabel" styleClass="section-title" text="Upcoming Auction" />
 
-                        <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" styleClass="scroll-pane" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="upcomingHbox" styleClass="main-content-wrapper" spacing="20" />
+                              <HBox fx:id="upcomingHbox" spacing="20" styleClass="main-content-wrapper" />
                            </content>
 
                         </ScrollPane>
@@ -218,12 +199,12 @@
                         <Button fx:id="viewAllUpcoming" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="button-login" text="View all" />
 
                         <!-- Ongoing -->
-                        <Label fx:id="ongoingTitleLabel" styleClass="section-title"  text="Ongoing Auction" />
+                        <Label fx:id="ongoingTitleLabel" styleClass="section-title" text="Ongoing Auction" />
 
-                        <ScrollPane fitToWidth="false" styleClass="scroll-pane" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                        <ScrollPane fitToWidth="false" hbarPolicy="ALWAYS" styleClass="scroll-pane" vbarPolicy="NEVER">
 
                            <content>
-                              <HBox fx:id="ongoingHbox" styleClass="main-content-wrapper" spacing="20" />
+                              <HBox fx:id="ongoingHbox" spacing="20" styleClass="main-content-wrapper" />
                            </content>
 
                         </ScrollPane>
@@ -243,12 +224,11 @@
       </BorderPane>
 
       <!-- Side Panel / User Dashboard -->
-      <AnchorPane fx:id="overlayDashboard" managed="false" prefHeight="490.0" prefWidth="804.0" visible="false" styleClass="overlay-backdrop">
+      <AnchorPane fx:id="overlayDashboard" managed="false" prefHeight="490.0" prefWidth="804.0" styleClass="overlay-backdrop" visible="false">
 
          <children>
 
-            <VBox fx:id="dashboardPanel" prefWidth="300.0" styleClass="dashboard-panel"
-                   AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox fx:id="dashboardPanel" prefWidth="300.0" styleClass="dashboard-panel" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                <!-- ① Header luôn cố định trên đầu -->
@@ -259,89 +239,73 @@
                </HBox>
 
                <!-- ② Phần giữa có thể scroll -->
-               <ScrollPane fitToWidth="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS"
-                           hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+               <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-pane" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                   <content>
                      <VBox>
                         <!-- User Profile Card -->
                         <VBox alignment="CENTER" spacing="12" styleClass="panel-profile-card">
-                           <padding><Insets top="24" bottom="24" left="20" right="20" /></padding>
-                           <StackPane fx:id="panelAvatarPane" alignment="CENTER" styleClass="panel-avatar-wrap"
-                                      minWidth="72" minHeight="72" maxWidth="72" maxHeight="72">
-                              <ImageView fx:id="panelAvatarView" fitWidth="72" fitHeight="72"
-                                         preserveRatio="false" visible="false"/>
-                              <Label fx:id="panelAvatarIcon" styleClass="panel-avatar-icon" text="👤"/>
+                           <padding><Insets bottom="24" left="20" right="20" top="24" /></padding>
+                           <StackPane fx:id="panelAvatarPane" alignment="CENTER" maxHeight="72" maxWidth="72" minHeight="72" minWidth="72" styleClass="panel-avatar-wrap">
+                              <ImageView fx:id="panelAvatarView" fitHeight="72" fitWidth="72" preserveRatio="false" visible="false" />
+                              <Label fx:id="panelAvatarIcon" styleClass="panel-avatar-icon" text="👤" />
                            </StackPane>
                            <Label fx:id="panelUsernameLabel" styleClass="panel-username" text="Label" />
                            <Label fx:id="panelRoleLabel" styleClass="panel-role-badge" text="Username" />
-                           <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                   styleClass="btn-panel-primary" text="✏  Edit Profile" onAction="#handleOpenProfile">
+                           <Button fx:id="editProfileBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleOpenProfile" styleClass="btn-panel-primary" text="✏  Edit Profile">
                               <VBox.margin><Insets top="8" /></VBox.margin>
                            </Button>
                         </VBox>
 
                         <!-- Section label -->
                         <HBox alignment="CENTER_LEFT" styleClass="panel-section-header">
-                           <padding><Insets top="20" bottom="8" left="20" right="20" /></padding>
+                           <padding><Insets bottom="8" left="20" right="20" top="20" /></padding>
                            <Label fx:id="accountSectionLabel" styleClass="panel-section-label" text="ACCOUNT" />
                            <Region HBox.hgrow="ALWAYS" />
                         </HBox>
 
                         <!-- Balance card -->
-                        <VBox styleClass="panel-balance-card" spacing="4">
-                           <VBox.margin><Insets left="12" right="12" bottom="6" /></VBox.margin>
-                           <padding><Insets top="14" bottom="14" left="16" right="16" /></padding>
+                        <VBox spacing="4" styleClass="panel-balance-card">
+                           <VBox.margin><Insets bottom="6" left="12" right="12" /></VBox.margin>
+                           <padding><Insets bottom="14" left="16" right="16" top="14" /></padding>
                            <HBox spacing="8">
                               <Label text="💰" />
-                              <Label fx:id="balanceTitleLabel" styleClass="panel-balance-title" text="%main.panel.balance"/>
+                              <Label fx:id="balanceTitleLabel" styleClass="panel-balance-title" text="%main.panel.balance" />
                            </HBox>
-                           <Label fx:id="balanceLabel" styleClass="panel-balance-amount" text="1.000.000.000 ₫"/>
-                           <Button fx:id="depositBtn" maxWidth="1.7976931348623157E308" styleClass="btn-deposit"
-                                   text="%deposit.open" onAction="#handleOpenDeposit">
-                              <VBox.margin><Insets top="8"/></VBox.margin>
+                           <Label fx:id="balanceLabel" styleClass="panel-balance-amount" text="1.000.000.000 ₫" />
+                           <Button fx:id="depositBtn" maxWidth="1.7976931348623157E308" onAction="#handleOpenDeposit" styleClass="btn-deposit" text="%deposit.open">
+                              <VBox.margin><Insets top="8" /></VBox.margin>
                            </Button>
                         </VBox>
 
                         <VBox spacing="8" styleClass="panel-nav-group">
-                           <padding><Insets left="12" right="12" top="4" bottom="4" /></padding>
-                           <Button fx:id="sellerMyItemsBtn" maxWidth="1.7976931348623157E308" managed="false"
-                                   mnemonicParsing="false" onAction="#handleMyItems"
-                                   styleClass="panel-nav-btn" text="%main.panel.my_items" visible="false" />
-                           <Button fx:id="bidderWonAuctionsBtn" maxWidth="1.7976931348623157E308" managed="false"
-                                   mnemonicParsing="false" onAction="#handleWonAuctions"
-                                   styleClass="panel-nav-btn" text="%main.panel.won_auctions" visible="false" />
+                           <padding><Insets bottom="4" left="12" right="12" top="4" /></padding>
+                           <Button fx:id="sellerMyItemsBtn" managed="false" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMyItems" styleClass="panel-nav-btn" text="%main.panel.my_items" visible="false" />
+                           <Button fx:id="bidderWonAuctionsBtn" managed="false" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleWonAuctions" styleClass="panel-nav-btn" text="%main.panel.won_auctions" visible="false" />
                         </VBox>
 
                         <!-- Settings -->
                         <VBox spacing="2" styleClass="panel-nav-group">
                            <padding><Insets left="12" right="12" /></padding>
-                           <Button fx:id="settingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                   onAction="#handleToggleSettings"
-                                   styleClass="panel-nav-btn" text="⚙   Settings  ▾" />
-                           <VBox fx:id="settingsSubPanel" managed="false" visible="false"
-                                 styleClass="settings-sub-panel" spacing="0">
-                              <padding><Insets top="4" bottom="4" left="4" right="4" /></padding>
-                              <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
-                                 <padding><Insets top="10" bottom="10" left="12" right="12" /></padding>
+                           <Button fx:id="settingsBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleToggleSettings" styleClass="panel-nav-btn" text="⚙   Settings  ▾" />
+                           <VBox fx:id="settingsSubPanel" managed="false" spacing="0" styleClass="settings-sub-panel" visible="false">
+                              <padding><Insets bottom="4" left="4" right="4" top="4" /></padding>
+                              <HBox alignment="CENTER_LEFT" spacing="10" styleClass="settings-row">
+                                 <padding><Insets bottom="10" left="12" right="12" top="10" /></padding>
                                  <Label fx:id="languageSettingLabel" styleClass="settings-row-label" text="🌐  Language" HBox.hgrow="ALWAYS" />
                                  <Region HBox.hgrow="ALWAYS" />
-                                 <HBox styleClass="toggle-group-box" spacing="0">
-                                    <Button fx:id="langEnBtn" mnemonicParsing="false" onAction="#handleLangEn"
-                                            styleClass="toggle-btn-left, toggle-btn-active" text="EN" />
-                                    <Button fx:id="langViBtn" mnemonicParsing="false" onAction="#handleLangVi"
-                                            styleClass="toggle-btn-right" text="VI" />
+                                 <HBox spacing="0" styleClass="toggle-group-box">
+                                    <Button fx:id="langEnBtn" mnemonicParsing="false" onAction="#handleLangEn" styleClass="toggle-btn-left, toggle-btn-active" text="EN" />
+                                    <Button fx:id="langViBtn" mnemonicParsing="false" onAction="#handleLangVi" styleClass="toggle-btn-right" text="VI" />
                                  </HBox>
                               </HBox>
-                              <Region styleClass="settings-row-divider" prefHeight="1" />
-                              <HBox alignment="CENTER_LEFT" styleClass="settings-row" spacing="10">
-                                 <padding><Insets top="10" bottom="10" left="12" right="12" /></padding>
+                              <Region prefHeight="1" styleClass="settings-row-divider" />
+                              <HBox alignment="CENTER_LEFT" spacing="10" styleClass="settings-row">
+                                 <padding><Insets bottom="10" left="12" right="12" top="10" /></padding>
                                  <Label fx:id="themeSettingLabel" styleClass="settings-row-label" text="☀   Theme" HBox.hgrow="ALWAYS" />
                                  <Region HBox.hgrow="ALWAYS" />
-                                 <HBox styleClass="toggle-group-box" spacing="0">
-                                    <Button fx:id="themeLightBtn" mnemonicParsing="false" onAction="#handleThemeLight"
-                                            styleClass="toggle-btn-left" text="☀" />
-                                    <Button fx:id="themeDarkBtn" mnemonicParsing="false" onAction="#handleThemeDark"
-                                            styleClass="toggle-btn-right, toggle-btn-active" text="🌙" />
+                                 <HBox spacing="0" styleClass="toggle-group-box">
+                                    <Button fx:id="themeLightBtn" mnemonicParsing="false" onAction="#handleThemeLight" styleClass="toggle-btn-left" text="☀" />
+                                    <Button fx:id="themeDarkBtn" mnemonicParsing="false" onAction="#handleThemeDark" styleClass="toggle-btn-right, toggle-btn-active" text="🌙" />
                                  </HBox>
                               </HBox>
                            </VBox>
@@ -355,9 +319,8 @@
                   <VBox.margin><Insets left="20" right="20" /></VBox.margin>
                </Separator>
                <VBox spacing="4" styleClass="panel-nav-group">
-                  <padding><Insets top="12" left="12" right="12" bottom="24" /></padding>
-                  <Button fx:id="logOutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                          styleClass="panel-logout-btn" text="⏻   Log Out" onAction="#handleLogout" />
+                  <padding><Insets bottom="24" left="12" right="12" top="12" /></padding>
+                  <Button fx:id="logOutBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" styleClass="panel-logout-btn" text="⏻   Log Out" />
                </VBox>
 
             </children>
@@ -368,68 +331,54 @@
       </AnchorPane>
 
       <!-- FLOATING DROPDOWN OVERLAYS (rendered on top of everything) -->
-      <AnchorPane mouseTransparent="false" managed="false" visible="true" pickOnBounds="false">
+      <AnchorPane managed="false" mouseTransparent="false" pickOnBounds="false" visible="true">
 
          <!-- Categories floating menu -->
-         <VBox fx:id="categoryMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
-               AnchorPane.topAnchor="62" AnchorPane.leftAnchor="160">
-            <Button fx:id="catArtBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.art" onAction="#handleCategory" userData="ART" />
-            <Button fx:id="catElectronicsBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.electronics" onAction="#handleCategory" userData="ELECTRONICS" />
-            <Button fx:id="catEstateBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.estate" onAction="#handleCategory" userData="ESTATE" />
-            <Button fx:id="catFashionsBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.fashions" onAction="#handleCategory" userData="FASHIONS" />
-            <Button fx:id="catVehiclesBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.vehicles" onAction="#handleCategory" userData="VEHICLES" />
-            <Button fx:id="catOthersBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.category.others" onAction="#handleCategory" userData="OTHERS" />
+         <VBox fx:id="categoryMenu" managed="false" styleClass="dropdown-menu-float" visible="false" AnchorPane.leftAnchor="160" AnchorPane.topAnchor="62">
+            <Button fx:id="catArtBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.art" userData="ART" />
+            <Button fx:id="catElectronicsBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.electronics" userData="ELECTRONICS" />
+            <Button fx:id="catEstateBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.estate" userData="ESTATE" />
+            <Button fx:id="catFashionsBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.fashions" userData="FASHIONS" />
+            <Button fx:id="catVehiclesBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.vehicles" userData="VEHICLES" />
+            <Button fx:id="catOthersBtn" mnemonicParsing="false" onAction="#handleCategory" styleClass="dropdown-item" text="%main.category.others" userData="OTHERS" />
          </VBox>
 
          <!-- Auctions floating menu -->
-         <VBox fx:id="auctionMenu" managed="false" visible="false" styleClass="dropdown-menu-float"
-               AnchorPane.topAnchor="62" AnchorPane.leftAnchor="290">
-            <Button fx:id="auctionUpcomingBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.auction.upcoming" onAction="#handleViewAllUpcoming" />
-            <Button fx:id="auctionOngoingBtn" mnemonicParsing="false" styleClass="dropdown-item" text="%main.auction.ongoing" onAction="#handleViewAllOngoing" />
+         <VBox fx:id="auctionMenu" managed="false" styleClass="dropdown-menu-float" visible="false" AnchorPane.leftAnchor="290" AnchorPane.topAnchor="62">
+            <Button fx:id="auctionUpcomingBtn" mnemonicParsing="false" onAction="#handleViewAllUpcoming" styleClass="dropdown-item" text="%main.auction.upcoming" />
+            <Button fx:id="auctionOngoingBtn" mnemonicParsing="false" onAction="#handleViewAllOngoing" styleClass="dropdown-item" text="%main.auction.ongoing" />
          </VBox>
 
          <!-- Suggestion box — position updated dynamically by controller -->
-         <VBox fx:id="suggestionBox"
-               managed="false"
-               visible="false"
-               styleClass="suggest-dropdown"
-               AnchorPane.topAnchor="62" AnchorPane.rightAnchor="54" />
+         <VBox fx:id="suggestionBox" managed="false" styleClass="suggest-dropdown" visible="false" AnchorPane.rightAnchor="54" AnchorPane.topAnchor="62" />
 
       </AnchorPane>
 
-      <AnchorPane fx:id="depositOverlay" managed="false" visible="false" styleClass="overlay-backdrop"
-                  AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-                  AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-         <VBox alignment="CENTER" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-               AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-            <VBox styleClass="deposit-dialog" spacing="16" maxWidth="360">
-               <padding><Insets top="28" bottom="28" left="28" right="28" /></padding>
+      <AnchorPane fx:id="depositOverlay" managed="false" styleClass="overlay-backdrop" visible="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+         <VBox alignment="CENTER" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+            <VBox maxWidth="360" spacing="16" styleClass="deposit-dialog">
+               <padding><Insets bottom="28" left="28" right="28" top="28" /></padding>
 
                <HBox alignment="CENTER_LEFT">
-                  <Label fx:id="depositTitleLabel" styleClass="deposit-dialog-title" text="%deposit.title" HBox.hgrow="ALWAYS"/>
-                  <Button mnemonicParsing="false" styleClass="panel-close-btn" text="✕" onAction="#handleCloseDeposit"/>
+                  <Label fx:id="depositTitleLabel" styleClass="deposit-dialog-title" text="%deposit.title" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#handleCloseDeposit" styleClass="panel-close-btn" text="✕" />
                </HBox>
 
                <VBox spacing="6">
                   <Label fx:id="depositAmountLabel" styleClass="deposit-field-label" text="%deposit.amount" />
-                  <TextField fx:id="depositAmountField" styleClass="deposit-input"
-                             promptText="%deposit.amount.placeholder" />
+                  <TextField fx:id="depositAmountField" promptText="%deposit.amount.placeholder" styleClass="deposit-input" />
                </VBox>
 
                <VBox spacing="6">
                   <Label fx:id="depositNoteLabel" styleClass="deposit-field-label" text="%deposit.note" />
-                  <TextField fx:id="depositNoteField" styleClass="deposit-input"
-                             promptText="%deposit.note.placeholder" />
+                  <TextField fx:id="depositNoteField" promptText="%deposit.note.placeholder" styleClass="deposit-input" />
                </VBox>
 
-               <Label fx:id="depositInfoLabel" styleClass="deposit-info-text"
-                      text="%deposit.info" wrapText="true"/>
+               <Label fx:id="depositInfoLabel" styleClass="deposit-info-text" text="%deposit.info" wrapText="true" />
 
                <HBox spacing="10">
-                  <Button fx:id="depositCancelBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                          styleClass="btn-cancel" text="%common.cancel" onAction="#handleCloseDeposit" HBox.hgrow="ALWAYS"/>
-                  <Button fx:id="depositSubmitBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                          styleClass="btn-deposit-submit" text="%deposit.submit" onAction="#handleSubmitDeposit" HBox.hgrow="ALWAYS"/>
+                  <Button fx:id="depositCancelBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCloseDeposit" styleClass="btn-cancel" text="%common.cancel" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="depositSubmitBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSubmitDeposit" styleClass="btn-deposit-submit" text="%deposit.submit" HBox.hgrow="ALWAYS" />
                </HBox>
             </VBox>
          </VBox>
