@@ -58,9 +58,15 @@ public class BiddingCoordinator {
     }
 
     private void processAutoBids() {
-        AutoBidManager.AutoBidResult result = autoBidManager.processAuto();
-        if (result != null) {
+        AutoBidManager.AutoBidResult result;
+        while ((result = autoBidManager.processAuto()) != null) {
             placeBidInternal(result.getBidder(), result.getAmount(), false, BidType.AUTO);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
     }
 

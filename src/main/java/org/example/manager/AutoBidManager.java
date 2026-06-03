@@ -1,7 +1,6 @@
 package org.example.manager;
 
 import org.example.domain.auction.Auction;
-import org.example.domain.item.Item;
 import org.example.domain.user.Bidder;
 import org.example.util.AutoBid;
 
@@ -14,87 +13,84 @@ public class AutoBidManager {
     private Auction auction;
     private final PriorityQueue<AutoBid> autoBids;
     private final ReentrantLock lock = new ReentrantLock();
+    private Bidder lastAutoBidder = null;
 
     public AutoBidManager(Auction auction) {
         this.auction = auction;
-        autoBids = new PriorityQueue<>((a, b) -> {
-            int logic = Double.compare(b.getMaxBid(), a.getMaxBid());
-            if (logic == 0) return a.getTime().compareTo(b.getTime());
-            return logic;
-        });
+        autoBids = new PriorityQueue<>(
+                (a, b) -> {
+                    int logic = Double.compare(b.getMaxBid(), a.getMaxBid());
+                    if (logic == 0) return a.getTime().compareTo(b.getTime());
+                    return logic;
+                }
+        );
     }
 
     public void addAutoBid(AutoBid autoBid) {
         lock.lock();
         try {
-            autoBid.setRegisteredMinIncrement(auction.getMinIncrement());
             autoBids.add(autoBid);
         } finally {
             lock.unlock();
         }
     }
 
+    public void resetLastBidder() {
+        lock.lock();
+        try { lastAutoBidder = null; }
+        finally { lock.unlock(); }
+    }
+
     public AutoBidResult processAuto() {
         lock.lock();
         try {
             double minIncrement = auction.getMinIncrement();
-            Item item = auction.getItem();
+            double currentPrice = auction.getItem().getCurrentPrice();
+
             if (autoBids.isEmpty()) return null;
 
-            AutoBid first = null, second = null;
-            List<AutoBid> skipped = new ArrayList<>();
+            List<AutoBid> temp = new ArrayList<>(autoBids);
+            autoBids.clear();
 
-            while (!autoBids.isEmpty()) {
-                AutoBid candidate = autoBids.poll();
-                if (candidate.getMaxBid() > auction.getCurrentPrice()
-                        && candidate.getIncrement() >= candidate.getRegisteredMinIncrement()) {
-                    first = candidate;
-                    break;
-                }
-                skipped.add(candidate);
-            }
-            if (first == null) {
-                autoBids.addAll(skipped);
-                return null;
-            }
+            // Lọc các bid còn hợp lệ (maxBid > currentPrice)
+            List<AutoBid> valid = temp.stream()
+                    .filter(ab -> ab.getMaxBid() > currentPrice)
+                    .collect(java.util.stream.Collectors.toList());
+            List<AutoBid> invalid = temp.stream()
+                    .filter(ab -> ab.getMaxBid() <= currentPrice)
+                    .collect(java.util.stream.Collectors.toList());
 
-            while (!autoBids.isEmpty()) {
-                AutoBid candidate = autoBids.poll();
-                if (candidate.getMaxBid() > auction.getCurrentPrice()
-                        && candidate.getIncrement() >= candidate.getRegisteredMinIncrement()) {
-                    second = candidate;
-                    break;
-                }
-                skipped.add(candidate);
-            }
+            autoBids.addAll(invalid); // invalid vẫn giữ lại để sau này check
 
-            double effectiveIncrement = Math.max(first.getIncrement(), minIncrement);
-            double priceAfterBid;
-            if (second == null) {
-                priceAfterBid = Math.min(first.getMaxBid(), effectiveIncrement + item.getCurrentPrice());
-            } else {
-                priceAfterBid = Math.min(first.getMaxBid(), second.getMaxBid() + effectiveIncrement);
-                autoBids.add(second);
-            }
+            if (valid.isEmpty()) return null;
 
-            autoBids.add(first);
-            autoBids.addAll(skipped);
+            // Chọn người KHÁC lastAutoBidder, ưu tiên maxBid cao nhất
+            AutoBid chosen = valid.stream()
+                    .filter(ab -> !ab.getBidder().equals(lastAutoBidder))
+                    .findFirst() // valid đã được sort theo maxBid desc từ PriorityQueue
+                    .orElse(null);
 
-            return new AutoBidResult(first.getBidder(), priceAfterBid);
+            autoBids.addAll(valid);
+
+            if (chosen == null) return null; // chỉ còn 1 người đang dẫn đầu
+
+            double effectiveIncrement = Math.max(chosen.getIncrement(), minIncrement);
+            double nextPrice = currentPrice + effectiveIncrement;
+
+            if (nextPrice > chosen.getMaxBid()) return null;
+
+            lastAutoBidder = chosen.getBidder();
+            return new AutoBidResult(chosen.getBidder(), nextPrice);
+
         } finally {
             lock.unlock();
         }
     }
 
     public static class AutoBidResult {
-        private Bidder bidder;
-        private double amount;
-
-        public AutoBidResult(Bidder bidder, double amount) {
-            this.bidder = bidder;
-            this.amount = amount;
-        }
-
+        private final Bidder bidder;
+        private final double amount;
+        public AutoBidResult(Bidder bidder, double amount) { this.bidder = bidder; this.amount = amount; }
         public Bidder getBidder() { return bidder; }
         public double getAmount() { return amount; }
     }
